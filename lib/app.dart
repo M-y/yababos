@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yababos/views/wallet.dart';
 
 class Yababos extends StatelessWidget {
   @override
@@ -8,6 +9,7 @@ class Yababos extends StatelessWidget {
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      home: Wallet(),
     );
   }
 }
