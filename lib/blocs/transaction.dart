@@ -19,12 +19,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       yield await _mapUpdatetoState(event);
     } else if (event is TransactionGet) {
       yield await _mapGettoState(event);
+    } else if (event is TransactionGetAll) {
+      yield await _mapGetAlltoState(event);
     }
   }
 
   Future<TransactionState> _mapAddtoState(TransactionAdd event) async {
     db.add(event.transaction);
-    return TransactionLoaded();
+    return TransactionLoaded.all(await db.getAll());
   }
 
   Future<TransactionState> _mapDeletetoState(TransactionDelete event) async {
@@ -39,5 +41,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   Future<TransactionState> _mapGettoState(TransactionGet event) async {
     return TransactionLoaded.one(await db.get(event.id));
+  }
+
+  _mapGetAlltoState(TransactionGetAll event) async {
+    return TransactionLoaded.all(await db.getAll());
   }
 }
