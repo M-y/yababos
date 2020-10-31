@@ -44,6 +44,46 @@ class S {
       args: [],
     );
   }
+
+  /// `Edit Transaction`
+  String get editTransaction {
+    return Intl.message(
+      'Edit Transaction',
+      name: 'editTransaction',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New Transaction`
+  String get newTransaction {
+    return Intl.message(
+      'New Transaction',
+      name: 'newTransaction',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Amount`
+  String get amount {
+    return Intl.message(
+      'Amount',
+      name: 'amount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Description`
+  String get description {
+    return Intl.message(
+      'Description',
+      name: 'description',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

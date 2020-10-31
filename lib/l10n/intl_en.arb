@@ -1,3 +1,7 @@
 {
-  "wallet": "Wallet"
+  "wallet": "Wallet",
+  "editTransaction": "Edit Transaction",
+  "newTransaction": "New Transaction",
+  "amount": "Amount",
+  "description": "Description"
 }

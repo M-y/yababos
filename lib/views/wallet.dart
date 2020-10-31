@@ -6,7 +6,8 @@ import 'package:yababos/blocs/transaction.dart';
 import 'package:yababos/events/transaction.dart';
 import 'package:yababos/models/transaction.dart';
 import 'package:yababos/states/transaction.dart';
-import 'package:yababos/views/transactionitem.dart';
+import 'package:yababos/views/transaction_editor.dart';
+import 'package:yababos/views/transaction_item.dart';
 
 class Wallet extends StatefulWidget {
   @override
@@ -34,17 +35,16 @@ class WalletState extends State<Wallet> {
             floatingActionButton: FloatingActionButton(
               child: Icon(Icons.add),
               onPressed: () {
-                final Transaction transaction1 = Transaction(
-                  id: 1,
-                  from: 1,
-                  to: null,
-                  amount: 9.99,
-                  description: 'milk',
-                  tags: ['market'],
-                );
-
-                BlocProvider.of<TransactionBloc>(context)
-                    .add(TransactionAdd(transaction1));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (econtext) => TransactionEditor(
+                        transaction: Transaction(id: null, from: 1, to: null),
+                        onSave: (transaction) =>
+                            BlocProvider.of<TransactionBloc>(context)
+                                .add(TransactionAdd(transaction)),
+                      ),
+                    ));
               },
             ),
           );
