@@ -13,9 +13,7 @@ class TransactionInmemory extends TransactionRepository {
 
   @override
   Future<List<Transaction>> getAll() {
-    return Future(() {
-      return _transactions;
-    });
+    return Future.delayed(Duration(seconds: 3), () => _transactions);
   }
 
   @override
