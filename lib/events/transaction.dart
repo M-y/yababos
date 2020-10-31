@@ -22,6 +22,8 @@ class TransactionGet extends TransactionEvent {
   const TransactionGet(this.id);
 }
 
+class TransactionGetAll extends TransactionEvent {}
+
 class TransactionDelete extends TransactionEvent {
   final int id;
 
