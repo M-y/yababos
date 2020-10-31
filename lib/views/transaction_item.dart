@@ -27,7 +27,7 @@ class TransactionItem extends StatelessWidget {
                 alignment: Alignment.topLeft,
                 child: Icon(Icons.category),
               ),
-              Center(child: Text(transaction.description)),
+              Center(child: Text(transaction.description ?? '')),
               Align(
                 alignment: Alignment.topRight,
                 child: Text(
