@@ -1,11 +1,12 @@
 import 'package:flutter/foundation.dart';
+import 'package:yababos/models/tag.dart';
 
 class Transaction {
   int id;
   int from; // from wallet
   int to; // to wallet
   double amount;
-  List<String> tags;
+  List<Tag> tags;
   String description;
 
   Transaction({
