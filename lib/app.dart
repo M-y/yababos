@@ -24,7 +24,7 @@ class Yababos extends StatelessWidget {
       home: BlocProvider(
         create: (context) => TransactionBloc(db: TransactionInmemory())
           ..add(TransactionGetAll()),
-        child: Wallet(),
+        child: WalletWidget(),
       ),
     );
   }

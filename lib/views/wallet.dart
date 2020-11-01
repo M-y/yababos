@@ -7,14 +7,14 @@ import 'package:yababos/events/transaction.dart';
 import 'package:yababos/models/transaction.dart';
 import 'package:yababos/states/transaction.dart';
 import 'package:yababos/views/transaction_editor.dart';
-import 'package:yababos/views/transaction_item.dart';
+import 'package:yababos/views/transaction.dart';
 
-class Wallet extends StatefulWidget {
+class WalletWidget extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => WalletState();
+  State<StatefulWidget> createState() => WalletWidgetState();
 }
 
-class WalletState extends State<Wallet> {
+class WalletWidgetState extends State<WalletWidget> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TransactionBloc, TransactionState>(
@@ -29,7 +29,7 @@ class WalletState extends State<Wallet> {
             body: ListView.builder(
               itemCount: transactions.length,
               itemBuilder: (context, index) {
-                return TransactionItem(transactions[index]);
+                return TransactionWidget(transactions[index]);
               },
             ),
             floatingActionButton: FloatingActionButton(

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:yababos/models/transaction.dart';
 
-class TransactionItem extends StatelessWidget {
+class TransactionWidget extends StatelessWidget {
   final Transaction transaction;
 
-  const TransactionItem(this.transaction);
+  const TransactionWidget(this.transaction);
 
   bool _isExpense() {
     if (transaction.to == null) return true;
