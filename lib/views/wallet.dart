@@ -10,6 +10,10 @@ import 'package:yababos/views/transaction_editor.dart';
 import 'package:yababos/views/transaction.dart';
 
 class WalletWidget extends StatefulWidget {
+  final int id;
+
+  const WalletWidget(this.id);
+
   @override
   State<StatefulWidget> createState() => WalletWidgetState();
 }
@@ -39,7 +43,8 @@ class WalletWidgetState extends State<WalletWidget> {
                     context,
                     MaterialPageRoute(
                       builder: (econtext) => TransactionEditor(
-                        transaction: Transaction(id: null, from: 1, to: null),
+                        transaction:
+                            Transaction(id: null, from: widget.id, to: null),
                         onSave: (transaction) =>
                             BlocProvider.of<TransactionBloc>(context)
                                 .add(TransactionAdd(transaction)),
