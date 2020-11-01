@@ -1,13 +1,12 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yababos/events/transaction.dart';
 import 'package:yababos/models/transaction_repository.dart';
 import 'package:yababos/states/transaction.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
-  final TransactionRepository db;
+  final TransactionRepository _transactionRepository;
 
-  TransactionBloc({@required this.db}) : super(TransactionLoading());
+  TransactionBloc(this._transactionRepository) : super(TransactionLoading());
 
   @override
   Stream<TransactionState> mapEventToState(TransactionEvent event) async* {
@@ -25,25 +24,25 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   Future<TransactionState> _mapAddtoState(TransactionAdd event) async {
-    db.add(event.transaction);
-    return TransactionLoaded.all(await db.getAll());
+    _transactionRepository.add(event.transaction);
+    return TransactionLoaded.all(await _transactionRepository.getAll());
   }
 
   Future<TransactionState> _mapDeletetoState(TransactionDelete event) async {
-    db.delete(event.id);
-    return TransactionLoaded.all(await db.getAll());
+    _transactionRepository.delete(event.id);
+    return TransactionLoaded.all(await _transactionRepository.getAll());
   }
 
   Future<TransactionState> _mapUpdatetoState(TransactionUpdate event) async {
-    db.update(event.transaction);
-    return TransactionLoaded.all(await db.getAll());
+    _transactionRepository.update(event.transaction);
+    return TransactionLoaded.all(await _transactionRepository.getAll());
   }
 
   Future<TransactionState> _mapGettoState(TransactionGet event) async {
-    return TransactionLoaded.one(await db.get(event.id));
+    return TransactionLoaded.one(await _transactionRepository.get(event.id));
   }
 
   _mapGetAlltoState(TransactionGetAll event) async {
-    return TransactionLoaded.all(await db.getAll());
+    return TransactionLoaded.all(await _transactionRepository.getAll());
   }
 }
