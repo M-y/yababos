@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:yababos/blocs/transaction.dart';
+import 'package:yababos/events/transaction.dart';
 import 'package:yababos/models/transaction.dart';
+import 'package:yababos/views/transaction_editor.dart';
 
 class TransactionWidget extends StatelessWidget {
   final Transaction transaction;
@@ -17,7 +21,17 @@ class TransactionWidget extends StatelessWidget {
       color: _isExpense() ? Colors.white : Colors.lightGreenAccent,
       child: InkWell(
         onTap: () {
-          print(1);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (econtext) => TransactionEditor(
+                transaction: transaction,
+                onSave: (transaction) =>
+                    BlocProvider.of<TransactionBloc>(context)
+                        .add(TransactionUpdate(transaction)),
+              ),
+            ),
+          );
         },
         child: Padding(
           padding: const EdgeInsets.all(8.0),
