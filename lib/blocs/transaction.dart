@@ -31,12 +31,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   Future<TransactionState> _mapDeletetoState(TransactionDelete event) async {
     db.delete(event.id);
-    return TransactionLoaded();
+    return TransactionLoaded.all(await db.getAll());
   }
 
   Future<TransactionState> _mapUpdatetoState(TransactionUpdate event) async {
     db.update(event.transaction);
-    return TransactionLoaded();
+    return TransactionLoaded.all(await db.getAll());
   }
 
   Future<TransactionState> _mapGettoState(TransactionGet event) async {
