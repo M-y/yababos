@@ -7,6 +7,7 @@ class TransactionInmemory extends TransactionRepository {
   @override
   Future add(Transaction transaction) {
     return Future(() {
+      transaction.id = _transactions.length + 1;
       _transactions.add(transaction);
     });
   }
@@ -34,8 +35,8 @@ class TransactionInmemory extends TransactionRepository {
   @override
   Future update(Transaction transaction) {
     return Future(() {
-      delete(transaction.id);
-      add(transaction);
+      _transactions[_transactions
+          .indexWhere((element) => element.id == transaction.id)] = transaction;
     });
   }
 }
