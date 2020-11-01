@@ -3,5 +3,7 @@
   "editTransaction": "Edit Transaction",
   "newTransaction": "New Transaction",
   "amount": "Amount",
-  "description": "Description"
+  "description": "Description",
+  "tags": "Tags",
+  "delete": "Delete"
 }

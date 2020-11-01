@@ -5,16 +5,16 @@ import 'package:yababos/models/transaction.dart';
 import 'package:yababos/generated/l10n.dart';
 
 typedef OnSave = Function(Transaction transaction);
+typedef OnDelete = Function(Transaction transaction);
 
 class TransactionEditor extends StatelessWidget {
   final Transaction transaction;
   final OnSave onSave;
+  final OnDelete onDelete;
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  const TransactionEditor({
-    @required this.transaction,
-    @required this.onSave,
-  });
+  const TransactionEditor(
+      {@required this.transaction, @required this.onSave, this.onDelete});
 
   bool _isEdit() {
     if (transaction.id != null) return true;
@@ -28,6 +28,20 @@ class TransactionEditor extends StatelessWidget {
         title: Text(_isEdit()
             ? S.of(context).editTransaction
             : S.of(context).newTransaction),
+        actions: [
+          _isEdit()
+              ? FlatButton(
+                  child: Text(
+                    S.of(context).delete,
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  onPressed: () {
+                    onDelete(transaction);
+                    Navigator.pop(context);
+                  },
+                )
+              : Container()
+        ],
       ),
       body: Form(
         key: _formKey,
@@ -46,7 +60,7 @@ class TransactionEditor extends StatelessWidget {
             ),
             // Tags
             ChipsInput(
-              decoration: InputDecoration(labelText: 'Tags'),
+              decoration: InputDecoration(labelText: S.of(context).tags),
               initialValue: transaction.tags ?? [],
               chipBuilder: (context, state, data) {
                 return InputChip(

@@ -29,6 +29,9 @@ class TransactionWidget extends StatelessWidget {
                 onSave: (transaction) =>
                     BlocProvider.of<TransactionBloc>(context)
                         .add(TransactionUpdate(transaction)),
+                onDelete: (transaction) =>
+                    BlocProvider.of<TransactionBloc>(context)
+                        .add(TransactionDelete(transaction.id)),
               ),
             ),
           );

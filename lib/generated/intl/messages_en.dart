@@ -22,9 +22,11 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
     "amount" : MessageLookupByLibrary.simpleMessage("Amount"),
+    "delete" : MessageLookupByLibrary.simpleMessage("Delete"),
     "description" : MessageLookupByLibrary.simpleMessage("Description"),
     "editTransaction" : MessageLookupByLibrary.simpleMessage("Edit Transaction"),
     "newTransaction" : MessageLookupByLibrary.simpleMessage("New Transaction"),
+    "tags" : MessageLookupByLibrary.simpleMessage("Tags"),
     "wallet" : MessageLookupByLibrary.simpleMessage("Wallet")
   };
 }
