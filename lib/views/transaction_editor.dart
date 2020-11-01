@@ -33,6 +33,8 @@ class TransactionEditor extends StatelessWidget {
         key: _formKey,
         child: ListView(
           children: [
+            // From
+            // To
             // Amount
             TextFormField(
               decoration: InputDecoration(labelText: S.of(context).amount),
@@ -45,6 +47,7 @@ class TransactionEditor extends StatelessWidget {
             // Tags
             ChipsInput(
               decoration: InputDecoration(labelText: 'Tags'),
+              initialValue: transaction.tags ?? [],
               chipBuilder: (context, state, data) {
                 return InputChip(
                     label: Text(data.toString()),
