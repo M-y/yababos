@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chips_input/flutter_chips_input.dart';
+
 import 'package:yababos/models/transaction.dart';
 import 'package:yababos/generated/l10n.dart';
 
@@ -31,6 +33,7 @@ class TransactionEditor extends StatelessWidget {
         key: _formKey,
         child: ListView(
           children: [
+            // Amount
             TextFormField(
               decoration: InputDecoration(labelText: S.of(context).amount),
               initialValue: _isEdit() ? transaction.amount.toString() : null,
@@ -39,12 +42,35 @@ class TransactionEditor extends StatelessWidget {
               onSaved: (newValue) =>
                   transaction.amount = double.parse(newValue),
             ),
+            // Tags
+            ChipsInput(
+              decoration: InputDecoration(labelText: 'Tags'),
+              chipBuilder: (context, state, data) {
+                return InputChip(
+                    label: Text(data.toString()),
+                    onDeleted: () => state.deleteChip(data),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap);
+              },
+              suggestionBuilder: (context, state, data) {
+                return ListTile(
+                  title: Text(data.toString()),
+                  onTap: () => state.selectSuggestion(data),
+                );
+              },
+              findSuggestions: (query) {
+                return <String>[query];
+              },
+              onChanged: (value) {
+                transaction.tags = value.map((e) => e.toString()).toList();
+              },
+            ),
+            // Description
             TextFormField(
               decoration: InputDecoration(labelText: S.of(context).description),
               initialValue: _isEdit() ? transaction.description : null,
               onSaved: (newValue) => transaction.description = newValue,
-              maxLines: 100,
-            )
+              maxLines: 10,
+            ),
           ],
         ),
       ),
