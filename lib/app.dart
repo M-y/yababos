@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:yababos/events/transaction.dart';
-import 'package:yababos/models/repository.dart';
 import 'generated/l10n.dart';
-import 'package:yababos/blocs/transaction.dart';
 import 'package:yababos/views/wallet.dart';
 
 class Yababos extends StatelessWidget {
@@ -21,12 +17,7 @@ class Yababos extends StatelessWidget {
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: BlocProvider(
-        create: (context) =>
-            TransactionBloc(RepositorySelections.transactionRepository)
-              ..add(TransactionGetAll()),
-        child: WalletWidget(0),
-      ),
+      home: WalletWidget(0),
     );
   }
 }

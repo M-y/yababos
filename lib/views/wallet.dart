@@ -20,7 +20,7 @@ class WalletWidget extends StatefulWidget {
 
 class WalletWidgetState extends State<WalletWidget> {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext walletWidgetContext) {
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
         if (state is TransactionLoaded) {
@@ -40,16 +40,19 @@ class WalletWidgetState extends State<WalletWidget> {
               child: Icon(Icons.add),
               onPressed: () {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (econtext) => TransactionEditor(
+                  walletWidgetContext,
+                  MaterialPageRoute(
+                    builder: (econtext) {
+                      return TransactionEditor(
                         transaction:
                             Transaction(id: null, from: widget.id, to: null),
                         onSave: (transaction) =>
                             BlocProvider.of<TransactionBloc>(context)
                                 .add(TransactionAdd(transaction)),
-                      ),
-                    ));
+                      );
+                    },
+                  ),
+                );
               },
             ),
           );
