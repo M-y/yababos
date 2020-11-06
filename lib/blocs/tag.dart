@@ -12,10 +12,16 @@ class TagBloc extends Bloc<TagEvent, TagState> {
   Stream<TagState> mapEventToState(TagEvent event) async* {
     if (event is TagGetAll) {
       yield await _mapGetAlltoState(event);
+    } else if (event is TagFind) {
+      yield await _mapFindToState(event);
     }
   }
 
   _mapGetAlltoState(TagGetAll event) async {
     return TagLoaded(await _tagRepository.getAll());
+  }
+
+  _mapFindToState(TagFind event) async {
+    return TagLoaded(await _tagRepository.find(event.tag));
   }
 }

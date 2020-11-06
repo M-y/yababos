@@ -28,6 +28,7 @@ class TagInmemory extends TagRepository {
 
   @override
   Future<List<Tag>> getAll() {
+    _tags.add(Tag(name: _tags.length.toString()));
     return Future.delayed(Duration(seconds: 3), () => _tags);
   }
 
@@ -35,6 +36,13 @@ class TagInmemory extends TagRepository {
   Future update(String oldName, Tag tag) {
     return Future(() {
       _tags[_tags.indexWhere((element) => element.name == oldName)] = tag;
+    });
+  }
+
+  @override
+  Future<List<Tag>> find(Tag tag) {
+    return Future(() {
+      return _tags.where((element) => element == tag).toList();
     });
   }
 }

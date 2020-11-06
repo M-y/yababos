@@ -7,4 +7,6 @@ abstract class TagRepository {
   Future add(Tag tag);
   Future update(String oldName, Tag tag);
   Future delete(String name);
+
+  Future<List<Tag>> find(Tag tag);
 }
