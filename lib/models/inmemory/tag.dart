@@ -22,27 +22,31 @@ class TagInmemory extends TagRepository {
   @override
   Future<Tag> get(String name) {
     return Future(() {
-      return _tags.firstWhere((element) => element.name == name);
+      return _tags.firstWhere(
+        (element) => element.name == name,
+        orElse: () => null,
+      );
     });
   }
 
   @override
   Future<List<Tag>> getAll() {
-    _tags.add(Tag(name: _tags.length.toString()));
     return Future.delayed(Duration(seconds: 3), () => _tags);
   }
 
   @override
   Future update(String oldName, Tag tag) {
     return Future(() {
-      _tags[_tags.indexWhere((element) => element.name == oldName)] = tag;
+      int index = _tags.indexWhere((element) => element.name == oldName);
+      if (index == -1) throw new Exception();
+      _tags[index] = tag;
     });
   }
 
   @override
   Future<List<Tag>> find(Tag tag) {
     return Future(() {
-      return _tags.where((element) => element == tag).toList();
+      return _tags.where((element) => element.name == tag.name).toList();
     });
   }
 }
