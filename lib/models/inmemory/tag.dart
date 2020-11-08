@@ -46,7 +46,7 @@ class TagInmemory extends TagRepository {
   @override
   Future<List<Tag>> find(Tag tag) {
     return Future(() {
-      return _tags.where((element) => element.name == tag.name).toList();
+      return _tags.where((element) => element.name.contains(tag.name)).toList();
     });
   }
 }
