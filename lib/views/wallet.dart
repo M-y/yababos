@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:yababos/blocs/tag.dart';
+import 'package:yababos/events/tag.dart';
 import 'package:yababos/generated/l10n.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,9 +48,12 @@ class WalletWidgetState extends State<WalletWidget> {
                       return TransactionEditor(
                         transaction:
                             Transaction(id: null, from: widget.id, to: null),
-                        onSave: (transaction) =>
-                            BlocProvider.of<TransactionBloc>(context)
-                                .add(TransactionAdd(transaction)),
+                        onSave: (transaction) {
+                          BlocProvider.of<TagBloc>(context)
+                              .add(TagsAdd(transaction.tags));
+                          BlocProvider.of<TransactionBloc>(context)
+                              .add(TransactionAdd(transaction));
+                        },
                       );
                     },
                   ),
