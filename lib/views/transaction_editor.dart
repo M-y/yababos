@@ -67,44 +67,49 @@ class TransactionEditor extends StatelessWidget {
                   transaction.amount = double.parse(newValue),
             ),
             // Tags
-            BlocBuilder<TagBloc, TagState>(
-              builder: (econtext, state) {
-                return ChipsInput(
-                  decoration: InputDecoration(labelText: S.of(context).tags),
-                  initialValue: transaction.tags ?? [],
-                  chipBuilder: (context, state, tag) {
-                    return InputChip(
-                        label: Text((tag as Tag).name),
-                        onDeleted: () => state.deleteChip(tag),
-                        materialTapTargetSize:
-                            MaterialTapTargetSize.shrinkWrap);
-                  },
-                  suggestionBuilder: (context, chipsInputState, data) {
-                    if (data != null) {
-                      return ListTile(
-                        title: Text((data as Tag).name),
-                        onTap: () => chipsInputState.selectSuggestion(data),
-                      );
-                    }
-                    return const Center(
-                      child: LinearProgressIndicator(),
-                      heightFactor: 10,
-                      widthFactor: 10,
-                    );
-                  },
-                  findSuggestions: (query) {
-                    BlocProvider.of<TagBloc>(context)
-                        .add(TagFind(Tag(name: query)));
-                    if (state is TagLoaded) {
-                      if (state.tags.isEmpty) return <Tag>[Tag(name: query)];
-                      return state.tags;
-                    }
-                    return [null];
-                  },
-                  onChanged: (value) =>
-                      transaction.tags = value.map((e) => (e as Tag)).toList(),
+            ChipsInput(
+              decoration: InputDecoration(labelText: S.of(context).tags),
+              initialValue: transaction.tags ?? [],
+              chipBuilder: (context, state, tag) {
+                return InputChip(
+                    label: Text((tag as Tag).name),
+                    onDeleted: () => state.deleteChip(tag),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap);
+              },
+              suggestionBuilder: (context, chipsInputState, data) {
+                if (data != null) {
+                  return ListTile(
+                    title: Text((data as Tag).name),
+                    onTap: () {
+                      (data as Tag).name =
+                          (data as Tag).name.replaceFirst(RegExp('^\\+ '), '');
+                      chipsInputState.selectSuggestion(data);
+                    },
+                  );
+                }
+                return const Center(
+                  child: LinearProgressIndicator(),
+                  heightFactor: 10,
+                  widthFactor: 10,
                 );
               },
+              findSuggestions: (query) async {
+                Tag queryTag = Tag(name: query);
+
+                // fire TagFind event on TagBloc
+                Stream<TagState> fireEvent = BlocProvider.of<TagBloc>(context)
+                    .mapEventToState(TagFind(queryTag));
+                // wait for state
+                TagState findState = await fireEvent.last;
+
+                if (findState is TagLoaded) {
+                  if (findState.tags.contains(queryTag)) return findState.tags;
+                  return findState.tags + [Tag(name: '+ ' + query)];
+                }
+                return [null];
+              },
+              onChanged: (value) =>
+                  transaction.tags = value.map((e) => (e as Tag)).toList(),
             ),
             // Description
             TextFormField(
