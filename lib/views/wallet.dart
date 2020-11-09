@@ -49,8 +49,9 @@ class WalletWidgetState extends State<WalletWidget> {
                         transaction:
                             Transaction(id: null, from: widget.id, to: null),
                         onSave: (transaction) {
-                          BlocProvider.of<TagBloc>(context)
-                              .add(TagsAdd(transaction.tags));
+                          if (transaction.tags != null)
+                            BlocProvider.of<TagBloc>(context)
+                                .add(TagsAdd(transaction.tags));
                           BlocProvider.of<TransactionBloc>(context)
                               .add(TransactionAdd(transaction));
                         },

@@ -29,8 +29,9 @@ class TransactionWidget extends StatelessWidget {
               builder: (econtext) => TransactionEditor(
                 transaction: transaction,
                 onSave: (transaction) {
-                  BlocProvider.of<TagBloc>(context)
-                      .add(TagsAdd(transaction.tags));
+                  if (transaction.tags != null)
+                    BlocProvider.of<TagBloc>(context)
+                        .add(TagsAdd(transaction.tags));
                   BlocProvider.of<TransactionBloc>(context)
                       .add(TransactionUpdate(transaction));
                 },
