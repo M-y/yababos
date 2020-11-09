@@ -44,18 +44,31 @@ class TransactionWidget extends StatelessWidget {
         },
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Stack(
+          child: Row(
             children: [
-              Align(
-                alignment: Alignment.topLeft,
-                child: Icon(Icons.category),
+              Expanded(
+                flex: 2,
+                child: Wrap(
+                  children: (transaction.tags == null)
+                      ? []
+                      : transaction.tags
+                          .map((tag) => Container(
+                                color: tag.color,
+                                padding: EdgeInsets.all(5),
+                                margin: EdgeInsets.all(.5),
+                                child: Text(tag.name),
+                              ))
+                          .toList(),
+                ),
               ),
-              Center(child: Text(transaction.description ?? '')),
-              Align(
-                alignment: Alignment.topRight,
-                child: Text(
-                    (_isExpense() ? '-' : '') + transaction.amount.toString()),
-              )
+              Expanded(
+                flex: 5,
+                child: Text(transaction.description ?? ''),
+              ),
+              Expanded(
+                  flex: 1,
+                  child: Text((_isExpense() ? '-' : '') +
+                      transaction.amount.toString()))
             ],
           ),
         ),
