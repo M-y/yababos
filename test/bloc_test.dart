@@ -57,5 +57,12 @@ void main() {
       act: (bloc) => bloc.add(TagGetAll()),
       expect: <TagState>[TagLoaded(allTags)],
     );
+
+    blocTest(
+      'duplicate add',
+      build: () => TagBloc(tagRepository),
+      act: (bloc) => bloc.add(TagAdd(sampleTag)),
+      expect: <TagState>[TagLoaded(allTags)],
+    );
   });
 }
