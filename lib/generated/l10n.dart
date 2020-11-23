@@ -104,6 +104,56 @@ class S {
       args: [],
     );
   }
+
+  /// `Edit Wallet`
+  String get editWallet {
+    return Intl.message(
+      'Edit Wallet',
+      name: 'editWallet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New Wallet`
+  String get newWallet {
+    return Intl.message(
+      'New Wallet',
+      name: 'newWallet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Initial Amount`
+  String get initialAmount {
+    return Intl.message(
+      'Initial Amount',
+      name: 'initialAmount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Name`
+  String get name {
+    return Intl.message(
+      'Name',
+      name: 'name',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Currency`
+  String get currency {
+    return Intl.message(
+      'Currency',
+      name: 'currency',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

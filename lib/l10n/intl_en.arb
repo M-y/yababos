@@ -5,5 +5,10 @@
   "amount": "Amount",
   "description": "Description",
   "tags": "Tags",
-  "delete": "Delete"
+  "delete": "Delete",
+  "editWallet": "Edit Wallet",
+  "newWallet": "New Wallet",
+  "initialAmount": "Initial Amount",
+  "name": "Name",
+  "currency": "Currency"
 }

@@ -10,6 +10,7 @@ import 'package:yababos/models/transaction.dart';
 import 'package:yababos/states/transaction.dart';
 import 'package:yababos/views/transaction_editor.dart';
 import 'package:yababos/views/transaction.dart';
+import 'package:yababos/views/wallets.dart';
 
 class WalletWidget extends StatefulWidget {
   final int id;
@@ -31,6 +32,31 @@ class WalletWidgetState extends State<WalletWidget> {
           return Scaffold(
             appBar: AppBar(
               title: Text(S.of(context).wallet),
+            ),
+            drawer: Drawer(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  DrawerHeader(
+                    child: Text("Yababos"),
+                  ),
+                  ListTile(
+                    title: Text("Wallets"),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (BuildContext rcontext) {
+                          return WalletsWidget();
+                        }),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    title: Text("Tags"),
+                    onTap: () {},
+                  )
+                ],
+              ),
             ),
             body: ListView.builder(
               itemCount: transactions.length,
