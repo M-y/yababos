@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'blocs/wallet.dart';
 import 'generated/l10n.dart';
 import 'package:yababos/views/wallet.dart';
+import 'package:yababos/states/wallet.dart';
+import 'package:yababos/views/wallets.dart';
 
 class Yababos extends StatelessWidget {
   @override
@@ -17,7 +21,16 @@ class Yababos extends StatelessWidget {
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: WalletWidget(0),
+      home: BlocBuilder<WalletBloc, WalletState>(builder: (context, state) {
+        if (state is WalletLoaded) {
+          if (state.wallets.length < 1) return WalletsWidget();
+          return WalletWidget(
+            selectedWallet: state.wallets[state.wallets.length - 1],
+            wallets: state.wallets,
+          );
+        }
+        return const Center(child: CircularProgressIndicator());
+      }),
     );
   }
 }

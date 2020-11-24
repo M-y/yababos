@@ -7,15 +7,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yababos/blocs/transaction.dart';
 import 'package:yababos/events/transaction.dart';
 import 'package:yababos/models/transaction.dart';
+import 'package:yababos/models/wallet.dart';
 import 'package:yababos/states/transaction.dart';
 import 'package:yababos/views/transaction_editor.dart';
 import 'package:yababos/views/transaction.dart';
 import 'package:yababos/views/wallets.dart';
 
 class WalletWidget extends StatefulWidget {
-  final int id;
+  final Wallet selectedWallet;
+  final List<Wallet> wallets;
 
-  const WalletWidget(this.id);
+  const WalletWidget({this.selectedWallet, this.wallets});
 
   @override
   State<StatefulWidget> createState() => WalletWidgetState();
@@ -31,7 +33,30 @@ class WalletWidgetState extends State<WalletWidget> {
 
           return Scaffold(
             appBar: AppBar(
-              title: Text(S.of(context).wallet),
+              title: TextButton(
+                child: Text(
+                  widget.selectedWallet.name,
+                  style: TextStyle(color: Colors.white),
+                ),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return ListView.builder(
+                        itemCount: widget.wallets.length,
+                        itemBuilder: (BuildContext lcontext, int index) {
+                          return ListTile(
+                            title: Text(widget.wallets[index].name),
+                            onTap: () {
+                              widget.wallets[index];
+                            },
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
             ),
             drawer: Drawer(
               child: ListView(
@@ -43,18 +68,27 @@ class WalletWidgetState extends State<WalletWidget> {
                   ListTile(
                     title: Text("Wallets"),
                     onTap: () {
+                      Navigator.pop(context);
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (BuildContext rcontext) {
-                          return WalletsWidget();
-                        }),
+                        MaterialPageRoute(
+                            builder: (BuildContext rcontext) =>
+                                WalletsWidget()),
                       );
                     },
                   ),
                   ListTile(
                     title: Text("Tags"),
-                    onTap: () {},
-                  )
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    title: Text("Export / Import"),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
                 ],
               ),
             ),
@@ -72,8 +106,8 @@ class WalletWidgetState extends State<WalletWidget> {
                   MaterialPageRoute(
                     builder: (econtext) {
                       return TransactionEditor(
-                        transaction:
-                            Transaction(id: null, from: widget.id, to: null),
+                        transaction: Transaction(
+                            id: null, from: widget.selectedWallet.id, to: null),
                         onSave: (transaction) {
                           if (transaction.tags != null)
                             BlocProvider.of<TagBloc>(context)
