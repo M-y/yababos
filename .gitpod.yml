@@ -1,0 +1,12 @@
+image:
+  file: .gitpod.dockerfile
+ports:
+  - port: 8080
+tasks:
+- before: >
+    source ~/.bashrc &&
+    flutter pub upgrade
+vscode:
+  extensions:
+    - Dart-Code.dart-code@3.16.0-dev.cloud.2:QwDf9NklkXLz3yA/A5Wsaw==
+    - Dart-Code.flutter@3.15.0:2NNVLOcQzPzXP73r8LBOJQ==
