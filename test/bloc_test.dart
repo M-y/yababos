@@ -1,13 +1,53 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bloc_test/bloc_test.dart';
+import 'package:yababos/blocs/settings.dart';
 import 'package:yababos/blocs/tag.dart';
+import 'package:yababos/events/settings.dart';
 import 'package:yababos/events/tag.dart';
+import 'package:yababos/models/inmemory/settings.dart';
 import 'package:yababos/models/inmemory/tag.dart';
+import 'package:yababos/models/setting.dart';
+import 'package:yababos/models/settings_repository.dart';
 import 'package:yababos/models/tag.dart';
 import 'package:yababos/models/tag_repository.dart';
+import 'package:yababos/states/settings.dart';
 import 'package:yababos/states/tag.dart';
 
 void main() {
+  group('Settings', () {
+    SettingsRepository settingsRepository = SettingsInmemory();
+    Setting sampleSetting = Setting(name: 'sample', value: 1);
+    Setting sampleSettingChanged = Setting(name: 'sample', value: 2);
+
+    blocTest(
+      'add setting',
+      build: () => SettingsBloc(settingsRepository),
+      act: (bloc) => bloc.add(SettingAdd(sampleSetting)),
+      expect: <SettingState>[SettingChanged(sampleSetting)],
+    );
+
+    blocTest(
+      'add same setting',
+      build: () => SettingsBloc(settingsRepository),
+      act: (bloc) => bloc.add(SettingAdd(sampleSetting)),
+      expect: <SettingState>[SettingLoaded(sampleSetting)],
+    );
+
+    blocTest(
+      'update setting',
+      build: () => SettingsBloc(settingsRepository),
+      act: (bloc) => bloc.add(SettingAdd(sampleSettingChanged)),
+      expect: <SettingState>[SettingChanged(sampleSettingChanged)],
+    );
+
+    blocTest(
+      'get setting',
+      build: () => SettingsBloc(settingsRepository),
+      act: (bloc) => bloc.add(SettingGet('sample')),
+      expect: <SettingState>[SettingLoaded(sampleSettingChanged)],
+    );
+  });
+
   group('Tag', () {
     TagRepository tagRepository = TagInmemory();
     Tag sampleTag = Tag(name: 'sample');
