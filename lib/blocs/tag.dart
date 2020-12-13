@@ -53,12 +53,12 @@ class TagBloc extends Bloc<TagEvent, TagState> {
   }
 
   Future<TagState> _mapDeletetoState(TagDelete event) async {
-    _tagRepository.delete(event.tag.name);
+    await _tagRepository.delete(event.tag.name);
     return TagLoaded(await _tagRepository.getAll());
   }
 
   Future<TagState> _mapUpdatetoState(TagUpdate event) async {
-    _tagRepository.update(event.oldName, event.tag);
+    await _tagRepository.update(event.oldName, event.tag);
     return TagLoaded(await _tagRepository.getAll());
   }
 }

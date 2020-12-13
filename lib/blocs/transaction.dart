@@ -24,17 +24,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   Future<TransactionState> _mapAddtoState(TransactionAdd event) async {
-    _transactionRepository.add(event.transaction);
+    await _transactionRepository.add(event.transaction);
     return TransactionLoaded.all(await _transactionRepository.getAll());
   }
 
   Future<TransactionState> _mapDeletetoState(TransactionDelete event) async {
-    _transactionRepository.delete(event.id);
+    await _transactionRepository.delete(event.id);
     return TransactionLoaded.all(await _transactionRepository.getAll());
   }
 
   Future<TransactionState> _mapUpdatetoState(TransactionUpdate event) async {
-    _transactionRepository.update(event.transaction);
+    await _transactionRepository.update(event.transaction);
     return TransactionLoaded.all(await _transactionRepository.getAll());
   }
 
