@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:yababos/blocs/settings.dart';
 import 'package:yababos/blocs/tag.dart';
+import 'package:yababos/events/settings.dart';
 import 'package:yababos/events/tag.dart';
 import 'package:yababos/generated/l10n.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yababos/blocs/transaction.dart';
 import 'package:yababos/events/transaction.dart';
+import 'package:yababos/models/setting.dart';
 import 'package:yababos/models/transaction.dart';
 import 'package:yababos/models/wallet.dart';
 import 'package:yababos/states/transaction.dart';
@@ -33,6 +36,7 @@ class WalletWidgetState extends State<WalletWidget> {
 
           return Scaffold(
             appBar: AppBar(
+              // Wallet select button
               title: TextButton(
                 child: Text(
                   widget.selectedWallet.name,
@@ -48,7 +52,12 @@ class WalletWidgetState extends State<WalletWidget> {
                           return ListTile(
                             title: Text(widget.wallets[index].name),
                             onTap: () {
-                              widget.wallets[index];
+                              BlocProvider.of<SettingsBloc>(context)
+                                  .add(SettingAdd(Setting(
+                                name: 'wallet',
+                                value: widget.wallets[index].id,
+                              )));
+                              Navigator.pop(context);
                             },
                           );
                         },
