@@ -24,8 +24,9 @@ class Yababos extends StatelessWidget {
       home: BlocBuilder<WalletBloc, WalletState>(builder: (context, state) {
         if (state is WalletLoaded) {
           if (state.wallets.length < 1) return WalletsWidget();
+
           return WalletWidget(
-            selectedWallet: state.wallets[state.wallets.length - 1],
+            selectedWallet: state.selectedWallet,
             wallets: state.wallets,
           );
         }
