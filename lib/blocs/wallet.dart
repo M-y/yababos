@@ -13,6 +13,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   WalletBloc(this._walletRepository, this._settingsBloc)
       : super(WalletLoading()) {
+    // listen SettingsBloc for selected wallet change
     _settingsBloc.listen((state) async {
       if (state is SettingChanged && state.setting.name == 'wallet') {
         _selectedWallet = await _walletRepository.get(state.setting.value);

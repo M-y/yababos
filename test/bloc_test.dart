@@ -2,16 +2,22 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:yababos/blocs/settings.dart';
 import 'package:yababos/blocs/tag.dart';
+import 'package:yababos/blocs/wallet.dart';
 import 'package:yababos/events/settings.dart';
 import 'package:yababos/events/tag.dart';
+import 'package:yababos/events/wallet.dart';
 import 'package:yababos/models/inmemory/settings.dart';
 import 'package:yababos/models/inmemory/tag.dart';
+import 'package:yababos/models/inmemory/wallet.dart';
 import 'package:yababos/models/setting.dart';
 import 'package:yababos/models/settings_repository.dart';
 import 'package:yababos/models/tag.dart';
 import 'package:yababos/models/tag_repository.dart';
+import 'package:yababos/models/wallet.dart';
+import 'package:yababos/models/wallet_repository.dart';
 import 'package:yababos/states/settings.dart';
 import 'package:yababos/states/tag.dart';
+import 'package:yababos/states/wallet.dart';
 
 void main() {
   group('Settings', () {
@@ -45,6 +51,77 @@ void main() {
       build: () => SettingsBloc(settingsRepository),
       act: (bloc) => bloc.add(SettingGet('sample')),
       expect: <SettingState>[SettingLoaded(sampleSettingChanged)],
+    );
+  });
+
+  group('Wallet', () {
+    WalletRepository walletRepository = WalletInmemory();
+    SettingsRepository settingsRepository = SettingsInmemory();
+    SettingsBloc settingsBloc = SettingsBloc(settingsRepository);
+    Wallet sampleWallet = Wallet(
+      id: null,
+      name: 'Sample',
+      amount: 1000,
+      curreny: 'TRY',
+    );
+    List<Wallet> sampleWalletList = [sampleWallet];
+    Wallet updatedWallet = Wallet(
+      id: 1,
+      name: 'New',
+      amount: 2000,
+      curreny: 'USD',
+    );
+    List<Wallet> updatedWalletList = [updatedWallet];
+
+    blocTest(
+      'WalletAdd',
+      build: () => WalletBloc(walletRepository, settingsBloc),
+      act: (bloc) => bloc.add(WalletAdd(sampleWallet)),
+      expect: <WalletState>[WalletLoaded(wallets: sampleWalletList)],
+    );
+
+    blocTest(
+      'WalletGetAll',
+      build: () => WalletBloc(walletRepository, settingsBloc),
+      act: (bloc) => bloc.add(WalletGetAll()),
+      expect: <WalletState>[WalletLoaded(wallets: sampleWalletList)],
+    );
+
+    blocTest(
+      'WalletGet',
+      build: () => WalletBloc(walletRepository, settingsBloc),
+      act: (bloc) => bloc.add(WalletGet(1)),
+      expect: <WalletState>[WalletLoaded.one(sampleWallet)],
+    );
+
+    blocTest(
+      'WalletUpdate',
+      build: () => WalletBloc(walletRepository, settingsBloc),
+      act: (bloc) => bloc.add(WalletUpdate(updatedWallet)),
+      expect: <WalletState>[WalletLoaded(wallets: updatedWalletList)],
+    );
+
+    blocTest(
+      'WalletDelete',
+      build: () => WalletBloc(walletRepository, settingsBloc),
+      act: (bloc) => bloc.add(WalletDelete(1)),
+      expect: <WalletState>[WalletLoaded(wallets: List<Wallet>())],
+    );
+
+    blocTest(
+      'selected wallet',
+      build: () => WalletBloc(walletRepository, settingsBloc),
+      act: (bloc) {
+        bloc.add(WalletAdd(sampleWallet));
+        bloc.add(WalletAdd(updatedWallet));
+        settingsBloc.add(SettingAdd(Setting(name: 'wallet', value: 1)));
+      },
+      expect: <WalletState>[
+        WalletLoaded(
+          wallets: List<Wallet>.from([sampleWallet, updatedWallet]),
+          selectedWallet: sampleWallet,
+        )
+      ],
     );
   });
 

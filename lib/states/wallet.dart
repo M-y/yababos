@@ -1,7 +1,11 @@
+import 'package:equatable/equatable.dart';
 import 'package:yababos/models/wallet.dart';
 
-abstract class WalletState {
+abstract class WalletState extends Equatable {
   const WalletState();
+
+  @override
+  List<Object> get props => [];
 }
 
 class WalletLoading extends WalletState {}
@@ -16,4 +20,7 @@ class WalletLoaded extends WalletState {
       selectedWallet = wallets[wallets.length - 1];
   }
   WalletLoaded.one(this.wallet);
+
+  @override
+  List<Object> get props => [wallet, wallets, selectedWallet];
 }
