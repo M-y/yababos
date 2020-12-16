@@ -2,21 +2,27 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:yababos/blocs/settings.dart';
 import 'package:yababos/blocs/tag.dart';
+import 'package:yababos/blocs/transaction.dart';
 import 'package:yababos/blocs/wallet.dart';
 import 'package:yababos/events/settings.dart';
 import 'package:yababos/events/tag.dart';
+import 'package:yababos/events/transaction.dart';
 import 'package:yababos/events/wallet.dart';
 import 'package:yababos/models/inmemory/settings.dart';
 import 'package:yababos/models/inmemory/tag.dart';
+import 'package:yababos/models/inmemory/transaction.dart';
 import 'package:yababos/models/inmemory/wallet.dart';
 import 'package:yababos/models/setting.dart';
 import 'package:yababos/models/settings_repository.dart';
 import 'package:yababos/models/tag.dart';
 import 'package:yababos/models/tag_repository.dart';
+import 'package:yababos/models/transaction.dart';
+import 'package:yababos/models/transaction_repository.dart';
 import 'package:yababos/models/wallet.dart';
 import 'package:yababos/models/wallet_repository.dart';
 import 'package:yababos/states/settings.dart';
 import 'package:yababos/states/tag.dart';
+import 'package:yababos/states/transaction.dart';
 import 'package:yababos/states/wallet.dart';
 
 void main() {
@@ -122,6 +128,65 @@ void main() {
           selectedWallet: sampleWallet,
         )
       ],
+    );
+  });
+
+  group('Transaction', () {
+    TransactionRepository transactionRepository = TransactionInmemory();
+    Transaction sampleTransaction = Transaction(
+      id: null,
+      from: 1,
+      to: null,
+      amount: 100,
+      description: 'sample expense',
+    );
+    Transaction updatedTransaction = Transaction(
+      id: 1,
+      from: 1,
+      to: null,
+      amount: 150,
+      description: 'updated expense',
+    );
+
+    blocTest(
+      'TransactionAdd',
+      build: () => TransactionBloc(transactionRepository),
+      act: (bloc) => bloc.add(TransactionAdd(sampleTransaction)),
+      expect: <TransactionState>[
+        TransactionLoaded.all(List<Transaction>.from([sampleTransaction]))
+      ],
+    );
+
+    blocTest(
+      'TransactionGetAll',
+      build: () => TransactionBloc(transactionRepository),
+      act: (bloc) => bloc.add(TransactionGetAll()),
+      expect: <TransactionState>[
+        TransactionLoaded.all(List<Transaction>.from([sampleTransaction]))
+      ],
+    );
+
+    blocTest(
+      'TransactionGet',
+      build: () => TransactionBloc(transactionRepository),
+      act: (bloc) => bloc.add(TransactionGet(1)),
+      expect: <TransactionState>[TransactionLoaded.one(sampleTransaction)],
+    );
+
+    blocTest(
+      'TransactionUpdate',
+      build: () => TransactionBloc(transactionRepository),
+      act: (bloc) => bloc.add(TransactionUpdate(updatedTransaction)),
+      expect: <TransactionState>[
+        TransactionLoaded.all(List<Transaction>.from([updatedTransaction]))
+      ],
+    );
+
+    blocTest(
+      'TransactionDelete',
+      build: () => TransactionBloc(transactionRepository),
+      act: (bloc) => bloc.add(TransactionDelete(1)),
+      expect: <TransactionState>[TransactionLoaded.all(List<Transaction>())],
     );
   });
 
