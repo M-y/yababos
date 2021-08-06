@@ -32,7 +32,7 @@ class WalletsWidget extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (econtext) {
-                              return WidgetEditor(
+                              return WalletEditor(
                                 wallet: wallets[index],
                                 onSave: (wallet) =>
                                     BlocProvider.of<WalletBloc>(context)
@@ -61,7 +61,7 @@ class WalletsWidget extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (econtext) {
-                return WidgetEditor(
+                return WalletEditor(
                   wallet: Wallet(id: null),
                   onSave: (wallet) => BlocProvider.of<WalletBloc>(context)
                       .add(WalletAdd(wallet)),

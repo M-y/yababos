@@ -5,13 +5,13 @@ import 'package:yababos/models/wallet.dart';
 typedef OnSave = Function(Wallet wallet);
 typedef OnDelete = Function(Wallet wallet);
 
-class WidgetEditor extends StatelessWidget {
+class WalletEditor extends StatelessWidget {
   final Wallet wallet;
   final OnSave onSave;
   final OnDelete onDelete;
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  const WidgetEditor({
+  const WalletEditor({
     @required this.wallet,
     @required this.onSave,
     this.onDelete,
