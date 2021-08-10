@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yababos/blocs/settings.dart';
 import 'package:yababos/events/wallet.dart';
 import 'package:yababos/models/wallet.dart';
-import 'package:yababos/models/wallet_repository.dart';
+import 'package:yababos/repositories/wallet_repository.dart';
 import 'package:yababos/states/settings.dart';
 import 'package:yababos/states/wallet.dart';
 

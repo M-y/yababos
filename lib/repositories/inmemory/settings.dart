@@ -1,5 +1,5 @@
 import 'package:yababos/models/setting.dart';
-import 'package:yababos/models/settings_repository.dart';
+import 'package:yababos/repositories/settings_repository.dart';
 
 class SettingsInmemory extends SettingsRepository {
   List<Setting> _settings = [];

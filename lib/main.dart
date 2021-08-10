@@ -8,7 +8,7 @@ import 'app.dart';
 import 'blocs/tag.dart';
 import 'blocs/transaction.dart';
 import 'events/transaction.dart';
-import 'models/repository.dart';
+import 'repositories/repository.dart';
 
 void main() {
   runApp(MultiBlocProvider(
