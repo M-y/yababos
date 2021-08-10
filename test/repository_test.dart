@@ -33,69 +33,6 @@ void main() {
     });
   });
 
-  group('Wallet', () {
-    WalletRepository walletRepository = WalletInmemory();
-
-    test('add', () async {
-      Wallet sampleWallet = Wallet(
-        id: null,
-        name: 'Sample',
-        amount: 1000,
-        curreny: 'TRY',
-      );
-
-      await walletRepository.add(sampleWallet);
-      expect((await walletRepository.getAll()).first.name, 'Sample');
-    });
-
-    test('update/get', () async {
-      Wallet wallet = (await walletRepository.getAll()).first;
-      wallet.curreny = 'USD';
-
-      await walletRepository.update(wallet);
-      expect((await walletRepository.get(wallet.id)).curreny, 'USD');
-    });
-
-    test('getAll/delete', () async {
-      int id = (await walletRepository.getAll()).first.id;
-      await walletRepository.delete(id);
-
-      expect((await walletRepository.getAll()).length, 0);
-    });
-  });
-
-  group('Transaction', () {
-    TransactionRepository transactionRepository = TransactionInmemory();
-
-    test('add', () async {
-      Transaction sampleTransaction = Transaction(
-        id: null,
-        from: 0,
-        to: null,
-        amount: 100,
-        description: 'sample',
-      );
-
-      await transactionRepository.add(sampleTransaction);
-      expect((await transactionRepository.getAll()).first.amount, 100);
-    });
-
-    test('update/get', () async {
-      Transaction transaction = (await transactionRepository.getAll()).first;
-      transaction.amount = 150;
-
-      await transactionRepository.update(transaction);
-      expect((await transactionRepository.get(transaction.id)).amount, 150);
-    });
-
-    test('getAll/delete', () async {
-      int id = (await transactionRepository.getAll()).first.id;
-      await transactionRepository.delete(id);
-
-      expect((await transactionRepository.getAll()).length, 0);
-    });
-  });
-
   group('Tag', () {
     TagRepository tagRepository = TagInmemory();
 
@@ -138,6 +75,30 @@ void main() {
       await tagRepository.delete('updated');
 
       expect(await tagRepository.get('updated'), null);
+    });
+  });
+
+  group('Transaction', () {
+    TransactionRepository transactionRepository = TransactionInmemory();
+
+    test('add', () async {
+      Transaction sampleTransaction = Transaction(id: null, from: null, to: 1);
+      await transactionRepository.add(sampleTransaction);
+
+      expect(await transactionRepository.get(1), sampleTransaction);
+    });
+
+    test('update', () async {
+      await transactionRepository
+          .update(Transaction(id: 1, from: null, to: 1, description: "test"));
+
+      expect((await transactionRepository.get(1)).description, "test");
+    });
+
+    test('delete & getAll', () async {
+      expect((await transactionRepository.getAll()).length, 1);
+      await transactionRepository.delete(1);
+      expect((await transactionRepository.getAll()).length, 0);
     });
   });
 }
