@@ -116,7 +116,12 @@ class WalletWidgetState extends State<WalletWidget> {
                     builder: (econtext) {
                       return TransactionEditor(
                         transaction: Transaction(
-                            id: null, from: widget.selectedWallet.id, to: null),
+                          id: null,
+                          from: widget.selectedWallet.id,
+                          to: null,
+                          amount: 0,
+                          when: DateTime.now(),
+                        ),
                         onSave: (transaction) {
                           if (transaction.tags != null)
                             BlocProvider.of<TagBloc>(context)

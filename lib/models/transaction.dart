@@ -7,6 +7,7 @@ class Transaction extends Equatable {
   int from; // from wallet
   int to; // to wallet
   double amount;
+  DateTime when;
   List<Tag> tags;
   String description;
 
@@ -14,11 +15,12 @@ class Transaction extends Equatable {
     @required this.id,
     @required this.from,
     @required this.to,
-    this.amount,
+    @required this.amount,
+    @required this.when,
     this.tags,
     this.description,
   });
 
   @override
-  List<Object> get props => [id, from, to, amount, tags, description];
+  List<Object> get props => [id, from, to, amount, when, tags, description];
 }

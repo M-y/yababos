@@ -82,15 +82,21 @@ void main() {
     TransactionRepository transactionRepository = TransactionInmemory();
 
     test('add', () async {
-      Transaction sampleTransaction = Transaction(id: null, from: null, to: 1);
+      Transaction sampleTransaction =
+          Transaction(id: null, from: null, to: 1, amount: 0, when: null);
       await transactionRepository.add(sampleTransaction);
 
       expect(await transactionRepository.get(1), sampleTransaction);
     });
 
     test('update', () async {
-      await transactionRepository
-          .update(Transaction(id: 1, from: null, to: 1, description: "test"));
+      await transactionRepository.update(Transaction(
+          id: 1,
+          from: null,
+          to: 1,
+          description: "test",
+          amount: 0,
+          when: null));
 
       expect((await transactionRepository.get(1)).description, "test");
     });
@@ -99,6 +105,14 @@ void main() {
       expect((await transactionRepository.getAll()).length, 1);
       await transactionRepository.delete(1);
       expect((await transactionRepository.getAll()).length, 0);
+    });
+
+    test('wallet transactions', () async {
+      Transaction sampleTransaction =
+          Transaction(id: null, from: null, to: 1, amount: 0, when: null);
+      await transactionRepository.add(sampleTransaction);
+
+      expect(await transactionRepository.get(1), sampleTransaction);
     });
   });
 }

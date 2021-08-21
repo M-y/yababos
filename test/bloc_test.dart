@@ -138,6 +138,7 @@ void main() {
       from: 1,
       to: null,
       amount: 100,
+      when: null,
       description: 'sample expense',
     );
     Transaction updatedTransaction = Transaction(
@@ -145,6 +146,7 @@ void main() {
       from: 1,
       to: null,
       amount: 150,
+      when: null,
       description: 'updated expense',
     );
 
