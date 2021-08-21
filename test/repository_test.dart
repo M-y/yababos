@@ -107,12 +107,46 @@ void main() {
       expect((await transactionRepository.getAll()).length, 0);
     });
 
-    test('wallet transactions', () async {
-      Transaction sampleTransaction =
-          Transaction(id: null, from: null, to: 1, amount: 0, when: null);
-      await transactionRepository.add(sampleTransaction);
+    test('wallet\'s transactions', () async {
+      Transaction yesterday = Transaction(
+        id: null,
+        from: null,
+        to: 1,
+        amount: 0,
+        when: DateTime.now().subtract(new Duration(days: 1)),
+      );
+      Transaction today = Transaction(
+        id: null,
+        from: 1,
+        to: null,
+        amount: 0,
+        when: DateTime.now(),
+      );
+      Transaction otherWalletTransaction = Transaction(
+        id: null,
+        from: null,
+        to: 2,
+        amount: 0,
+        when: DateTime.now(),
+      );
+      await transactionRepository.add(yesterday);
+      await transactionRepository.add(today);
+      await transactionRepository.add(otherWalletTransaction);
 
-      expect(await transactionRepository.get(1), sampleTransaction);
+      expect((await transactionRepository.walletTransactions(1)).length, 2);
+      expect((await transactionRepository.walletTransactions(1))[0], yesterday);
+      expect((await transactionRepository.walletTransactions(1))[1], today);
+    });
+
+    test('balance', () async {
+      Transaction income = Transaction(
+          id: null, from: null, to: 1, amount: 150, when: DateTime.now());
+      Transaction expense = Transaction(
+          id: null, from: 1, to: null, amount: 50, when: DateTime.now());
+      await transactionRepository.add(income);
+      await transactionRepository.add(expense);
+
+      expect(await transactionRepository.balance(1), 100);
     });
   });
 }

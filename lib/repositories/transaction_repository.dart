@@ -7,4 +7,7 @@ abstract class TransactionRepository {
   Future add(Transaction transaction);
   Future update(Transaction transaction);
   Future delete(int id);
+
+  Future<double> balance(int wallet);
+  Future<List<Transaction>> walletTransactions(int wallet);
 }
