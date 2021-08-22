@@ -149,13 +149,21 @@ void main() {
       when: null,
       description: 'updated expense',
     );
+    Transaction walletTransaction = Transaction(
+      id: 2,
+      from: null,
+      to: 2,
+      amount: 100,
+      when: null,
+      description: null,
+    );
 
     blocTest(
       'TransactionAdd',
       build: () => TransactionBloc(transactionRepository),
       act: (bloc) => bloc.add(TransactionAdd(sampleTransaction)),
       expect: <TransactionState>[
-        TransactionLoaded.all(List<Transaction>.from([sampleTransaction]))
+        TransactionLoaded.many(List<Transaction>.from([sampleTransaction]))
       ],
     );
 
@@ -164,7 +172,7 @@ void main() {
       build: () => TransactionBloc(transactionRepository),
       act: (bloc) => bloc.add(TransactionGetAll()),
       expect: <TransactionState>[
-        TransactionLoaded.all(List<Transaction>.from([sampleTransaction]))
+        TransactionLoaded.many(List<Transaction>.from([sampleTransaction]))
       ],
     );
 
@@ -180,7 +188,7 @@ void main() {
       build: () => TransactionBloc(transactionRepository),
       act: (bloc) => bloc.add(TransactionUpdate(updatedTransaction)),
       expect: <TransactionState>[
-        TransactionLoaded.all(List<Transaction>.from([updatedTransaction]))
+        TransactionLoaded.many(List<Transaction>.from([updatedTransaction]))
       ],
     );
 
@@ -188,7 +196,22 @@ void main() {
       'TransactionDelete',
       build: () => TransactionBloc(transactionRepository),
       act: (bloc) => bloc.add(TransactionDelete(1)),
-      expect: <TransactionState>[TransactionLoaded.all(List<Transaction>())],
+      expect: <TransactionState>[TransactionLoaded.many(List<Transaction>())],
+    );
+
+    blocTest(
+      'Wallet\'s Transactions and balance',
+      build: () => TransactionBloc(transactionRepository)
+        ..add(TransactionAdd(sampleTransaction))
+        ..add(TransactionAdd(walletTransaction)),
+      act: (bloc) {
+        bloc.add(TransactionGetWallet(walletTransaction.to));
+      },
+      skip: 1,
+      expect: <TransactionState>[
+        WalletTransactionsLoaded(
+            List<Transaction>.from([walletTransaction]), 100)
+      ],
     );
   });
 

@@ -24,6 +24,12 @@ class TransactionGet extends TransactionEvent {
 
 class TransactionGetAll extends TransactionEvent {}
 
+class TransactionGetWallet extends TransactionEvent {
+  final int wallet;
+
+  const TransactionGetWallet(this.wallet);
+}
+
 class TransactionDelete extends TransactionEvent {
   final int id;
 

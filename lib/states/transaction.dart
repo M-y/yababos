@@ -16,8 +16,18 @@ class TransactionLoaded extends TransactionState {
 
   TransactionLoaded();
   TransactionLoaded.one(this.transaction);
-  TransactionLoaded.all(this.transactions);
+  TransactionLoaded.many(this.transactions);
 
   @override
   List<Object> get props => [transaction, transactions];
+}
+
+class WalletTransactionsLoaded extends TransactionState {
+  List<Transaction> transactions;
+  double balance;
+
+  WalletTransactionsLoaded(this.transactions, this.balance);
+
+  @override
+  List<Object> get props => [transactions, balance];
 }

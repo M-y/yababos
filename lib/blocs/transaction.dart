@@ -20,22 +20,24 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       yield await _mapGettoState(event);
     } else if (event is TransactionGetAll) {
       yield await _mapGetAlltoState(event);
+    } else if (event is TransactionGetWallet) {
+      yield await _mapGetWallettoState(event);
     }
   }
 
   Future<TransactionState> _mapAddtoState(TransactionAdd event) async {
     await _transactionRepository.add(event.transaction);
-    return TransactionLoaded.all(await _transactionRepository.getAll());
+    return TransactionLoaded.many(await _transactionRepository.getAll());
   }
 
   Future<TransactionState> _mapDeletetoState(TransactionDelete event) async {
     await _transactionRepository.delete(event.id);
-    return TransactionLoaded.all(await _transactionRepository.getAll());
+    return TransactionLoaded.many(await _transactionRepository.getAll());
   }
 
   Future<TransactionState> _mapUpdatetoState(TransactionUpdate event) async {
     await _transactionRepository.update(event.transaction);
-    return TransactionLoaded.all(await _transactionRepository.getAll());
+    return TransactionLoaded.many(await _transactionRepository.getAll());
   }
 
   Future<TransactionState> _mapGettoState(TransactionGet event) async {
@@ -43,6 +45,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   _mapGetAlltoState(TransactionGetAll event) async {
-    return TransactionLoaded.all(await _transactionRepository.getAll());
+    return TransactionLoaded.many(await _transactionRepository.getAll());
+  }
+
+  _mapGetWallettoState(TransactionGetWallet event) async {
+    return WalletTransactionsLoaded(
+        await _transactionRepository.walletTransactions(event.wallet),
+        await _transactionRepository.balance(event.wallet));
   }
 }
