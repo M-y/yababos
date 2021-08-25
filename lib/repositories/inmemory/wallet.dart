@@ -14,7 +14,7 @@ class WalletInmemory extends WalletRepository {
 
   @override
   Future<List<Wallet>> getAll() {
-    return Future.delayed(Duration(seconds: 3), () => _wallets);
+    return Future(() => _wallets);
   }
 
   @override

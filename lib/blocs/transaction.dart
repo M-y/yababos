@@ -5,6 +5,7 @@ import 'package:yababos/states/transaction.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final TransactionRepository _transactionRepository;
+  int _selectedWallet;
 
   TransactionBloc(this._transactionRepository) : super(TransactionLoading());
 
@@ -27,17 +28,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   Future<TransactionState> _mapAddtoState(TransactionAdd event) async {
     await _transactionRepository.add(event.transaction);
-    return TransactionLoaded.many(await _transactionRepository.getAll());
+    return await _selectedWalletTransactions();
   }
 
   Future<TransactionState> _mapDeletetoState(TransactionDelete event) async {
     await _transactionRepository.delete(event.id);
-    return TransactionLoaded.many(await _transactionRepository.getAll());
+    return await _selectedWalletTransactions();
   }
 
   Future<TransactionState> _mapUpdatetoState(TransactionUpdate event) async {
     await _transactionRepository.update(event.transaction);
-    return TransactionLoaded.many(await _transactionRepository.getAll());
+    return await _selectedWalletTransactions();
   }
 
   Future<TransactionState> _mapGettoState(TransactionGet event) async {
@@ -49,8 +50,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   _mapGetWallettoState(TransactionGetWallet event) async {
+    _selectedWallet = event.wallet;
+
+    return await _selectedWalletTransactions();
+  }
+
+  Future<WalletTransactionsLoaded> _selectedWalletTransactions() async {
     return WalletTransactionsLoaded(
-        await _transactionRepository.walletTransactions(event.wallet),
-        await _transactionRepository.balance(event.wallet));
+        await _transactionRepository.walletTransactions(_selectedWallet),
+        await _transactionRepository.balance(_selectedWallet));
   }
 }

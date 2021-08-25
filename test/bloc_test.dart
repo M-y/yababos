@@ -64,6 +64,8 @@ void main() {
     WalletRepository walletRepository = WalletInmemory();
     SettingsRepository settingsRepository = SettingsInmemory();
     SettingsBloc settingsBloc = SettingsBloc(settingsRepository);
+    TransactionRepository transactionRepository = TransactionInmemory();
+    TransactionBloc transactionBloc = TransactionBloc(transactionRepository);
     Wallet sampleWallet = Wallet(
       id: null,
       name: 'Sample',
@@ -81,51 +83,52 @@ void main() {
 
     blocTest(
       'WalletAdd',
-      build: () => WalletBloc(walletRepository, settingsBloc),
+      build: () => WalletBloc(walletRepository, settingsBloc, transactionBloc),
       act: (bloc) => bloc.add(WalletAdd(sampleWallet)),
       expect: <WalletState>[WalletLoaded(wallets: sampleWalletList)],
     );
 
     blocTest(
       'WalletGetAll',
-      build: () => WalletBloc(walletRepository, settingsBloc),
+      build: () => WalletBloc(walletRepository, settingsBloc, transactionBloc),
       act: (bloc) => bloc.add(WalletGetAll()),
       expect: <WalletState>[WalletLoaded(wallets: sampleWalletList)],
     );
 
     blocTest(
       'WalletGet',
-      build: () => WalletBloc(walletRepository, settingsBloc),
+      build: () => WalletBloc(walletRepository, settingsBloc, transactionBloc),
       act: (bloc) => bloc.add(WalletGet(1)),
       expect: <WalletState>[WalletLoaded.one(sampleWallet)],
     );
 
     blocTest(
       'WalletUpdate',
-      build: () => WalletBloc(walletRepository, settingsBloc),
+      build: () => WalletBloc(walletRepository, settingsBloc, transactionBloc),
       act: (bloc) => bloc.add(WalletUpdate(updatedWallet)),
       expect: <WalletState>[WalletLoaded(wallets: updatedWalletList)],
     );
 
     blocTest(
       'WalletDelete',
-      build: () => WalletBloc(walletRepository, settingsBloc),
+      build: () => WalletBloc(walletRepository, settingsBloc, transactionBloc),
       act: (bloc) => bloc.add(WalletDelete(1)),
       expect: <WalletState>[WalletLoaded(wallets: List<Wallet>())],
     );
 
     blocTest(
       'selected wallet',
-      build: () => WalletBloc(walletRepository, settingsBloc),
+      build: () => WalletBloc(walletRepository, settingsBloc, transactionBloc),
       act: (bloc) {
         bloc.add(WalletAdd(sampleWallet));
         bloc.add(WalletAdd(updatedWallet));
         settingsBloc.add(SettingAdd(Setting(name: 'wallet', value: 1)));
       },
+      skip: 1,
       expect: <WalletState>[
         WalletLoaded(
           wallets: List<Wallet>.from([sampleWallet, updatedWallet]),
-          selectedWallet: sampleWallet,
+          selectedWallet: updatedWallet,
         )
       ],
     );
@@ -163,7 +166,8 @@ void main() {
       build: () => TransactionBloc(transactionRepository),
       act: (bloc) => bloc.add(TransactionAdd(sampleTransaction)),
       expect: <TransactionState>[
-        TransactionLoaded.many(List<Transaction>.from([sampleTransaction]))
+        WalletTransactionsLoaded(
+            List<Transaction>.from([sampleTransaction]), 100)
       ],
     );
 
@@ -188,7 +192,8 @@ void main() {
       build: () => TransactionBloc(transactionRepository),
       act: (bloc) => bloc.add(TransactionUpdate(updatedTransaction)),
       expect: <TransactionState>[
-        TransactionLoaded.many(List<Transaction>.from([updatedTransaction]))
+        WalletTransactionsLoaded(
+            List<Transaction>.from([updatedTransaction]), 150)
       ],
     );
 
@@ -196,7 +201,9 @@ void main() {
       'TransactionDelete',
       build: () => TransactionBloc(transactionRepository),
       act: (bloc) => bloc.add(TransactionDelete(1)),
-      expect: <TransactionState>[TransactionLoaded.many(List<Transaction>())],
+      expect: <TransactionState>[
+        WalletTransactionsLoaded(List<Transaction>(), 0)
+      ],
     );
 
     blocTest(

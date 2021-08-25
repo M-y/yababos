@@ -31,7 +31,7 @@ class WalletWidgetState extends State<WalletWidget> {
   Widget build(BuildContext walletWidgetContext) {
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
-        if (state is TransactionLoaded) {
+        if (state is WalletTransactionsLoaded) {
           List<Transaction> transactions = state.transactions;
 
           return Scaffold(

@@ -7,7 +7,6 @@ import 'package:yababos/events/wallet.dart';
 import 'app.dart';
 import 'blocs/tag.dart';
 import 'blocs/transaction.dart';
-import 'events/transaction.dart';
 import 'repositories/repository.dart';
 
 void main() {
@@ -20,15 +19,16 @@ void main() {
       ),
       BlocProvider(
         create: (context) =>
-            TransactionBloc(RepositorySelections.transactionRepository)
-              ..add(TransactionGetAll()),
+            TransactionBloc(RepositorySelections.transactionRepository),
       ),
       BlocProvider(
         create: (context) => TagBloc(RepositorySelections.tagRepository),
       ),
       BlocProvider(
-        create: (context) => WalletBloc(RepositorySelections.walletRepository,
-            BlocProvider.of<SettingsBloc>(context))
+        create: (context) => WalletBloc(
+            RepositorySelections.walletRepository,
+            BlocProvider.of<SettingsBloc>(context),
+            BlocProvider.of<TransactionBloc>(context))
           ..add(WalletGetAll()),
       ),
     ],
