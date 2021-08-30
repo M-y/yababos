@@ -35,28 +35,28 @@ void main() {
       'add setting',
       build: () => SettingsBloc(settingsRepository),
       act: (bloc) => bloc.add(SettingAdd(sampleSetting)),
-      expect: <SettingState>[SettingChanged(sampleSetting)],
+      expect: () => <SettingState>[SettingChanged(sampleSetting)],
     );
 
     blocTest(
       'add same setting',
       build: () => SettingsBloc(settingsRepository),
       act: (bloc) => bloc.add(SettingAdd(sampleSetting)),
-      expect: <SettingState>[SettingLoaded(sampleSetting)],
+      expect: () => <SettingState>[SettingLoaded(sampleSetting)],
     );
 
     blocTest(
       'update setting',
       build: () => SettingsBloc(settingsRepository),
       act: (bloc) => bloc.add(SettingAdd(sampleSettingChanged)),
-      expect: <SettingState>[SettingChanged(sampleSettingChanged)],
+      expect: () => <SettingState>[SettingChanged(sampleSettingChanged)],
     );
 
     blocTest(
       'get setting',
       build: () => SettingsBloc(settingsRepository),
       act: (bloc) => bloc.add(SettingGet('sample')),
-      expect: <SettingState>[SettingLoaded(sampleSettingChanged)],
+      expect: () => <SettingState>[SettingLoaded(sampleSettingChanged)],
     );
   });
 
@@ -85,35 +85,35 @@ void main() {
       'WalletAdd',
       build: () => WalletBloc(walletRepository, settingsBloc, transactionBloc),
       act: (bloc) => bloc.add(WalletAdd(sampleWallet)),
-      expect: <WalletState>[WalletLoaded(wallets: sampleWalletList)],
+      expect: () => <WalletState>[WalletLoaded(wallets: sampleWalletList)],
     );
 
     blocTest(
       'WalletGetAll',
       build: () => WalletBloc(walletRepository, settingsBloc, transactionBloc),
       act: (bloc) => bloc.add(WalletGetAll()),
-      expect: <WalletState>[WalletLoaded(wallets: sampleWalletList)],
+      expect: () => <WalletState>[WalletLoaded(wallets: sampleWalletList)],
     );
 
     blocTest(
       'WalletGet',
       build: () => WalletBloc(walletRepository, settingsBloc, transactionBloc),
       act: (bloc) => bloc.add(WalletGet(1)),
-      expect: <WalletState>[WalletLoaded.one(sampleWallet)],
+      expect: () => <WalletState>[WalletLoaded.one(sampleWallet)],
     );
 
     blocTest(
       'WalletUpdate',
       build: () => WalletBloc(walletRepository, settingsBloc, transactionBloc),
       act: (bloc) => bloc.add(WalletUpdate(updatedWallet)),
-      expect: <WalletState>[WalletLoaded(wallets: updatedWalletList)],
+      expect: () => <WalletState>[WalletLoaded(wallets: updatedWalletList)],
     );
 
     blocTest(
       'WalletDelete',
       build: () => WalletBloc(walletRepository, settingsBloc, transactionBloc),
       act: (bloc) => bloc.add(WalletDelete(1)),
-      expect: <WalletState>[WalletLoaded(wallets: List<Wallet>())],
+      expect: () => <WalletState>[WalletLoaded(wallets: List<Wallet>())],
     );
 
     blocTest(
@@ -125,7 +125,7 @@ void main() {
         settingsBloc.add(SettingAdd(Setting(name: 'wallet', value: 1)));
       },
       skip: 1,
-      expect: <WalletState>[
+      expect: () => <WalletState>[
         WalletLoaded(
           wallets: List<Wallet>.from([sampleWallet, updatedWallet]),
           selectedWallet: updatedWallet,
@@ -165,7 +165,7 @@ void main() {
       'TransactionAdd',
       build: () => TransactionBloc(transactionRepository),
       act: (bloc) => bloc.add(TransactionAdd(sampleTransaction)),
-      expect: <TransactionState>[
+      expect: () => <TransactionState>[
         WalletTransactionsLoaded(
             List<Transaction>.from([sampleTransaction]), 100)
       ],
@@ -175,7 +175,7 @@ void main() {
       'TransactionGetAll',
       build: () => TransactionBloc(transactionRepository),
       act: (bloc) => bloc.add(TransactionGetAll()),
-      expect: <TransactionState>[
+      expect: () => <TransactionState>[
         TransactionLoaded.many(List<Transaction>.from([sampleTransaction]))
       ],
     );
@@ -184,14 +184,15 @@ void main() {
       'TransactionGet',
       build: () => TransactionBloc(transactionRepository),
       act: (bloc) => bloc.add(TransactionGet(1)),
-      expect: <TransactionState>[TransactionLoaded.one(sampleTransaction)],
+      expect: () =>
+          <TransactionState>[TransactionLoaded.one(sampleTransaction)],
     );
 
     blocTest(
       'TransactionUpdate',
       build: () => TransactionBloc(transactionRepository),
       act: (bloc) => bloc.add(TransactionUpdate(updatedTransaction)),
-      expect: <TransactionState>[
+      expect: () => <TransactionState>[
         WalletTransactionsLoaded(
             List<Transaction>.from([updatedTransaction]), 150)
       ],
@@ -201,9 +202,8 @@ void main() {
       'TransactionDelete',
       build: () => TransactionBloc(transactionRepository),
       act: (bloc) => bloc.add(TransactionDelete(1)),
-      expect: <TransactionState>[
-        WalletTransactionsLoaded(List<Transaction>(), 0)
-      ],
+      expect: () =>
+          <TransactionState>[WalletTransactionsLoaded(List<Transaction>(), 0)],
     );
 
     blocTest(
@@ -215,7 +215,7 @@ void main() {
         bloc.add(TransactionGetWallet(walletTransaction.to));
       },
       skip: 1,
-      expect: <TransactionState>[
+      expect: () => <TransactionState>[
         WalletTransactionsLoaded(
             List<Transaction>.from([walletTransaction]), 100)
       ],
@@ -234,49 +234,49 @@ void main() {
       'TagAdd',
       build: () => TagBloc(tagRepository),
       act: (bloc) => bloc.add(TagAdd(sampleTag)),
-      expect: <TagState>[TagLoaded(sampleTagList)],
+      expect: () => <TagState>[TagLoaded(sampleTagList)],
     );
 
     blocTest(
       'TagUpdate',
       build: () => TagBloc(tagRepository),
       act: (bloc) => bloc.add(TagUpdate(sampleTag.name, newTag)),
-      expect: <TagState>[TagLoaded(newTagList)],
+      expect: () => <TagState>[TagLoaded(newTagList)],
     );
 
     blocTest(
       'TagDelete',
       build: () => TagBloc(tagRepository),
       act: (bloc) => bloc.add(TagDelete(newTag)),
-      expect: <TagState>[TagLoaded([])],
+      expect: () => <TagState>[TagLoaded([])],
     );
 
     blocTest(
       'TagsAdd',
       build: () => TagBloc(tagRepository),
       act: (bloc) => bloc.add(TagsAdd(allTags)),
-      expect: <TagState>[TagLoaded(allTags)],
+      expect: () => <TagState>[TagLoaded(allTags)],
     );
 
     blocTest(
       'TagFind',
       build: () => TagBloc(tagRepository),
       act: (bloc) => bloc.add(TagFind(Tag(name: 'sample'))),
-      expect: <TagState>[TagLoaded(sampleTagList)],
+      expect: () => <TagState>[TagLoaded(sampleTagList)],
     );
 
     blocTest(
       'TagGetAll',
       build: () => TagBloc(tagRepository),
       act: (bloc) => bloc.add(TagGetAll()),
-      expect: <TagState>[TagLoaded(allTags)],
+      expect: () => <TagState>[TagLoaded(allTags)],
     );
 
     blocTest(
       'duplicate add',
       build: () => TagBloc(tagRepository),
       act: (bloc) => bloc.add(TagAdd(sampleTag)),
-      expect: <TagState>[TagLoaded(allTags)],
+      expect: () => <TagState>[TagLoaded(allTags)],
     );
   });
 }
