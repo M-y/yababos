@@ -21,6 +21,9 @@ class Yababos extends StatelessWidget {
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      routes: {
+        '/wallets': (rcontext) => WalletsWidget(),
+      },
       home: BlocBuilder<WalletBloc, WalletState>(builder: (context, state) {
         if (state is WalletLoaded) {
           if (state.wallets.length < 1) return WalletsWidget();

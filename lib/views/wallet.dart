@@ -14,7 +14,6 @@ import 'package:yababos/models/wallet.dart';
 import 'package:yababos/states/transaction.dart';
 import 'package:yababos/views/transaction_editor.dart';
 import 'package:yababos/views/transaction.dart';
-import 'package:yababos/views/wallets.dart';
 
 class WalletWidget extends StatefulWidget {
   final Wallet selectedWallet;
@@ -78,12 +77,7 @@ class WalletWidgetState extends State<WalletWidget> {
                     title: Text("Wallets"),
                     onTap: () {
                       Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext rcontext) =>
-                                WalletsWidget()),
-                      );
+                      Navigator.of(context).pushNamed('/wallets');
                     },
                   ),
                   ListTile(
