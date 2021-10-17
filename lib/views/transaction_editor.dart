@@ -64,12 +64,14 @@ class TransactionEditor extends StatelessWidget {
               outside: true,
               wallets: wallets,
               onTap: (id) => transaction.from = id,
+              selected: transaction.from,
             ),
             // To
             WalletList(
               outside: true,
               wallets: wallets,
               onTap: (id) => transaction.to = id,
+              selected: transaction.to,
             ),
             // Amount
             TextFormField(

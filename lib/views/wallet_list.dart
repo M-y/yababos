@@ -4,31 +4,62 @@ import 'package:yababos/generated/l10n.dart';
 
 typedef OnTap = Function(int id);
 
-class WalletList extends StatelessWidget {
+class WalletList extends StatefulWidget {
   final List<Wallet> wallets;
   final OnTap onTap;
   final bool outside;
+  int selected;
 
-  const WalletList(
-      {Key key, @required this.wallets, this.onTap, this.outside = false})
+  WalletList(
+      {Key key,
+      @required this.wallets,
+      this.onTap,
+      this.outside = false,
+      this.selected})
       : super(key: key);
 
   @override
+  State<StatefulWidget> createState() => WalletListState();
+}
+
+class WalletListState extends State<WalletList> {
+  @override
   Widget build(BuildContext context) {
-    List<Wallet> wallets = this.wallets.toList();
-    if (outside) wallets.add(Wallet(id: null, name: S.of(context).outside));
+    List<ListTile> walletButtons = List<ListTile>();
+    if (widget.outside)
+      walletButtons.add(ListTile(
+        selected: widget.selected == null,
+        title: Text(
+          S.of(context).outside,
+          style: TextStyle(color: Colors.grey),
+        ),
+        onTap: () {
+          widget.onTap(null);
+          setState(() {
+            widget.selected = null;
+          });
+        },
+      ));
+
+    for (Wallet wallet in widget.wallets) {
+      walletButtons.add(ListTile(
+        selected: widget.selected == wallet.id,
+        title: Text(wallet.name),
+        onTap: () {
+          widget.onTap(wallet.id);
+          setState(() {
+            widget.selected = wallet.id;
+          });
+        },
+      ));
+    }
 
     return ListView.builder(
       shrinkWrap: true,
       physics: ClampingScrollPhysics(),
-      itemCount: wallets.length,
+      itemCount: walletButtons.length,
       itemBuilder: (BuildContext lcontext, int index) {
-        return ListTile(
-          title: Text(wallets[index].name),
-          onTap: () {
-            onTap(wallets[index].id);
-          },
-        );
+        return walletButtons[index];
       },
     );
   }

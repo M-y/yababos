@@ -56,6 +56,7 @@ class WalletWidgetState extends State<WalletWidget> {
                           )));
                           Navigator.pop(context);
                         },
+                        selected: widget.selectedWallet.id,
                       );
                     },
                   );
