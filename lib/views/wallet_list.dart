@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:yababos/models/wallet.dart';
 import 'package:yababos/generated/l10n.dart';
 
-typedef OnTap = Function(int index);
+typedef OnTap = Function(int id);
 
 class WalletList extends StatelessWidget {
   final List<Wallet> wallets;
@@ -26,7 +26,7 @@ class WalletList extends StatelessWidget {
         return ListTile(
           title: Text(wallets[index].name),
           onTap: () {
-            onTap(index);
+            onTap(wallets[index].id);
           },
         );
       },

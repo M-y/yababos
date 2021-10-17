@@ -48,11 +48,11 @@ class WalletWidgetState extends State<WalletWidget> {
                     builder: (BuildContext context) {
                       return WalletList(
                         wallets: widget.wallets,
-                        onTap: (index) {
+                        onTap: (id) {
                           BlocProvider.of<SettingsBloc>(context)
                               .add(SettingAdd(Setting(
                             name: 'wallet',
-                            value: widget.wallets[index].id,
+                            value: id,
                           )));
                           Navigator.pop(context);
                         },
@@ -97,6 +97,7 @@ class WalletWidgetState extends State<WalletWidget> {
                 return TransactionWidget(
                   transaction: transactions[index],
                   wallets: widget.wallets,
+                  wallet: widget.selectedWallet,
                 );
               },
             ),
