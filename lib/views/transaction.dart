@@ -11,11 +11,16 @@ import 'package:yababos/views/transaction_editor.dart';
 class TransactionWidget extends StatelessWidget {
   final Transaction transaction;
   final List<Wallet> wallets;
+  final Wallet wallet;
 
-  const TransactionWidget({this.transaction, this.wallets});
+  const TransactionWidget({
+    @required this.transaction,
+    @required this.wallets,
+    @required this.wallet,
+  });
 
   bool _isExpense() {
-    if (transaction.to == null) return true;
+    if (transaction.from == wallet.id) return true;
     return false;
   }
 
