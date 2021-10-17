@@ -7,18 +7,22 @@ import 'package:yababos/models/tag.dart';
 
 import 'package:yababos/models/transaction.dart';
 import 'package:yababos/generated/l10n.dart';
+import 'package:yababos/models/wallet.dart';
 import 'package:yababos/states/tag.dart';
+import 'package:yababos/views/wallet_list.dart';
 
 typedef OnSave = Function(Transaction transaction);
 typedef OnDelete = Function(Transaction transaction);
 
 class TransactionEditor extends StatelessWidget {
+  final List<Wallet> wallets;
   final Transaction transaction;
   final OnSave onSave;
   final OnDelete onDelete;
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   const TransactionEditor({
+    @required this.wallets,
     @required this.transaction,
     @required this.onSave,
     this.onDelete,
@@ -56,7 +60,17 @@ class TransactionEditor extends StatelessWidget {
         child: ListView(
           children: [
             // From
+            WalletList(
+              outside: true,
+              wallets: wallets,
+              onTap: (index) => transaction.from = wallets[index].id,
+            ),
             // To
+            WalletList(
+              outside: true,
+              wallets: wallets,
+              onTap: (index) => transaction.to = wallets[index].id,
+            ),
             // Amount
             TextFormField(
               decoration: InputDecoration(labelText: S.of(context).amount),

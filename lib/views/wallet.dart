@@ -14,6 +14,7 @@ import 'package:yababos/models/wallet.dart';
 import 'package:yababos/states/transaction.dart';
 import 'package:yababos/views/transaction_editor.dart';
 import 'package:yababos/views/transaction.dart';
+import 'package:yababos/views/wallet_list.dart';
 
 class WalletWidget extends StatefulWidget {
   final Wallet selectedWallet;
@@ -45,20 +46,15 @@ class WalletWidgetState extends State<WalletWidget> {
                   showModalBottomSheet(
                     context: context,
                     builder: (BuildContext context) {
-                      return ListView.builder(
-                        itemCount: widget.wallets.length,
-                        itemBuilder: (BuildContext lcontext, int index) {
-                          return ListTile(
-                            title: Text(widget.wallets[index].name),
-                            onTap: () {
-                              BlocProvider.of<SettingsBloc>(context)
-                                  .add(SettingAdd(Setting(
-                                name: 'wallet',
-                                value: widget.wallets[index].id,
-                              )));
-                              Navigator.pop(context);
-                            },
-                          );
+                      return WalletList(
+                        wallets: widget.wallets,
+                        onTap: (index) {
+                          BlocProvider.of<SettingsBloc>(context)
+                              .add(SettingAdd(Setting(
+                            name: 'wallet',
+                            value: widget.wallets[index].id,
+                          )));
+                          Navigator.pop(context);
                         },
                       );
                     },
@@ -98,7 +94,10 @@ class WalletWidgetState extends State<WalletWidget> {
             body: ListView.builder(
               itemCount: transactions.length,
               itemBuilder: (context, index) {
-                return TransactionWidget(transactions[index]);
+                return TransactionWidget(
+                  transaction: transactions[index],
+                  wallets: widget.wallets,
+                );
               },
             ),
             floatingActionButton: FloatingActionButton(
@@ -109,6 +108,7 @@ class WalletWidgetState extends State<WalletWidget> {
                   MaterialPageRoute(
                     builder: (econtext) {
                       return TransactionEditor(
+                        wallets: widget.wallets.toList(),
                         transaction: Transaction(
                           id: null,
                           from: widget.selectedWallet.id,

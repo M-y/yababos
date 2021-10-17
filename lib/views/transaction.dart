@@ -5,12 +5,14 @@ import 'package:yababos/blocs/transaction.dart';
 import 'package:yababos/events/tag.dart';
 import 'package:yababos/events/transaction.dart';
 import 'package:yababos/models/transaction.dart';
+import 'package:yababos/models/wallet.dart';
 import 'package:yababos/views/transaction_editor.dart';
 
 class TransactionWidget extends StatelessWidget {
   final Transaction transaction;
+  final List<Wallet> wallets;
 
-  const TransactionWidget(this.transaction);
+  const TransactionWidget({this.transaction, this.wallets});
 
   bool _isExpense() {
     if (transaction.to == null) return true;
@@ -27,6 +29,7 @@ class TransactionWidget extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (econtext) => TransactionEditor(
+                wallets: wallets,
                 transaction: transaction,
                 onSave: (transaction) {
                   if (transaction.tags != null)

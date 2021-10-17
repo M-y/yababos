@@ -27,10 +27,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "description" : MessageLookupByLibrary.simpleMessage("Description"),
     "editTransaction" : MessageLookupByLibrary.simpleMessage("Edit Transaction"),
     "editWallet" : MessageLookupByLibrary.simpleMessage("Edit Wallet"),
+    "from" : MessageLookupByLibrary.simpleMessage("From"),
     "initialAmount" : MessageLookupByLibrary.simpleMessage("Initial Amount"),
     "name" : MessageLookupByLibrary.simpleMessage("Name"),
     "newTransaction" : MessageLookupByLibrary.simpleMessage("New Transaction"),
     "newWallet" : MessageLookupByLibrary.simpleMessage("New Wallet"),
+    "outside" : MessageLookupByLibrary.simpleMessage("Outside"),
     "tags" : MessageLookupByLibrary.simpleMessage("Tags"),
     "wallet" : MessageLookupByLibrary.simpleMessage("Wallet")
   };

@@ -10,5 +10,7 @@
   "newWallet": "New Wallet",
   "initialAmount": "Initial Amount",
   "name": "Name",
-  "currency": "Currency"
+  "currency": "Currency",
+  "from": "From",
+  "outside": "Outside"
 }
