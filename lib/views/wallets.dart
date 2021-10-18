@@ -13,7 +13,7 @@ class WalletsWidget extends StatelessWidget {
       appBar: AppBar(),
       body: BlocBuilder<WalletBloc, WalletState>(
         builder: (wcontext, state) {
-          if (state is WalletLoaded) {
+          if (state is WalletsLoaded) {
             List<Wallet> wallets = state.wallets;
 
             if (wallets.length == 0) {

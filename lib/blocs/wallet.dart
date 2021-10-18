@@ -46,7 +46,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   Future<WalletState> _mapAddtoState(WalletAdd event) async {
     await _walletRepository.add(event.wallet);
     await _selectLastWallet();
-    return WalletLoaded(
+    return WalletsLoaded(
       wallets: await _walletRepository.getAll(),
       selectedWallet: _selectedWallet,
     );
@@ -55,7 +55,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   Future<WalletState> _mapDeletetoState(WalletDelete event) async {
     await _walletRepository.delete(event.id);
     await _selectLastWallet();
-    return WalletLoaded(
+    return WalletsLoaded(
       wallets: await _walletRepository.getAll(),
       selectedWallet: _selectedWallet,
     );
@@ -63,18 +63,18 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   Future<WalletState> _mapUpdatetoState(WalletUpdate event) async {
     await _walletRepository.update(event.wallet);
-    return WalletLoaded(
+    return WalletsLoaded(
       wallets: await _walletRepository.getAll(),
       selectedWallet: _selectedWallet,
     );
   }
 
   Future<WalletState> _mapGettoState(WalletGet event) async {
-    return WalletLoaded.one(await _walletRepository.get(event.id));
+    return WalletLoaded(await _walletRepository.get(event.id));
   }
 
   _mapGetAlltoState(WalletGetAll event) async {
-    return WalletLoaded(
+    return WalletsLoaded(
       wallets: await _walletRepository.getAll(),
       selectedWallet: _selectedWallet,
     );

@@ -25,7 +25,7 @@ class Yababos extends StatelessWidget {
         '/wallets': (rcontext) => WalletsWidget(),
       },
       home: BlocBuilder<WalletBloc, WalletState>(builder: (context, state) {
-        if (state is WalletLoaded) {
+        if (state is WalletsLoaded) {
           if (state.wallets.length < 1) return WalletsWidget();
 
           return WalletWidget(
