@@ -3,11 +3,13 @@ import 'package:yababos/repositories/wallet_repository.dart';
 
 class WalletInmemory extends WalletRepository {
   List<Wallet> _wallets = [];
+  int _lastId = 0;
 
   @override
   Future add(Wallet wallet) {
     return Future(() {
-      wallet.id = _wallets.length + 1;
+      _lastId = _lastId + 1;
+      wallet.id = _lastId;
       _wallets.add(wallet);
     });
   }

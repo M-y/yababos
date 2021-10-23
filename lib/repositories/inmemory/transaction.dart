@@ -3,11 +3,13 @@ import 'package:yababos/repositories/transaction_repository.dart';
 
 class TransactionInmemory extends TransactionRepository {
   List<Transaction> _transactions = [];
+  int _lastId = 0;
 
   @override
   Future add(Transaction transaction) {
     return Future(() {
-      transaction.id = _transactions.length + 1;
+      _lastId = _lastId + 1;
+      transaction.id = _lastId;
       _transactions.add(transaction);
     });
   }
