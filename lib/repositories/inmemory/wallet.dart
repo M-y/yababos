@@ -28,7 +28,10 @@ class WalletInmemory extends WalletRepository {
   @override
   Future<Wallet> get(int id) {
     return Future(() {
-      return _wallets.firstWhere((element) => element.id == id);
+      return _wallets.firstWhere(
+        (element) => element.id == id,
+        orElse: () => null,
+      );
     });
   }
 
