@@ -49,7 +49,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   Future<WalletState> _mapAddtoState(WalletAdd event) async {
     await _walletRepository.add(event.wallet);
-    await _selectLastWallet();
+    await _selectedWalletFix();
     return WalletsLoaded(
       wallets: await _walletRepository.getAll(),
       selectedWallet: _selectedWallet,
@@ -58,7 +58,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   Future<WalletState> _mapDeletetoState(WalletDelete event) async {
     await _walletRepository.delete(event.id);
-    await _selectLastWallet();
+    await _selectedWalletFix();
     return WalletsLoaded(
       wallets: await _walletRepository.getAll(),
       selectedWallet: _selectedWallet,
@@ -88,14 +88,25 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     return WalletsLoaded(wallets: List<Wallet>(), selectedWallet: null);
   }
 
-  Future _selectLastWallet() async {
+  Future _selectedWalletFix() async {
     List<Wallet> wallets = await _walletRepository.getAll();
+
+    // select the only wallet
     if (wallets.length == 1) {
-      _selectedWallet = wallets[0];
-      _settingsBloc.add(SettingAdd(Setting(
-        name: 'wallet',
-        value: _selectedWallet.id,
-      )));
+      _selectFirstWallet(wallets);
+    } else {
+      // check if selected wallet still exists
+      if (_selectedWallet != null &&
+          await _walletRepository.get(_selectedWallet.id) == null)
+        _selectFirstWallet(wallets);
     }
+  }
+
+  void _selectFirstWallet(List<Wallet> wallets) {
+    _selectedWallet = wallets[0];
+    _settingsBloc.add(SettingAdd(Setting(
+      name: 'wallet',
+      value: _selectedWallet.id,
+    )));
   }
 }
