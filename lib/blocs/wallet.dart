@@ -89,9 +89,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   Future _selectLastWallet() async {
     List<Wallet> wallets = await _walletRepository.getAll();
     if (wallets.length == 1) {
+      _selectedWallet = wallets[0];
       _settingsBloc.add(SettingAdd(Setting(
         name: 'wallet',
-        value: wallets[0].id,
+        value: _selectedWallet.id,
       )));
     }
   }

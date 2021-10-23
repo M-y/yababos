@@ -23,10 +23,7 @@ class WalletsLoaded extends WalletState {
   Wallet selectedWallet;
   List<Wallet> wallets;
 
-  WalletsLoaded({this.wallets, this.selectedWallet}) {
-    if (wallets.length > 0 && selectedWallet == null)
-      selectedWallet = wallets[wallets.length - 1];
-  }
+  WalletsLoaded({this.wallets, this.selectedWallet});
 
   @override
   List<Object> get props => [wallets, selectedWallet];

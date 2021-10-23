@@ -85,7 +85,9 @@ void main() {
       'WalletAdd',
       build: () => WalletBloc(walletRepository, settingsBloc, transactionBloc),
       act: (bloc) => bloc.add(WalletAdd(sampleWallet)),
-      expect: () => <WalletState>[WalletsLoaded(wallets: sampleWalletList)],
+      expect: () => <WalletState>[
+        WalletsLoaded(wallets: sampleWalletList, selectedWallet: sampleWallet)
+      ],
     );
 
     blocTest(
@@ -124,10 +126,42 @@ void main() {
         bloc.add(WalletAdd(updatedWallet));
         settingsBloc.add(SettingAdd(Setting(name: 'wallet', value: 1)));
       },
-      skip: 1,
       expect: () => <WalletState>[
         WalletsLoaded(
           wallets: List<Wallet>.from([sampleWallet, updatedWallet]),
+          selectedWallet: sampleWallet,
+        )
+      ],
+    );
+
+    blocTest(
+      'set as selected wallet when first one added',
+      setUp: () => walletRepository = WalletInmemory(),
+      build: () => WalletBloc(walletRepository, settingsBloc, transactionBloc),
+      act: (bloc) {
+        bloc.add(WalletAdd(sampleWallet));
+      },
+      expect: () => <WalletState>[
+        WalletsLoaded(
+          wallets: List<Wallet>.from([sampleWallet]),
+          selectedWallet: sampleWallet,
+        )
+      ],
+    );
+
+    blocTest(
+      'set as selected wallet when last one stands',
+      setUp: () => walletRepository = WalletInmemory(),
+      build: () => WalletBloc(walletRepository, settingsBloc, transactionBloc),
+      act: (bloc) {
+        bloc.add(WalletAdd(sampleWallet));
+        bloc.add(WalletAdd(updatedWallet));
+        bloc.add(WalletDelete(1));
+      },
+      skip: 1,
+      expect: () => <WalletState>[
+        WalletsLoaded(
+          wallets: List<Wallet>.from([updatedWallet]),
           selectedWallet: updatedWallet,
         )
       ],
