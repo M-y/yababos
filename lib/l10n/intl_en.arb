@@ -12,5 +12,8 @@
   "name": "Name",
   "currency": "Currency",
   "from": "From",
-  "outside": "Outside"
+  "outside": "Outside",
+  "noWallets": "No wallets",
+  "wallets": "Wallets",
+  "backup": "Backup"
 }

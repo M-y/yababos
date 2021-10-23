@@ -5,6 +5,7 @@ import 'package:yababos/events/wallet.dart';
 import 'package:yababos/models/wallet.dart';
 import 'package:yababos/states/wallet.dart';
 import 'package:yababos/views/wallet_editor.dart';
+import 'package:yababos/generated/l10n.dart';
 
 class WalletsWidget extends StatelessWidget {
   @override
@@ -17,7 +18,7 @@ class WalletsWidget extends StatelessWidget {
             List<Wallet> wallets = state.wallets;
 
             if (wallets.length == 0) {
-              return Center(child: Text("No wallets"));
+              return Center(child: Text(S.of(context).noWallets));
             } else {
               return ListView.builder(
                 itemCount: wallets.length,

@@ -174,6 +174,36 @@ class S {
       args: [],
     );
   }
+
+  /// `No wallets`
+  String get noWallets {
+    return Intl.message(
+      'No wallets',
+      name: 'noWallets',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Wallets`
+  String get wallets {
+    return Intl.message(
+      'Wallets',
+      name: 'wallets',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Backup`
+  String get backup {
+    return Intl.message(
+      'Backup',
+      name: 'backup',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
