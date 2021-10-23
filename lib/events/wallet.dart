@@ -24,6 +24,8 @@ class WalletGet extends WalletEvent {
 
 class WalletGetAll extends WalletEvent {}
 
+class WalletGetNone extends WalletEvent {}
+
 class WalletDelete extends WalletEvent {
   final int id;
 

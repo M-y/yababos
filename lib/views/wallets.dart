@@ -36,10 +36,12 @@ class WalletsWidget extends StatelessWidget {
                                 wallet: wallets[index],
                                 onSave: (wallet) =>
                                     BlocProvider.of<WalletBloc>(context)
-                                        .add(WalletUpdate(wallet)),
+                                      ..add(WalletGetNone())
+                                      ..add(WalletUpdate(wallet)),
                                 onDelete: (wallet) =>
                                     BlocProvider.of<WalletBloc>(context)
-                                        .add(WalletDelete(wallet.id)),
+                                      ..add(WalletGetNone())
+                                      ..add(WalletDelete(wallet.id)),
                               );
                             },
                           ),
@@ -64,7 +66,8 @@ class WalletsWidget extends StatelessWidget {
                 return WalletEditor(
                   wallet: Wallet(id: null),
                   onSave: (wallet) => BlocProvider.of<WalletBloc>(context)
-                      .add(WalletAdd(wallet)),
+                    ..add(WalletGetNone())
+                    ..add(WalletAdd(wallet)),
                 );
               },
             ),

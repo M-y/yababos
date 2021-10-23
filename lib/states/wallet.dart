@@ -29,5 +29,5 @@ class WalletsLoaded extends WalletState {
   }
 
   @override
-  List<Object> get props => [List.from(wallets).hashCode, selectedWallet];
+  List<Object> get props => [wallets, selectedWallet];
 }

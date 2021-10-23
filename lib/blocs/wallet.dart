@@ -40,6 +40,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       yield await _mapGettoState(event);
     } else if (event is WalletGetAll) {
       yield await _mapGetAlltoState(event);
+    } else if (event is WalletGetNone) {
+      yield await _mapGetNonetoState(event);
     }
   }
 
@@ -73,11 +75,15 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     return WalletLoaded(await _walletRepository.get(event.id));
   }
 
-  _mapGetAlltoState(WalletGetAll event) async {
+  Future<WalletState> _mapGetAlltoState(WalletGetAll event) async {
     return WalletsLoaded(
       wallets: await _walletRepository.getAll(),
       selectedWallet: _selectedWallet,
     );
+  }
+
+  Future<WalletState> _mapGetNonetoState(WalletGetNone event) async {
+    return WalletsLoaded(wallets: List<Wallet>(), selectedWallet: null);
   }
 
   Future _selectLastWallet() async {
