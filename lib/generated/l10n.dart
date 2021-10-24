@@ -204,6 +204,36 @@ class S {
       args: [],
     );
   }
+
+  /// `No tags`
+  String get noTags {
+    return Intl.message(
+      'No tags',
+      name: 'noTags',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit Tag`
+  String get editTag {
+    return Intl.message(
+      'Edit Tag',
+      name: 'editTag',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New Tag`
+  String get newTag {
+    return Intl.message(
+      'New Tag',
+      name: 'newTag',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

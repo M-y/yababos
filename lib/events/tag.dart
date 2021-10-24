@@ -6,6 +6,8 @@ abstract class TagEvent {
 
 class TagGetAll extends TagEvent {}
 
+class TagGetNone extends TagEvent {}
+
 class TagFind extends TagEvent {
   final Tag tag;
 

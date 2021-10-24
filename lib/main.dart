@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yababos/blocs/settings.dart';
 import 'package:yababos/blocs/wallet.dart';
 import 'package:yababos/events/settings.dart';
+import 'package:yababos/events/tag.dart';
 import 'package:yababos/events/wallet.dart';
 import 'app.dart';
 import 'blocs/tag.dart';
@@ -22,7 +23,8 @@ void main() {
             TransactionBloc(RepositorySelections.transactionRepository),
       ),
       BlocProvider(
-        create: (context) => TagBloc(RepositorySelections.tagRepository),
+        create: (context) =>
+            TagBloc(RepositorySelections.tagRepository)..add(TagGetAll()),
       ),
       BlocProvider(
         create: (context) => WalletBloc(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:yababos/views/tags.dart';
 import 'blocs/wallet.dart';
 import 'generated/l10n.dart';
 import 'package:yababos/views/wallet.dart';
@@ -23,6 +24,7 @@ class Yababos extends StatelessWidget {
       ),
       routes: {
         '/wallets': (rcontext) => WalletsWidget(),
+        '/tags': (rcontext) => TagsWidget(),
       },
       home: BlocBuilder<WalletBloc, WalletState>(builder: (context, state) {
         if (state is WalletsLoaded) {

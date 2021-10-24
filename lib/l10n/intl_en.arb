@@ -15,5 +15,8 @@
   "outside": "Outside",
   "noWallets": "No wallets",
   "wallets": "Wallets",
-  "backup": "Backup"
+  "backup": "Backup",
+  "noTags": "No tags",
+  "editTag": "Edit Tag",
+  "newTag": "New Tag"
 }

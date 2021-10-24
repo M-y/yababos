@@ -23,6 +23,8 @@ class TagBloc extends Bloc<TagEvent, TagState> {
       yield await _mapDeletetoState(event);
     } else if (event is TagUpdate) {
       yield await _mapUpdatetoState(event);
+    } else if (event is TagGetNone) {
+      yield await _mapGetNonetoState(event);
     }
   }
 
@@ -60,5 +62,9 @@ class TagBloc extends Bloc<TagEvent, TagState> {
   Future<TagState> _mapUpdatetoState(TagUpdate event) async {
     await _tagRepository.update(event.oldName, event.tag);
     return TagLoaded(await _tagRepository.getAll());
+  }
+
+  Future<TagState> _mapGetNonetoState(TagGetNone event) async {
+    return TagLoaded(List<Tag>());
   }
 }
