@@ -6,13 +6,25 @@ import 'package:yababos/repositories/inmemory/wallet.dart';
 import 'package:yababos/models/setting.dart';
 import 'package:yababos/repositories/settings_repository.dart';
 import 'package:yababos/models/tag.dart';
+import 'package:yababos/repositories/sqlite/transaction.dart';
+import 'package:yababos/repositories/sqlite/yababos.dart';
 import 'package:yababos/repositories/tag_repository.dart';
 import 'package:yababos/models/transaction.dart';
 import 'package:yababos/repositories/transaction_repository.dart';
 import 'package:yababos/models/wallet.dart';
 import 'package:yababos/repositories/wallet_repository.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite/sqflite.dart' as sqflite;
 
 void main() {
+  setUpAll(() {
+    // Initialize FFI
+    sqfliteFfiInit();
+    // Change the default factory
+    sqflite.databaseFactory = databaseFactoryFfi;
+    YababosSqlite.path = ':memory:';
+  });
+
   group('Settings', () {
     SettingsRepository settingsRepository = SettingsInmemory();
 
@@ -79,74 +91,81 @@ void main() {
   });
 
   group('Transaction', () {
-    TransactionRepository transactionRepository = TransactionInmemory();
+    List<TransactionRepository> repositories = List.from([
+      TransactionInmemory(),
+      TransactionSqlite(),
+    ]);
 
-    test('add', () async {
-      Transaction sampleTransaction =
-          Transaction(id: null, from: null, to: 1, amount: 0, when: null);
-      await transactionRepository.add(sampleTransaction);
+    for (TransactionRepository transactionRepository in repositories) {
+      test('add', () async {
+        Transaction sampleTransaction =
+            Transaction(id: 1, from: null, to: 1, amount: 0, when: null);
+        await transactionRepository.add(sampleTransaction);
 
-      expect(await transactionRepository.get(1), sampleTransaction);
-    });
+        expect(await transactionRepository.get(1), sampleTransaction);
+      });
 
-    test('update', () async {
-      await transactionRepository.update(Transaction(
+      test('update', () async {
+        await transactionRepository.update(Transaction(
+            id: 1,
+            from: null,
+            to: 1,
+            description: "test",
+            amount: 0,
+            when: null));
+
+        expect((await transactionRepository.get(1)).description, "test");
+      });
+
+      test('delete & getAll', () async {
+        expect((await transactionRepository.getAll()).length, 1);
+        await transactionRepository.delete(1);
+        expect((await transactionRepository.getAll()).length, 0);
+      });
+
+      test('wallet\'s transactions', () async {
+        Transaction yesterday = Transaction(
           id: 1,
           from: null,
           to: 1,
-          description: "test",
           amount: 0,
-          when: null));
+          when: DateTime.now().subtract(new Duration(days: 1)),
+        );
+        Transaction today = Transaction(
+          id: 2,
+          from: 1,
+          to: null,
+          amount: 0,
+          when: DateTime.now(),
+        );
+        Transaction otherWalletTransaction = Transaction(
+          id: 3,
+          from: null,
+          to: 2,
+          amount: 0,
+          when: DateTime.now(),
+        );
+        await transactionRepository.add(yesterday);
+        await transactionRepository.add(today);
+        await transactionRepository.add(otherWalletTransaction);
+        List<Transaction> walletTransactions =
+            await transactionRepository.walletTransactions(1);
 
-      expect((await transactionRepository.get(1)).description, "test");
-    });
+        expect(walletTransactions.length, 2);
+        expect(walletTransactions[0], yesterday);
+        expect(walletTransactions[1], today);
+      });
 
-    test('delete & getAll', () async {
-      expect((await transactionRepository.getAll()).length, 1);
-      await transactionRepository.delete(1);
-      expect((await transactionRepository.getAll()).length, 0);
-    });
+      test('balance', () async {
+        Transaction income = Transaction(
+            id: null, from: null, to: 1, amount: 150.5, when: DateTime.now());
+        Transaction expense = Transaction(
+            id: null, from: 1, to: null, amount: 50, when: DateTime.now());
+        await transactionRepository.add(income);
+        await transactionRepository.add(expense);
 
-    test('wallet\'s transactions', () async {
-      Transaction yesterday = Transaction(
-        id: null,
-        from: null,
-        to: 1,
-        amount: 0,
-        when: DateTime.now().subtract(new Duration(days: 1)),
-      );
-      Transaction today = Transaction(
-        id: null,
-        from: 1,
-        to: null,
-        amount: 0,
-        when: DateTime.now(),
-      );
-      Transaction otherWalletTransaction = Transaction(
-        id: null,
-        from: null,
-        to: 2,
-        amount: 0,
-        when: DateTime.now(),
-      );
-      await transactionRepository.add(yesterday);
-      await transactionRepository.add(today);
-      await transactionRepository.add(otherWalletTransaction);
-
-      expect((await transactionRepository.walletTransactions(1)).length, 2);
-      expect((await transactionRepository.walletTransactions(1))[0], yesterday);
-      expect((await transactionRepository.walletTransactions(1))[1], today);
-    });
-
-    test('balance', () async {
-      Transaction income = Transaction(
-          id: null, from: null, to: 1, amount: 150, when: DateTime.now());
-      Transaction expense = Transaction(
-          id: null, from: 1, to: null, amount: 50, when: DateTime.now());
-      await transactionRepository.add(income);
-      await transactionRepository.add(expense);
-
-      expect(await transactionRepository.balance(1), 100);
-    });
+        expect(await transactionRepository.balance(1), 100.5);
+      });
+    }
   });
 }
