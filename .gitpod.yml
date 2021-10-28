@@ -4,20 +4,13 @@ tasks:
   - init: |
       flutter channel beta
       flutter upgrade
-
       flutter config --enable-web
-      flutter config --android-sdk /home/gitpod/androidsdk
-      yes | flutter doctor --android-licenses
-
       flutter doctor
-
       flutter pub get
-
       flutter build -v web
       
   - command: |
       flutter devices
-    
       flutter run --web-port 8080
 
 
