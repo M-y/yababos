@@ -99,7 +99,7 @@ void main() {
   group('Transaction', () {
     List<TransactionRepository> repositories = List.from([
       TransactionInmemory(),
-      TransactionSqlite(),
+      TransactionSqlite(TagSqlite()),
     ]);
 
     for (TransactionRepository transactionRepository in repositories) {

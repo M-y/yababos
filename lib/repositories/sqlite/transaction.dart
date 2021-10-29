@@ -1,8 +1,14 @@
+import 'package:yababos/models/tag.dart';
 import 'package:yababos/models/transaction.dart';
+import 'package:yababos/repositories/sqlite/tag.dart';
 import 'package:yababos/repositories/sqlite/yababos.dart';
 import 'package:yababos/repositories/transaction_repository.dart';
 
 class TransactionSqlite extends TransactionRepository {
+  TagSqlite _tagRepository;
+
+  TransactionSqlite(this._tagRepository);
+
   @override
   Future add(Transaction transaction) {
     return Future(() async {
@@ -32,6 +38,10 @@ class TransactionSqlite extends TransactionRepository {
             : null,
         transaction.description,
       ]);
+
+      await _deleteTransactionTags(transaction.id);
+      if (transaction.tags != null)
+        await _addTransactionTags(transaction.id, transaction.tags);
     });
   }
 
@@ -43,7 +53,7 @@ class TransactionSqlite extends TransactionRepository {
           await (await YababosSqlite.getDatabase())
               .rawQuery('SELECT * FROM transactions');
       for (var record in records) {
-        transactions.add(_mapRecord(record));
+        transactions.add(await _mapRecord(record));
       }
       return transactions;
     });
@@ -52,6 +62,7 @@ class TransactionSqlite extends TransactionRepository {
   @override
   Future delete(int id) {
     return Future(() async {
+      await _deleteTransactionTags(id);
       await (await YababosSqlite.getDatabase())
           .rawDelete('DELETE FROM transactions WHERE id = ?', [id]);
     });
@@ -89,6 +100,10 @@ class TransactionSqlite extends TransactionRepository {
         transaction.description,
         transaction.id,
       ]);
+
+      await _deleteTransactionTags(transaction.id);
+      if (transaction.tags != null)
+        await _addTransactionTags(transaction.id, transaction.tags);
     });
   }
 
@@ -117,13 +132,13 @@ class TransactionSqlite extends TransactionRepository {
               'SELECT * FROM transactions WHERE fromWallet = ? OR toWallet = ? ORDER BY date',
               [wallet, wallet]);
       for (var record in records) {
-        transactions.add(_mapRecord(record));
+        transactions.add(await _mapRecord(record));
       }
       return transactions;
     });
   }
 
-  Transaction _mapRecord(Map<String, Object> record) {
+  Future<Transaction> _mapRecord(Map<String, Object> record) async {
     return Transaction(
       id: record['id'],
       from: record['fromWallet'],
@@ -133,6 +148,54 @@ class TransactionSqlite extends TransactionRepository {
           ? DateTime.fromMicrosecondsSinceEpoch(record['date'])
           : null,
       description: record['description'],
+      tags: await _transactionTags(record['id']),
     );
+  }
+
+  Future<List<Tag>> _transactionTags(int transactionId) {
+    return Future(() async {
+      List<Tag> tags = List<Tag>();
+
+      List<Map<String, Object>> records =
+          await (await YababosSqlite.getDatabase()).rawQuery(
+              'SELECT * FROM transaction_tags WHERE transactionId = ?',
+              [transactionId]);
+      for (var record in records) {
+        tags.add(await _tagRepository.get(record['tag']));
+      }
+
+      if (tags.isEmpty) return null;
+      return tags;
+    });
+  }
+
+  Future _deleteTransactionTags(int transactionId) {
+    return Future(() async {
+      await (await YababosSqlite.getDatabase()).rawDelete(
+          'DELETE FROM transaction_tags WHERE transactionId = ?',
+          [transactionId]);
+    });
+  }
+
+  Future _addTransactionTags(int transactionId, List<Tag> tags) {
+    return Future(() async {
+      for (Tag tag in tags) {
+        await (await YababosSqlite.getDatabase()).rawInsert('''
+        INSERT INTO transaction_tags
+        (
+          transactionId,
+          tag
+        )
+        VALUES
+        (
+          ?,
+          ?
+        )
+        ''', [
+          transactionId,
+          tag.name,
+        ]);
+      }
+    });
   }
 }

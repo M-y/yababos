@@ -21,9 +21,9 @@ CREATE TABLE "tags" (
 	PRIMARY KEY("name")
 );
 CREATE TABLE "transaction_tags" (
-	"transaction"	INTEGER,
+	"transactionId"	INTEGER,
 	"tag"	TEXT,
-	FOREIGN KEY("transaction") REFERENCES "transactions"("id"),
+	FOREIGN KEY("transactionId") REFERENCES "transactions"("id"),
 	FOREIGN KEY("tag") REFERENCES "tags"("name")
 );
 CREATE TABLE "wallet" (
