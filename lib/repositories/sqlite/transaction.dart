@@ -63,6 +63,7 @@ class TransactionSqlite extends TransactionRepository {
       List<Map<String, Object>> record =
           await (await YababosSqlite.getDatabase())
               .rawQuery('SELECT * FROM transactions WHERE id = ?', [id]);
+      if (record.isEmpty) return null;
       return _mapRecord(record[0]);
     });
   }

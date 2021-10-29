@@ -30,7 +30,10 @@ class TransactionInmemory extends TransactionRepository {
   @override
   Future<Transaction> get(int id) {
     return Future(() {
-      return _transactions.firstWhere((element) => element.id == id);
+      return _transactions.firstWhere(
+        (element) => element.id == id,
+        orElse: () => null,
+      );
     });
   }
 
