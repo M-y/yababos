@@ -6,6 +6,7 @@ import 'package:yababos/repositories/inmemory/wallet.dart';
 import 'package:yababos/models/setting.dart';
 import 'package:yababos/repositories/settings_repository.dart';
 import 'package:yababos/models/tag.dart';
+import 'package:yababos/repositories/sqlite/settings.dart';
 import 'package:yababos/repositories/sqlite/tag.dart';
 import 'package:yababos/repositories/sqlite/transaction.dart';
 import 'package:yababos/repositories/sqlite/wallet.dart';
@@ -28,23 +29,28 @@ void main() {
   });
 
   group('Settings', () {
-    SettingsRepository settingsRepository = SettingsInmemory();
+    List<SettingsRepository> repositories = List.from([
+      SettingsInmemory(),
+      SettingsSqlite(),
+    ]);
 
-    test('add', () async {
-      Setting sampleSetting = Setting(name: 'test', value: 1);
-      await settingsRepository.add(sampleSetting);
-    });
+    for (SettingsRepository settingsRepository in repositories) {
+      test('add', () async {
+        Setting sampleSetting = Setting(name: 'test', value: 1);
+        await settingsRepository.add(sampleSetting);
+      });
 
-    test('get', () async {
-      expect((await settingsRepository.get('test')).value, 1);
-      expect(await settingsRepository.get('not available'), null);
-    });
-    test('update', () async {
-      Setting tobeUpdateSetting = Setting(name: 'test', value: 2);
-      await settingsRepository.add(tobeUpdateSetting);
+      test('get', () async {
+        expect((await settingsRepository.get('test')).value, 1);
+        expect(await settingsRepository.get('not available'), null);
+      });
+      test('update', () async {
+        Setting tobeUpdateSetting = Setting(name: 'test', value: 2);
+        await settingsRepository.add(tobeUpdateSetting);
 
-      expect((await settingsRepository.get('test')).value, 2);
-    });
+        expect((await settingsRepository.get('test')).value, 2);
+      });
+    }
   });
 
   group('Tag', () {
