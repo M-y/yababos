@@ -15,6 +15,9 @@ import 'package:yababos/repositories/inmemory/wallet.dart';
 import 'package:yababos/models/setting.dart';
 import 'package:yababos/repositories/settings_repository.dart';
 import 'package:yababos/models/tag.dart';
+import 'package:yababos/repositories/sqlite/tag.dart';
+import 'package:yababos/repositories/sqlite/transaction.dart';
+import 'package:yababos/repositories/sqlite/yababos.dart';
 import 'package:yababos/repositories/tag_repository.dart';
 import 'package:yababos/models/transaction.dart';
 import 'package:yababos/repositories/transaction_repository.dart';
@@ -24,8 +27,18 @@ import 'package:yababos/states/settings.dart';
 import 'package:yababos/states/tag.dart';
 import 'package:yababos/states/transaction.dart';
 import 'package:yababos/states/wallet.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite/sqflite.dart' as sqflite;
 
 void main() {
+  setUpAll(() {
+    // Initialize FFI
+    sqfliteFfiInit();
+    // Change the default factory
+    sqflite.databaseFactory = databaseFactoryFfi;
+    YababosSqlite.path = ':memory:';
+  });
+
   group('Settings', () {
     SettingsRepository settingsRepository = SettingsInmemory();
     Setting sampleSetting = Setting(name: 'sample', value: 1);
@@ -312,5 +325,43 @@ void main() {
       act: (bloc) => bloc.add(TagAdd(sampleTag)),
       expect: () => <TagState>[TagLoaded(allTags)],
     );
+  });
+
+  group('Transaction & Tag', () {
+    Transaction transactionWithTags = Transaction(
+      id: null,
+      from: 1,
+      to: null,
+      amount: 100,
+      when: null,
+      description: 'transaction with tags',
+      tags: [Tag(name: 't1'), Tag(name: 't2')],
+    );
+
+    var repositories = [
+      [TagInmemory(), TransactionInmemory()],
+      [TagSqlite(), TransactionSqlite(TagSqlite())]
+    ];
+
+    for (var repository in repositories) {
+      TagRepository tagRepository = repository[0];
+      TransactionRepository transactionRepository = repository[1];
+
+      blocTest(
+        'Transaction tags',
+        build: () {
+          TagBloc(tagRepository)..add(TagsAdd(transactionWithTags.tags));
+          return TransactionBloc(transactionRepository)
+            ..add(TransactionAdd(transactionWithTags));
+        },
+        act: (bloc) {
+          bloc.add(TransactionGetAll());
+        },
+        skip: 1,
+        expect: () => <TransactionState>[
+          TransactionLoaded.many(List<Transaction>.from([transactionWithTags]))
+        ],
+      );
+    }
   });
 }
