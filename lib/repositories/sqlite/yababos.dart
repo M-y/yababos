@@ -26,7 +26,7 @@ CREATE TABLE "transaction_tags" (
 	FOREIGN KEY("transactionId") REFERENCES "transactions"("id"),
 	FOREIGN KEY("tag") REFERENCES "tags"("name")
 );
-CREATE TABLE "wallet" (
+CREATE TABLE "wallets" (
 	"id"	INTEGER,
 	"name"	TEXT NOT NULL,
 	"curreny"	TEXT NOT NULL,

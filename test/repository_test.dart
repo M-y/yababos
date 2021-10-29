@@ -8,6 +8,7 @@ import 'package:yababos/repositories/settings_repository.dart';
 import 'package:yababos/models/tag.dart';
 import 'package:yababos/repositories/sqlite/tag.dart';
 import 'package:yababos/repositories/sqlite/transaction.dart';
+import 'package:yababos/repositories/sqlite/wallet.dart';
 import 'package:yababos/repositories/sqlite/yababos.dart';
 import 'package:yababos/repositories/tag_repository.dart';
 import 'package:yababos/models/transaction.dart';
@@ -171,6 +172,37 @@ void main() {
         await transactionRepository.add(expense);
 
         expect(await transactionRepository.balance(1), 100.5);
+      });
+    }
+  });
+
+  group('Wallet', () {
+    List<WalletRepository> repositories = List.from([
+      WalletInmemory(),
+      WalletSqlite(),
+    ]);
+
+    for (WalletRepository walletRepository in repositories) {
+      test('add', () async {
+        Wallet sampleWallet =
+            Wallet(id: 1, name: 'sample', amount: 0, curreny: 'TRY');
+        await walletRepository.add(sampleWallet);
+
+        expect(await walletRepository.get(1), sampleWallet);
+      });
+
+      test('update', () async {
+        await walletRepository
+            .update(Wallet(id: 1, name: 'test', amount: 10, curreny: 'TRY'));
+
+        expect((await walletRepository.get(1)).name, 'test');
+        expect((await walletRepository.get(1)).amount, 10);
+      });
+
+      test('delete & getAll', () async {
+        expect((await walletRepository.getAll()).length, 1);
+        await walletRepository.delete(1);
+        expect((await walletRepository.getAll()).length, 0);
       });
     }
   });
