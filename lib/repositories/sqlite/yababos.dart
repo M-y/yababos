@@ -13,7 +13,7 @@ CREATE TABLE "transactions" (
 	"amount"	REAL,
 	"date"	INTEGER,
 	"description"	TEXT,
-	PRIMARY KEY("id")
+	PRIMARY KEY("id" AUTOINCREMENT)
 );
 CREATE TABLE "tags" (
 	"name"	TEXT,
@@ -31,7 +31,7 @@ CREATE TABLE "wallets" (
 	"name"	TEXT NOT NULL,
 	"curreny"	TEXT NOT NULL,
 	"amount"	REAL NOT NULL DEFAULT 0,
-	PRIMARY KEY("id")
+	PRIMARY KEY("id" AUTOINCREMENT)
 );
 CREATE TABLE "settings" (
 	"name"	TEXT,
