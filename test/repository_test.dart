@@ -35,16 +35,16 @@ void main() {
     ]);
 
     for (SettingsRepository settingsRepository in repositories) {
-      test('add', () async {
+      test('add $settingsRepository', () async {
         Setting sampleSetting = Setting(name: 'test', value: 1);
         await settingsRepository.add(sampleSetting);
       });
 
-      test('get', () async {
+      test('get $settingsRepository', () async {
         expect((await settingsRepository.get('test')).value, 1);
         expect(await settingsRepository.get('not available'), null);
       });
-      test('update', () async {
+      test('update $settingsRepository', () async {
         Setting tobeUpdateSetting = Setting(name: 'test', value: 2);
         await settingsRepository.add(tobeUpdateSetting);
 
@@ -60,23 +60,23 @@ void main() {
     ]);
 
     for (TagRepository tagRepository in repositories) {
-      test('add', () async {
+      test('add $tagRepository', () async {
         Tag sampleTag = Tag(name: 'test');
         await tagRepository.add(sampleTag);
 
         expect(await tagRepository.get(sampleTag.name), sampleTag);
       });
 
-      test('get', () async {
+      test('get $tagRepository', () async {
         expect((await tagRepository.get('test')).name, 'test');
         expect(await tagRepository.get('not available'), null);
       });
 
-      test('getAll', () async {
+      test('getAll $tagRepository', () async {
         expect(await tagRepository.getAll(), isInstanceOf<List<Tag>>());
       });
 
-      test('update', () async {
+      test('update $tagRepository', () async {
         Tag updateTag = Tag(name: 'updated');
         await tagRepository.update('test', updateTag);
 
@@ -85,7 +85,7 @@ void main() {
         expect(await tagRepository.get('updated'), updateTag);
       });
 
-      test('find', () async {
+      test('find $tagRepository', () async {
         Tag find = Tag(name: 'up');
         Tag toNotFind = Tag(name: 'not available');
 
@@ -95,7 +95,7 @@ void main() {
         expect((await tagRepository.find(toNotFind)).length, 0);
       });
 
-      test('delete', () async {
+      test('delete $tagRepository', () async {
         await tagRepository.delete('updated');
 
         expect(await tagRepository.get('updated'), null);
@@ -110,7 +110,7 @@ void main() {
     ]);
 
     for (TransactionRepository transactionRepository in repositories) {
-      test('add', () async {
+      test('add $transactionRepository', () async {
         Transaction sampleTransaction =
             Transaction(id: 1, from: null, to: 1, amount: 0, when: null);
         await transactionRepository.add(sampleTransaction);
@@ -118,7 +118,7 @@ void main() {
         expect(await transactionRepository.get(1), sampleTransaction);
       });
 
-      test('update', () async {
+      test('update $transactionRepository', () async {
         await transactionRepository.update(Transaction(
             id: 1,
             from: null,
@@ -130,29 +130,29 @@ void main() {
         expect((await transactionRepository.get(1)).description, "test");
       });
 
-      test('delete & getAll', () async {
+      test('delete & getAll $transactionRepository', () async {
         expect((await transactionRepository.getAll()).length, 1);
         await transactionRepository.delete(1);
         expect((await transactionRepository.getAll()).length, 0);
       });
 
-      test('wallet\'s transactions', () async {
+      test('wallet\'s transactions $transactionRepository', () async {
         Transaction yesterday = Transaction(
-          id: 1,
+          id: 2,
           from: null,
           to: 1,
           amount: 0,
           when: DateTime.now().subtract(new Duration(days: 1)),
         );
         Transaction today = Transaction(
-          id: 2,
+          id: 3,
           from: 1,
           to: null,
           amount: 0,
           when: DateTime.now(),
         );
         Transaction otherWalletTransaction = Transaction(
-          id: 3,
+          id: 4,
           from: null,
           to: 2,
           amount: 0,
@@ -169,7 +169,7 @@ void main() {
         expect(walletTransactions[1], today);
       });
 
-      test('balance', () async {
+      test('balance $transactionRepository', () async {
         Transaction income = Transaction(
             id: null, from: null, to: 1, amount: 150.5, when: DateTime.now());
         Transaction expense = Transaction(
@@ -189,7 +189,7 @@ void main() {
     ]);
 
     for (WalletRepository walletRepository in repositories) {
-      test('add', () async {
+      test('add $walletRepository', () async {
         Wallet sampleWallet =
             Wallet(id: 1, name: 'sample', amount: 0, curreny: 'TRY');
         await walletRepository.add(sampleWallet);
@@ -197,7 +197,7 @@ void main() {
         expect(await walletRepository.get(1), sampleWallet);
       });
 
-      test('update', () async {
+      test('update $walletRepository', () async {
         await walletRepository
             .update(Wallet(id: 1, name: 'test', amount: 10, curreny: 'TRY'));
 
@@ -205,7 +205,7 @@ void main() {
         expect((await walletRepository.get(1)).amount, 10);
       });
 
-      test('delete & getAll', () async {
+      test('delete & getAll $walletRepository', () async {
         expect((await walletRepository.getAll()).length, 1);
         await walletRepository.delete(1);
         expect((await walletRepository.getAll()).length, 0);
