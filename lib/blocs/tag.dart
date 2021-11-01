@@ -43,9 +43,9 @@ class TagBloc extends Bloc<TagEvent, TagState> {
   }
 
   Future<TagState> _mapAddManytoState(TagsAdd event) async {
-    event.tags.forEach((tag) async {
+    for (Tag tag in event.tags) {
       await _tagAdd(tag);
-    });
+    }
     return TagLoaded(await _tagRepository.getAll());
   }
 
