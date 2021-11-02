@@ -110,15 +110,23 @@ class TransactionSqlite extends TransactionRepository {
   @override
   Future<double> balance(int wallet) {
     return Future(() async {
-      List<Map<String, Object>> record =
-          await (await YababosSqlite.getDatabase()).rawQuery('''
+      List<Map<String, Object>> record;
+      if (wallet == null)
+        record = await (await YababosSqlite.getDatabase()).rawQuery('''
           select 
-            (SELECT SUM(amount) FROM transactions WHERE toWallet = ?)
+            IFNULL((SELECT SUM(amount) FROM transactions WHERE toWallet IS NULL),0)
             -
-            (SELECT SUM(amount) FROM transactions WHERE fromWallet = ?)
+            IFNULL((SELECT SUM(amount) FROM transactions WHERE fromWallet IS NULL),0)
+          as balance
+          ''');
+      else
+        record = await (await YababosSqlite.getDatabase()).rawQuery('''
+          select 
+            IFNULL((SELECT SUM(amount) FROM transactions WHERE toWallet = ?),0)
+            -
+            IFNULL((SELECT SUM(amount) FROM transactions WHERE fromWallet = ?),0)
           as balance
           ''', [wallet, wallet]);
-
       return record[0]['balance'];
     });
   }
@@ -127,10 +135,15 @@ class TransactionSqlite extends TransactionRepository {
   Future<List<Transaction>> walletTransactions(int wallet) {
     return Future(() async {
       List<Transaction> transactions = List<Transaction>();
-      List<Map<String, Object>> records =
-          await (await YababosSqlite.getDatabase()).rawQuery(
-              'SELECT * FROM transactions WHERE fromWallet = ? OR toWallet = ? ORDER BY date',
-              [wallet, wallet]);
+      List<Map<String, Object>> records;
+      if (wallet == null)
+        records = await (await YababosSqlite.getDatabase()).rawQuery(
+            'SELECT * FROM transactions WHERE fromWallet IS NULL OR toWallet IS NULL ORDER BY date');
+      else
+        records = await (await YababosSqlite.getDatabase()).rawQuery(
+            'SELECT * FROM transactions WHERE fromWallet = ? OR toWallet = ? ORDER BY date',
+            [wallet, wallet]);
+
       for (var record in records) {
         transactions.add(await _mapRecord(record));
       }
