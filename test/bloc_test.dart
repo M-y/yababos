@@ -210,37 +210,37 @@ void main() {
   });
 
   group('Transaction', () {
-    Transaction sampleTransaction = Transaction(
-      id: null,
-      from: 1,
-      to: null,
-      amount: 100,
-      when: null,
-      description: 'sample expense',
-    );
-    Transaction updatedTransaction = Transaction(
-      id: 1,
-      from: 1,
-      to: null,
-      amount: 150,
-      when: null,
-      description: 'updated expense',
-    );
-    Transaction walletTransaction = Transaction(
-      id: 2,
-      from: null,
-      to: 2,
-      amount: 100,
-      when: null,
-      description: null,
-    );
-
     List<TransactionRepository> repositories = List.from([
       TransactionInmemory(),
       TransactionSqlite(TagSqlite()),
     ]);
 
     for (TransactionRepository transactionRepository in repositories) {
+      Transaction sampleTransaction = Transaction(
+        id: 1,
+        from: 1,
+        to: null,
+        amount: 100,
+        when: DateTime.now(),
+        description: 'sample expense',
+      );
+      Transaction updatedTransaction = Transaction(
+        id: 1,
+        from: 1,
+        to: null,
+        amount: 150,
+        when: DateTime.now(),
+        description: 'updated expense',
+      );
+      Transaction walletTransaction = Transaction(
+        id: 2,
+        from: null,
+        to: 2,
+        amount: 100,
+        when: DateTime.now(),
+        description: null,
+      );
+
       blocTest(
         'TransactionAdd $transactionRepository',
         build: () => TransactionBloc(transactionRepository),
@@ -293,13 +293,17 @@ void main() {
           ..add(TransactionAdd(sampleTransaction))
           ..add(TransactionAdd(walletTransaction)),
         act: (bloc) {
+          walletTransaction.id = 3;
           bloc.add(TransactionGetWallet(walletTransaction.to));
         },
-        skip: 1,
+        skip: 2,
         expect: () => <TransactionState>[
           WalletTransactionsLoaded(
               List<Transaction>.from([walletTransaction]), 100)
         ],
+        tearDown: () => TransactionBloc(transactionRepository)
+          ..add(TransactionDelete(2))
+          ..add(TransactionDelete(3)),
       );
     }
   });
@@ -369,16 +373,6 @@ void main() {
   });
 
   group('Transaction & Tag', () {
-    Transaction transactionWithTags = Transaction(
-      id: null,
-      from: 1,
-      to: null,
-      amount: 100,
-      when: null,
-      description: 'transaction with tags',
-      tags: [Tag(name: 't1'), Tag(name: 't2')],
-    );
-
     var repositories = [
       [TagInmemory(), TransactionInmemory()],
       [TagSqlite(), TransactionSqlite(TagSqlite())]
@@ -387,6 +381,15 @@ void main() {
     for (var repository in repositories) {
       TagRepository tagRepository = repository[0];
       TransactionRepository transactionRepository = repository[1];
+      Transaction transactionWithTags = Transaction(
+        id: 4,
+        from: 1,
+        to: null,
+        amount: 100,
+        when: null,
+        description: 'transaction with tags',
+        tags: [Tag(name: 't1'), Tag(name: 't2')],
+      );
 
       blocTest(
         'Transaction tags $tagRepository',
