@@ -114,17 +114,17 @@ class TransactionSqlite extends TransactionRepository {
       if (wallet == null)
         record = await (await YababosSqlite.getDatabase()).rawQuery('''
           select 
-            IFNULL((SELECT SUM(amount) FROM transactions WHERE toWallet IS NULL),0)
+            IFNULL((SELECT SUM(amount) FROM transactions WHERE toWallet IS NULL),0.0)
             -
-            IFNULL((SELECT SUM(amount) FROM transactions WHERE fromWallet IS NULL),0)
+            IFNULL((SELECT SUM(amount) FROM transactions WHERE fromWallet IS NULL),0.0)
           as balance
           ''');
       else
         record = await (await YababosSqlite.getDatabase()).rawQuery('''
           select 
-            IFNULL((SELECT SUM(amount) FROM transactions WHERE toWallet = ?),0)
+            IFNULL((SELECT SUM(amount) FROM transactions WHERE toWallet = ?),0.0)
             -
-            IFNULL((SELECT SUM(amount) FROM transactions WHERE fromWallet = ?),0)
+            IFNULL((SELECT SUM(amount) FROM transactions WHERE fromWallet = ?),0.0)
           as balance
           ''', [wallet, wallet]);
       return record[0]['balance'];
