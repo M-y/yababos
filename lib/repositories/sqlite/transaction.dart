@@ -12,7 +12,7 @@ class TransactionSqlite extends TransactionRepository {
   @override
   Future add(Transaction transaction) {
     return Future(() async {
-      await (await YababosSqlite.getDatabase()).rawInsert('''
+      transaction.id = await (await YababosSqlite.getDatabase()).rawInsert('''
         INSERT INTO transactions
         (
           fromWallet,
@@ -39,7 +39,6 @@ class TransactionSqlite extends TransactionRepository {
         transaction.description,
       ]);
 
-      await _deleteTransactionTags(transaction.id);
       if (transaction.tags != null)
         await _addTransactionTags(transaction.id, transaction.tags);
     });
