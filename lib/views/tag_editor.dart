@@ -111,7 +111,7 @@ class TagEditorState extends State<TagEditor> {
                           shape: BoxShape.circle,
                           border:
                               Border.all(width: 1, color: Colors.grey[300])),
-                      child: itemColor == _pickedColor
+                      child: itemColor.value == _pickedColor.value
                           ? Center(
                               child: Icon(
                                 Icons.check,
