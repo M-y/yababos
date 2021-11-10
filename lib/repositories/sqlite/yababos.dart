@@ -1,3 +1,4 @@
+import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class YababosSqlite {
@@ -5,7 +6,8 @@ class YababosSqlite {
 
   static final int version = 1;
 
-  static final String onCreate = '''
+  static final List<String> onCreate = List.from({
+    '''
 CREATE TABLE "transactions" (
 	"id"	INTEGER,
 	"fromWallet"	INTEGER,
@@ -15,17 +17,23 @@ CREATE TABLE "transactions" (
 	"description"	TEXT,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
+''',
+    '''
 CREATE TABLE "tags" (
 	"name"	TEXT,
 	"color"	INTEGER NOT NULL,
 	PRIMARY KEY("name")
 );
+''',
+    '''
 CREATE TABLE "transaction_tags" (
-	"transactionId"	INTEGER,
-	"tag"	TEXT,
+	"transactionId"	INTEGER NOT NULL,
+	"tag"	TEXT NOT NULL,
 	FOREIGN KEY("transactionId") REFERENCES "transactions"("id"),
 	FOREIGN KEY("tag") REFERENCES "tags"("name")
 );
+''',
+    '''
 CREATE TABLE "wallets" (
 	"id"	INTEGER,
 	"name"	TEXT NOT NULL,
@@ -33,22 +41,31 @@ CREATE TABLE "wallets" (
 	"amount"	REAL NOT NULL DEFAULT 0,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
+''',
+    '''
 CREATE TABLE "settings" (
 	"name"	TEXT,
 	"value"	BLOB,
 	PRIMARY KEY("name")
 );
-  ''';
+  '''
+  });
 
   static final String onUpgrade = '''
 
   ''';
 
   static Future<Database> getDatabase() async {
+    if (path == null) path = join(await getDatabasesPath(), 'yababos.db');
+
     return openDatabase(
       path,
       version: version,
-      onCreate: (db, version) => db.execute(onCreate),
+      onCreate: (Database db, int version) async {
+        for (String createSql in onCreate) {
+          await db.execute(createSql);
+        }
+      },
       onUpgrade: (db, oldVersion, newVersion) => db.execute(onUpgrade),
       singleInstance: true,
     );
