@@ -1,5 +1,5 @@
 import 'package:yababos/models/transaction.dart';
-import 'package:yababos/repositories/transaction_repository.dart';
+import 'package:yababos/repositories/transaction.dart';
 
 class TransactionInmemory extends TransactionRepository {
   List<Transaction> _transactions = [];

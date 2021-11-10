@@ -6,7 +6,7 @@ import 'package:yababos/events/transaction.dart';
 import 'package:yababos/events/wallet.dart';
 import 'package:yababos/models/setting.dart';
 import 'package:yababos/models/wallet.dart';
-import 'package:yababos/repositories/wallet_repository.dart';
+import 'package:yababos/repositories/wallet.dart';
 import 'package:yababos/states/settings.dart';
 import 'package:yababos/states/wallet.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yababos/events/transaction.dart';
-import 'package:yababos/repositories/transaction_repository.dart';
+import 'package:yababos/repositories/transaction.dart';
 import 'package:yababos/states/transaction.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {

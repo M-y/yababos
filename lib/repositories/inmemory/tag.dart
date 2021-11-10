@@ -1,5 +1,5 @@
 import 'package:yababos/models/tag.dart';
-import 'package:yababos/repositories/tag_repository.dart';
+import 'package:yababos/repositories/tag.dart';
 
 class TagInmemory extends TagRepository {
   List<Tag> _tags = [];

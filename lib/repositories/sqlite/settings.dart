@@ -1,5 +1,5 @@
 import 'package:yababos/models/setting.dart';
-import 'package:yababos/repositories/settings_repository.dart';
+import 'package:yababos/repositories/settings.dart';
 import 'package:yababos/repositories/sqlite/yababos.dart';
 
 class SettingsSqlite extends SettingsRepository {

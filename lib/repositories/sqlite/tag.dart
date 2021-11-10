@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:yababos/models/tag.dart';
 import 'package:yababos/repositories/sqlite/yababos.dart';
-import 'package:yababos/repositories/tag_repository.dart';
+import 'package:yababos/repositories/tag.dart';
 
 class TagSqlite extends TagRepository {
   @override

@@ -2,7 +2,7 @@ import 'package:yababos/models/tag.dart';
 import 'package:yababos/models/transaction.dart';
 import 'package:yababos/repositories/sqlite/tag.dart';
 import 'package:yababos/repositories/sqlite/yababos.dart';
-import 'package:yababos/repositories/transaction_repository.dart';
+import 'package:yababos/repositories/transaction.dart';
 
 class TransactionSqlite extends TransactionRepository {
   TagSqlite _tagRepository;

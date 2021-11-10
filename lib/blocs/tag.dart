@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yababos/events/tag.dart';
 import 'package:yababos/models/tag.dart';
-import 'package:yababos/repositories/tag_repository.dart';
+import 'package:yababos/repositories/tag.dart';
 import 'package:yababos/states/tag.dart';
 
 class TagBloc extends Bloc<TagEvent, TagState> {

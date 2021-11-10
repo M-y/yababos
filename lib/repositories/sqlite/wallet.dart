@@ -1,6 +1,6 @@
 import 'package:yababos/models/wallet.dart';
 import 'package:yababos/repositories/sqlite/yababos.dart';
-import 'package:yababos/repositories/wallet_repository.dart';
+import 'package:yababos/repositories/wallet.dart';
 
 class WalletSqlite extends WalletRepository {
   @override

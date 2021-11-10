@@ -1,5 +1,5 @@
 import 'package:yababos/models/wallet.dart';
-import 'package:yababos/repositories/wallet_repository.dart';
+import 'package:yababos/repositories/wallet.dart';
 
 class WalletInmemory extends WalletRepository {
   List<Wallet> _wallets = [];

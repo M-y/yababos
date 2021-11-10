@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yababos/events/settings.dart';
 import 'package:yababos/models/setting.dart';
-import 'package:yababos/repositories/settings_repository.dart';
+import 'package:yababos/repositories/settings.dart';
 import 'package:yababos/states/settings.dart';
 
 class SettingsBloc extends Bloc<SettingEvent, SettingState> {
