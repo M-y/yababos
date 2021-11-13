@@ -12,5 +12,5 @@ class Tag extends Equatable {
   });
 
   @override
-  List<Object> get props => [name, color];
+  List<Object> get props => [name, color.value];
 }

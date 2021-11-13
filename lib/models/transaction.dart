@@ -22,5 +22,13 @@ class Transaction extends Equatable {
   });
 
   @override
-  List<Object> get props => [id, from, to, amount, when, tags, description];
+  List<Object> get props => [
+        id,
+        from,
+        to,
+        amount,
+        when,
+        (tags == null) ? null : List.from(tags.map((tag) => tag.props)),
+        description
+      ];
 }
