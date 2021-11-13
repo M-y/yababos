@@ -1,21 +1,22 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:yababos/repositories/csv.dart';
 import 'package:yababos/repositories/inmemory/settings.dart';
 import 'package:yababos/repositories/inmemory/tag.dart';
 import 'package:yababos/repositories/inmemory/transaction.dart';
 import 'package:yababos/repositories/inmemory/wallet.dart';
 import 'package:yababos/models/setting.dart';
-import 'package:yababos/repositories/settings_repository.dart';
+import 'package:yababos/repositories/settings.dart';
 import 'package:yababos/models/tag.dart';
 import 'package:yababos/repositories/sqlite/settings.dart';
 import 'package:yababos/repositories/sqlite/tag.dart';
 import 'package:yababos/repositories/sqlite/transaction.dart';
 import 'package:yababos/repositories/sqlite/wallet.dart';
 import 'package:yababos/repositories/sqlite/yababos.dart';
-import 'package:yababos/repositories/tag_repository.dart';
+import 'package:yababos/repositories/tag.dart';
 import 'package:yababos/models/transaction.dart';
-import 'package:yababos/repositories/transaction_repository.dart';
+import 'package:yababos/repositories/transaction.dart';
 import 'package:yababos/models/wallet.dart';
-import 'package:yababos/repositories/wallet_repository.dart';
+import 'package:yababos/repositories/wallet.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 
@@ -211,5 +212,22 @@ void main() {
         expect((await walletRepository.getAll()).length, 0);
       });
     }
+  });
+
+  group('csv', () {
+    test(
+        'listToCsv',
+        () => expect(
+            CsvRepository().listToCsv([
+              [',b', 3.1, 42],
+              ['n\n']
+            ]),
+            '",b",3.1,42\r\n"n\n"'));
+    test(
+        'csvToList',
+        () => expect(CsvRepository().csvToList('",b",3.1,42\r\n"n\n"'), [
+              [',b', 3.1, 42],
+              ['n\n']
+            ]));
   });
 }
