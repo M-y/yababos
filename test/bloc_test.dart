@@ -1,13 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bloc_test/bloc_test.dart';
+import 'package:yababos/blocs/backup.dart';
 import 'package:yababos/blocs/settings.dart';
 import 'package:yababos/blocs/tag.dart';
 import 'package:yababos/blocs/transaction.dart';
 import 'package:yababos/blocs/wallet.dart';
+import 'package:yababos/events/backup.dart';
 import 'package:yababos/events/settings.dart';
 import 'package:yababos/events/tag.dart';
 import 'package:yababos/events/transaction.dart';
 import 'package:yababos/events/wallet.dart';
+import 'package:yababos/repositories/csv.dart';
 import 'package:yababos/repositories/inmemory/settings.dart';
 import 'package:yababos/repositories/inmemory/tag.dart';
 import 'package:yababos/repositories/inmemory/transaction.dart';
@@ -25,6 +28,7 @@ import 'package:yababos/models/transaction.dart';
 import 'package:yababos/repositories/transaction.dart';
 import 'package:yababos/models/wallet.dart';
 import 'package:yababos/repositories/wallet.dart';
+import 'package:yababos/states/backup.dart';
 import 'package:yababos/states/settings.dart';
 import 'package:yababos/states/tag.dart';
 import 'package:yababos/states/transaction.dart';
@@ -405,6 +409,74 @@ void main() {
         expect: () => <TransactionState>[
           TransactionLoaded.many(List<Transaction>.from([transactionWithTags]))
         ],
+      );
+    }
+  });
+
+  group('Backup', () {
+    var repositories = [
+      [
+        SettingsInmemory(),
+        TagInmemory(),
+        TransactionInmemory(),
+        WalletInmemory()
+      ],
+      [
+        SettingsSqlite(),
+        TagSqlite(),
+        TransactionSqlite(TagSqlite()),
+        WalletSqlite()
+      ]
+    ];
+
+    for (var repository in repositories) {
+      SettingsRepository settingsRepository = repository[0];
+      TagRepository tagRepository = repository[1];
+      TransactionRepository transactionRepository = repository[2];
+      WalletRepository walletRepository = repository[3];
+
+      Transaction transactionWithTags = Transaction(
+        id: 4,
+        from: 1,
+        to: null,
+        amount: 100,
+        when: null,
+        description: 'transaction with tags',
+        tags: [Tag(name: 't1'), Tag(name: 't2')],
+      );
+      String csv =
+          '1,1,null,100.0,null,"[[t1, 4294967295], [t2, 4294967295]]",transaction with tags';
+
+      test('prepare $tagRepository', () async {
+        for (Tag tag in transactionWithTags.tags) {
+          if (await tagRepository.get(tag.name) == null)
+            await tagRepository.add(tag);
+        }
+        await transactionRepository.add(transactionWithTags);
+      });
+
+      blocTest(
+        'Create Backup $tagRepository',
+        build: () {
+          return BackupBloc(CsvRepository(), settingsRepository, tagRepository,
+              transactionRepository, walletRepository);
+        },
+        act: (bloc) {
+          bloc.add(BackupCreate());
+        },
+        expect: () => <BackupState>[BackupComplete(csv)],
+      );
+
+      blocTest(
+        'Load Backup $tagRepository',
+        build: () {
+          return BackupBloc(CsvRepository(), settingsRepository, tagRepository,
+              transactionRepository, walletRepository);
+        },
+        act: (bloc) {
+          bloc.add(BackupLoad(csv));
+        },
+        expect: () => <BackupState>[BackupLoaded(1)],
       );
     }
   });
