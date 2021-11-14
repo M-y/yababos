@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:yababos/blocs/backup.dart';
 import 'package:yababos/blocs/settings.dart';
 import 'package:yababos/blocs/wallet.dart';
 import 'package:yababos/events/settings.dart';
@@ -33,6 +34,14 @@ void main() {
             BlocProvider.of<TransactionBloc>(context))
           ..add(WalletGetAll()),
       ),
+      BlocProvider(
+        create: (context) => BackupBloc(
+            RepositorySelections.csvRepository,
+            RepositorySelections.settingsRepository,
+            RepositorySelections.tagRepository,
+            RepositorySelections.transactionRepository,
+            RepositorySelections.walletRepository),
+      )
     ],
     child: Yababos(),
   ));

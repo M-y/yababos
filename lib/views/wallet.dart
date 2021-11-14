@@ -88,6 +88,7 @@ class WalletWidgetState extends State<WalletWidget> {
                     title: Text(S.of(context).backup),
                     onTap: () {
                       Navigator.pop(context);
+                      Navigator.of(context).pushNamed('/backup');
                     },
                   ),
                 ],
