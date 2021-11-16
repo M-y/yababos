@@ -2,10 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path/path.dart';
 import 'package:yababos/blocs/backup.dart';
 import 'package:yababos/events/backup.dart';
 import 'package:yababos/states/backup.dart';
 import 'package:file_picker/file_picker.dart';
+
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class BackupWidget extends StatelessWidget {
   @override
@@ -15,16 +19,12 @@ class BackupWidget extends StatelessWidget {
       body: BlocBuilder<BackupBloc, BackupState>(
         builder: (bcontext, state) {
           if (state is BackupComplete) {
-            FilePicker.platform
-                .saveFile(
-              dialogTitle: 'Please select an output file:',
-              fileName: 'export.csv',
-            )
-                .then((fileName) {
-              if (fileName != null) {
-                File file = File(fileName);
-                file.writeAsString(state.csv);
-              }
+            getTemporaryDirectory().then((Directory tempDir) {
+              String filePath = join(tempDir.path, 'export.csv');
+              File file = File(filePath);
+              file
+                  .writeAsString(state.csv)
+                  .then((f) => Share.shareFiles([filePath]));
             });
           }
           if (state is BackupLoaded) {

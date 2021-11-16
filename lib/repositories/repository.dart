@@ -1,3 +1,4 @@
+import 'package:yababos/repositories/csv.dart';
 import 'package:yababos/repositories/settings.dart';
 import 'package:yababos/repositories/sqlite/settings.dart';
 import 'package:yababos/repositories/sqlite/tag.dart';
@@ -13,4 +14,6 @@ class RepositorySelections {
   static TagRepository tagRepository = TagSqlite();
   static TransactionRepository transactionRepository =
       TransactionSqlite(tagRepository);
+
+  static CsvRepository csvRepository = CsvRepository();
 }
