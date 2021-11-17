@@ -37,7 +37,6 @@ void main() {
       BlocProvider(
         create: (context) => BackupBloc(
             RepositorySelections.csvRepository,
-            RepositorySelections.settingsRepository,
             RepositorySelections.tagRepository,
             RepositorySelections.transactionRepository,
             RepositorySelections.walletRepository),
