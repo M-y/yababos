@@ -6,11 +6,12 @@ class WalletInmemory extends WalletRepository {
   int _lastId = 0;
 
   @override
-  Future add(Wallet wallet) {
+  Future<int> add(Wallet wallet) {
     return Future(() {
       _lastId = _lastId + 1;
       wallet.id = _lastId;
       _wallets.add(wallet);
+      return _lastId;
     });
   }
 

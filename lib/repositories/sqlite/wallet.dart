@@ -4,9 +4,9 @@ import 'package:yababos/repositories/wallet.dart';
 
 class WalletSqlite extends WalletRepository {
   @override
-  Future add(Wallet wallet) {
+  Future<int> add(Wallet wallet) {
     return Future(() async {
-      await (await YababosSqlite.getDatabase()).rawInsert('''
+      return await (await YababosSqlite.getDatabase()).rawInsert('''
         INSERT INTO wallets
         (
           name,
