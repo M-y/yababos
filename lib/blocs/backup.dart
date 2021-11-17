@@ -106,8 +106,8 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
 
     // add wallet if not found
     if (foundWallet == null) {
-      int lastInsertId =
-          await _walletRepository.add(Wallet(id: null, name: walletName));
+      int lastInsertId = await _walletRepository
+          .add(Wallet(id: null, name: walletName, curreny: 'TRY'));
       foundWallet = await _walletRepository.get(lastInsertId);
     }
 
