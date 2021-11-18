@@ -32,6 +32,19 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
   Future<BackupState> _mapBackupCreatetoState(BackupCreate event) async {
     List<Transaction> transactions = await _transactionRepository.getAll();
     List<List<dynamic>> rows = List<List<dynamic>>();
+
+    // wallets' initial amounts
+    for (Wallet wallet in await _walletRepository.getAll()) {
+      if (wallet.amount > 0)
+        transactions.add(Transaction(
+          id: null,
+          from: null,
+          to: wallet.id,
+          amount: wallet.amount,
+          when: DateTime.fromMillisecondsSinceEpoch(0),
+          description: 'Wallet initial balance',
+        ));
+    }
     for (Transaction transaction in transactions) {
       List<Object> row = transaction.props;
       row[1] = await _getWalletName(row.elementAt(1));
