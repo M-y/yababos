@@ -7,4 +7,6 @@ abstract class WalletRepository {
   Future<int> add(Wallet wallet);
   Future update(Wallet wallet);
   Future delete(int id);
+
+  Future clear();
 }

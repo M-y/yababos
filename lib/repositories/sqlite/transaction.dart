@@ -210,4 +210,12 @@ class TransactionSqlite extends TransactionRepository {
       }
     });
   }
+
+  @override
+  Future clear() {
+    return Future(() async {
+      await (await YababosSqlite.getDatabase())
+          .rawDelete('DELETE FROM transactions');
+    });
+  }
 }

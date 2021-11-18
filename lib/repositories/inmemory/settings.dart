@@ -23,4 +23,11 @@ class SettingsInmemory extends SettingsRepository {
           orElse: () => null);
     });
   }
+
+  @override
+  Future clear() {
+    return Future(() {
+      _settings.clear();
+    });
+  }
 }

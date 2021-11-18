@@ -10,4 +10,6 @@ abstract class TransactionRepository {
 
   Future<double> balance(int wallet);
   Future<List<Transaction>> walletTransactions(int wallet);
+
+  Future clear();
 }

@@ -9,4 +9,6 @@ abstract class TagRepository {
   Future delete(String name);
 
   Future<List<Tag>> find(Tag tag);
+
+  Future clear();
 }

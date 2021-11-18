@@ -68,4 +68,12 @@ class TransactionInmemory extends TransactionRepository {
       return transactions;
     });
   }
+
+  @override
+  Future clear() {
+    return Future(() {
+      _transactions.clear();
+      _lastId = 0;
+    });
+  }
 }

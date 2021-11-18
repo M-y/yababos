@@ -86,4 +86,12 @@ class WalletSqlite extends WalletRepository {
       curreny: record['curreny'],
     );
   }
+
+  @override
+  Future clear() {
+    return Future(() async {
+      await (await YababosSqlite.getDatabase())
+          .rawDelete('DELETE FROM wallets');
+    });
+  }
 }

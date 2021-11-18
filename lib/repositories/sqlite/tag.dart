@@ -95,4 +95,13 @@ class TagSqlite extends TagRepository {
       color: Color(record['color']),
     );
   }
+
+  @override
+  Future clear() {
+    return Future(() async {
+      await (await YababosSqlite.getDatabase())
+          .rawDelete('DELETE FROM transaction_tags');
+      await (await YababosSqlite.getDatabase()).rawDelete('DELETE FROM tags');
+    });
+  }
 }

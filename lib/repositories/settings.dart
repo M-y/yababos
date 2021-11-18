@@ -5,4 +5,6 @@ abstract class SettingsRepository {
 
   // updates setting if available
   Future add(Setting setting);
+
+  Future clear();
 }

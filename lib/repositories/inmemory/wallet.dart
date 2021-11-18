@@ -45,4 +45,12 @@ class WalletInmemory extends WalletRepository {
           wallet;
     });
   }
+
+  @override
+  Future clear() {
+    return Future(() {
+      _wallets.clear();
+      _lastId = 0;
+    });
+  }
 }

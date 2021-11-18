@@ -49,4 +49,11 @@ class TagInmemory extends TagRepository {
       return _tags.where((element) => element.name.contains(tag.name)).toList();
     });
   }
+
+  @override
+  Future clear() {
+    return Future(() {
+      _tags.clear();
+    });
+  }
 }
