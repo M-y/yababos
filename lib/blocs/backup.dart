@@ -72,6 +72,11 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
   }
 
   Future<Transaction> _mapRow(List<dynamic> row) async {
+    // fix nulls
+    for (var i = 0; i < row.length; i++) {
+      if (row[i] == 'null') row[i] = null;
+    }
+
     int from = await _getWalletId(row.elementAt(1));
     int to = await _getWalletId(row.elementAt(2));
     double amount = double.tryParse(row.elementAt(3).toString());
@@ -79,11 +84,16 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
     String description = row.elementAt(6);
 
     List<Tag> tags = List<Tag>();
-    String s = row.elementAt(5).toString().replaceAll(RegExp(r'\[|\]'), "");
-    List<String> s2 = s.split(',');
-    for (var i = 0; i < s2.length; i = i + 2) {
-      Tag tag = Tag(name: s2[i], color: Color(int.parse(s2[i + 1])));
-      tags.add(tag);
+    String tagString = (row.elementAt(5) as String);
+    if (tagString != null) {
+      tagString = tagString.replaceAll(RegExp(r'\[|\]'), "");
+      List<String> tagStringSplit = tagString.split(',');
+      for (var i = 0; i < tagStringSplit.length; i = i + 2) {
+        Tag tag = Tag(
+            name: tagStringSplit[i],
+            color: Color(int.parse(tagStringSplit[i + 1])));
+        tags.add(tag);
+      }
     }
 
     return Transaction(
