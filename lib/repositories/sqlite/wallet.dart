@@ -92,6 +92,8 @@ class WalletSqlite extends WalletRepository {
     return Future(() async {
       await (await YababosSqlite.getDatabase())
           .rawDelete('DELETE FROM wallets');
+      await (await YababosSqlite.getDatabase())
+          .rawDelete("DELETE FROM sqlite_sequence WHERE name='wallets'");
     });
   }
 }

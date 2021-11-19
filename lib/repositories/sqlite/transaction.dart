@@ -216,6 +216,8 @@ class TransactionSqlite extends TransactionRepository {
     return Future(() async {
       await (await YababosSqlite.getDatabase())
           .rawDelete('DELETE FROM transactions');
+      await (await YababosSqlite.getDatabase())
+          .rawDelete("DELETE FROM sqlite_sequence WHERE name='transactions'");
     });
   }
 }
