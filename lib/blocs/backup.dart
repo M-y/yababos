@@ -53,6 +53,7 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
     }
 
     String csv = _csvRepository.listToCsv(rows);
+    print(csv);
     return BackupComplete(csv);
   }
 
