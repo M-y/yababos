@@ -36,6 +36,8 @@ import 'package:yababos/states/wallet.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 
+import 'sample_database.dart';
+
 void main() {
   setUpAll(() {
     // Initialize FFI
@@ -415,50 +417,26 @@ void main() {
 
   group('Backup', () {
     var repositories = [
-      [
-        SettingsInmemory(),
-        TagInmemory(),
-        TransactionInmemory(),
-        WalletInmemory()
-      ],
-      [
-        SettingsSqlite(),
-        TagSqlite(),
-        TransactionSqlite(TagSqlite()),
-        WalletSqlite()
-      ]
+      [TagInmemory(), TransactionInmemory(), WalletInmemory()],
+      [TagSqlite(), TransactionSqlite(TagSqlite()), WalletSqlite()]
     ];
 
     for (var repository in repositories) {
-      SettingsRepository settingsRepository = repository[0];
-      TagRepository tagRepository = repository[1];
-      TransactionRepository transactionRepository = repository[2];
-      WalletRepository walletRepository = repository[3];
+      TagRepository tagRepository = repository[0];
+      TransactionRepository transactionRepository = repository[1];
+      WalletRepository walletRepository = repository[2];
 
-      Transaction transactionWithTags = Transaction(
-        id: 4,
-        from: 1,
-        to: null,
-        amount: 100,
-        when: null,
-        description: 'transaction with tags',
-        tags: [Tag(name: 't1'), Tag(name: 't2')],
-      );
-      String csv =
-          '1,1,null,100.0,null,"[[t1, 4294967295], [t2, 4294967295]]",transaction with tags';
-
-      test('prepare $tagRepository', () async {
-        for (Tag tag in transactionWithTags.tags) {
-          if (await tagRepository.get(tag.name) == null)
-            await tagRepository.add(tag);
-        }
-        await transactionRepository.add(transactionWithTags);
-      });
+      String csv = '1,Wallet 1,null,100.0,2021-11-20 14:08:46.000,"[[t1, 4294967295], [t2, 4294967295]]",transaction with tags\r\n' +
+          '2,Wallet 2,Wallet 1,10.0,2021-11-20 03:09:03.000,null,transaction from wallet2 to wallet1\r\n' +
+          'null,null,Wallet 1,1.0,1970-01-01 02:00:00.000,null,Wallet initial balance\r\n' +
+          'null,null,Wallet 2,10.0,1970-01-01 02:00:00.000,null,Wallet initial balance';
 
       blocTest(
         'Create Backup $tagRepository',
+        setUp: () async => await sampleDatabase(
+            walletRepository, tagRepository, transactionRepository),
         build: () {
-          return BackupBloc(CsvRepository(), settingsRepository, tagRepository,
+          return BackupBloc(CsvRepository(), tagRepository,
               transactionRepository, walletRepository);
         },
         act: (bloc) {
@@ -470,13 +448,13 @@ void main() {
       blocTest(
         'Load Backup $tagRepository',
         build: () {
-          return BackupBloc(CsvRepository(), settingsRepository, tagRepository,
+          return BackupBloc(CsvRepository(), tagRepository,
               transactionRepository, walletRepository);
         },
         act: (bloc) {
           bloc.add(BackupLoad(csv));
         },
-        expect: () => <BackupState>[BackupLoaded(1)],
+        expect: () => <BackupState>[BackupLoaded(4)],
       );
     }
   });
