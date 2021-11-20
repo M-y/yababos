@@ -108,6 +108,7 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
   }
 
   Future<String> _getWalletName(int walletId) async {
+    if (walletId == null) return null;
     Wallet wallet = await _walletRepository.get(walletId);
     if (wallet == null) return null;
     return wallet.name;
