@@ -59,13 +59,15 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
   Future<BackupState> _mapBackupLoadtoState(BackupLoad event) async {
     List<List<dynamic>> rows = _csvRepository.csvToList(event.csv);
     for (var row in rows) {
-      Transaction transaction = await _mapRow(row);
+      if (_checkRow(row)) {
+        Transaction transaction = await _mapRow(row);
 
-      for (Tag tag in transaction.tags) {
-        if (await _tagRepository.get(tag.name) == null)
-          await _tagRepository.add(tag);
+        for (Tag tag in transaction.tags) {
+          if (await _tagRepository.get(tag.name) == null)
+            await _tagRepository.add(tag);
+        }
+        await _transactionRepository.add(transaction);
       }
-      await _transactionRepository.add(transaction);
     }
 
     return BackupLoaded(rows.length);
@@ -136,5 +138,10 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
     }
 
     return foundWallet;
+  }
+
+  bool _checkRow(List row) {
+    if (row.length == 7) return true;
+    return false;
   }
 }
