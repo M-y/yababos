@@ -28,9 +28,11 @@ class BackupWidget extends StatelessWidget {
             });
           }
           if (state is BackupLoaded) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(state.count.toString() + ' transactions loaded.'),
-            ));
+            WidgetsBinding.instance.addPostFrameCallback((_) =>
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content:
+                      Text(state.count.toString() + ' transactions loaded.'),
+                )));
           }
           return Center(
             child: Column(
