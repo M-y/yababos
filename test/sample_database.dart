@@ -26,7 +26,7 @@ void sampleDatabase(
       from: 1,
       to: null,
       amount: 100,
-      when: DateTime.fromMillisecondsSinceEpoch(1637406526000),
+      when: DateTime.fromMillisecondsSinceEpoch(1637406526000, isUtc: true),
       description: 'transaction with tags',
       tags: [Tag(name: 't1'), Tag(name: 't2')],
     ),
@@ -35,7 +35,7 @@ void sampleDatabase(
       from: 2,
       to: 1,
       amount: 10,
-      when: DateTime.fromMillisecondsSinceEpoch(1637366943000),
+      when: DateTime.fromMillisecondsSinceEpoch(1637366943000, isUtc: true),
       description: 'transaction from wallet2 to wallet1',
     )
   ]);

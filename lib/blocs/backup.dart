@@ -30,7 +30,8 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
   }
 
   Future<BackupState> _mapBackupCreatetoState(BackupCreate event) async {
-    List<Transaction> transactions = await _transactionRepository.getAll();
+    List<Transaction> transactions =
+        await _transactionRepository.getAll(isUtc: true);
     List<List<dynamic>> rows = List<List<dynamic>>();
 
     // wallets' initial amounts
@@ -41,7 +42,7 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
           from: null,
           to: wallet.id,
           amount: wallet.amount,
-          when: DateTime.fromMillisecondsSinceEpoch(0),
+          when: DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
           description: 'Wallet initial balance',
         ));
     }
@@ -53,7 +54,6 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
     }
 
     String csv = _csvRepository.listToCsv(rows);
-    print(csv);
     return BackupComplete(csv);
   }
 

@@ -45,14 +45,14 @@ class TransactionSqlite extends TransactionRepository {
   }
 
   @override
-  Future<List<Transaction>> getAll() {
+  Future<List<Transaction>> getAll({bool isUtc = false}) {
     return Future(() async {
       List<Transaction> transactions = List<Transaction>();
       List<Map<String, Object>> records =
           await (await YababosSqlite.getDatabase())
               .rawQuery('SELECT * FROM transactions');
       for (var record in records) {
-        transactions.add(await _mapRecord(record));
+        transactions.add(await _mapRecord(record, isUtc: isUtc));
       }
       return transactions;
     });
@@ -150,14 +150,18 @@ class TransactionSqlite extends TransactionRepository {
     });
   }
 
-  Future<Transaction> _mapRecord(Map<String, Object> record) async {
+  Future<Transaction> _mapRecord(Map<String, Object> record,
+      {bool isUtc = false}) async {
     return Transaction(
       id: record['id'],
       from: record['fromWallet'],
       to: record['toWallet'],
       amount: record['amount'],
       when: record['date'] != null
-          ? DateTime.fromMicrosecondsSinceEpoch(record['date'])
+          ? (isUtc)
+              ? DateTime.fromMicrosecondsSinceEpoch(record['date'], isUtc: true)
+              : DateTime.fromMicrosecondsSinceEpoch(record['date'], isUtc: true)
+                  .toLocal()
           : null,
       description: record['description'],
       tags: await _transactionTags(record['id']),

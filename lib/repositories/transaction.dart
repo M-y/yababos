@@ -1,7 +1,7 @@
 import 'package:yababos/models/transaction.dart';
 
 abstract class TransactionRepository {
-  Future<List<Transaction>> getAll();
+  Future<List<Transaction>> getAll({bool isUtc = false});
   Future<Transaction> get(int id);
 
   Future add(Transaction transaction);
