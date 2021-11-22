@@ -14,12 +14,11 @@ import 'package:yababos/views/wallet_list.dart';
 typedef OnSave = Function(Transaction transaction);
 typedef OnDelete = Function(Transaction transaction);
 
-class TransactionEditor extends StatelessWidget {
+class TransactionEditor extends StatefulWidget {
   final List<Wallet> wallets;
   final Transaction transaction;
   final OnSave onSave;
   final OnDelete onDelete;
-  static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   const TransactionEditor({
     @required this.wallets,
@@ -28,6 +27,14 @@ class TransactionEditor extends StatelessWidget {
     this.onDelete,
   });
 
+  @override
+  State<StatefulWidget> createState() => TransactionEditorState();
+}
+
+class TransactionEditorState extends State<TransactionEditor> {
+  Transaction transaction;
+  static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   bool _isEdit() {
     if (transaction.id != null) return true;
     return false;
@@ -35,6 +42,7 @@ class TransactionEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    transaction = widget.transaction;
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEdit()
@@ -48,7 +56,7 @@ class TransactionEditor extends StatelessWidget {
                     style: TextStyle(color: Colors.red),
                   ),
                   onPressed: () {
-                    onDelete(transaction);
+                    widget.onDelete(transaction);
                     Navigator.pop(context);
                   },
                 )
@@ -62,16 +70,38 @@ class TransactionEditor extends StatelessWidget {
             // From
             WalletList(
               outside: true,
-              wallets: wallets,
+              wallets: widget.wallets,
               onTap: (id) => transaction.from = id,
               selected: transaction.from,
             ),
             // To
             WalletList(
               outside: true,
-              wallets: wallets,
+              wallets: widget.wallets,
               onTap: (id) => transaction.to = id,
               selected: transaction.to,
+            ),
+            // When
+            TextFormField(
+              readOnly: true,
+              key: Key(transaction.when.hashCode.toString()),
+              initialValue: _isEdit()
+                  ? transaction.when.toString()
+                  : DateTime.now().toString(),
+              onTap: () async {
+                final DateTime picked = await showDatePicker(
+                  context: context,
+                  initialDate: _isEdit() ? transaction.when : DateTime.now(),
+                  firstDate: DateTime(1900, 1, 1),
+                  lastDate: DateTime.now().add(Duration(days: 365 * 100)),
+                );
+                if (picked != null && picked != transaction.when)
+                  setState(() {
+                    transaction.when = picked;
+                  });
+              },
+              onSaved: (newValue) =>
+                  transaction.when = DateTime.parse(newValue),
             ),
             // Amount
             TextFormField(
@@ -141,7 +171,7 @@ class TransactionEditor extends StatelessWidget {
         child: Icon(Icons.check),
         onPressed: () {
           _formKey.currentState.save();
-          onSave(transaction);
+          widget.onSave(transaction);
           Navigator.pop(context);
         },
       ),
