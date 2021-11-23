@@ -166,8 +166,8 @@ void main() {
             await transactionRepository.walletTransactions(1);
 
         expect(walletTransactions.length, 2);
-        expect(walletTransactions[0], yesterday);
-        expect(walletTransactions[1], today);
+        expect(walletTransactions[0], today);
+        expect(walletTransactions[1], yesterday);
       });
 
       test('balance $transactionRepository', () async {

@@ -137,10 +137,10 @@ class TransactionSqlite extends TransactionRepository {
       List<Map<String, Object>> records;
       if (wallet == null)
         records = await (await YababosSqlite.getDatabase()).rawQuery(
-            'SELECT * FROM transactions WHERE fromWallet IS NULL OR toWallet IS NULL ORDER BY date');
+            'SELECT * FROM transactions WHERE fromWallet IS NULL OR toWallet IS NULL ORDER BY date DESC');
       else
         records = await (await YababosSqlite.getDatabase()).rawQuery(
-            'SELECT * FROM transactions WHERE fromWallet = ? OR toWallet = ? ORDER BY date',
+            'SELECT * FROM transactions WHERE fromWallet = ? OR toWallet = ? ORDER BY date DESC',
             [wallet, wallet]);
 
       for (var record in records) {

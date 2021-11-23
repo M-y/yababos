@@ -64,7 +64,7 @@ class TransactionInmemory extends TransactionRepository {
     return Future(() {
       List<Transaction> transactions = _transactions.toList();
       transactions.retainWhere((t) => t.from == wallet || t.to == wallet);
-      transactions.sort((a, b) => a.when.compareTo(b.when));
+      transactions.sort((a, b) => b.when.compareTo(a.when));
       return transactions;
     });
   }
