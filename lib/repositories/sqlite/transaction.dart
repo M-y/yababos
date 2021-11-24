@@ -131,16 +131,24 @@ class TransactionSqlite extends TransactionRepository {
   }
 
   @override
-  Future<List<Transaction>> walletTransactions(int wallet) {
+  Future<List<Transaction>> walletTransactions(
+      int wallet, int year, int month) {
     return Future(() async {
       List<Transaction> transactions = List<Transaction>();
       List<Map<String, Object>> records;
+
+      DateTime start = DateTime(year, month);
+      DateTime end = DateTime(year, month + 1);
+      if (month == 12) end = DateTime(year + 1, 1);
+      String dateWhere =
+          'date >= ${start.microsecondsSinceEpoch} AND date < ${end.microsecondsSinceEpoch}';
+
       if (wallet == null)
         records = await (await YababosSqlite.getDatabase()).rawQuery(
-            'SELECT * FROM transactions WHERE fromWallet IS NULL OR toWallet IS NULL ORDER BY date DESC');
+            'SELECT * FROM transactions WHERE $dateWhere AND (fromWallet IS NULL OR toWallet IS NULL) ORDER BY date DESC');
       else
         records = await (await YababosSqlite.getDatabase()).rawQuery(
-            'SELECT * FROM transactions WHERE fromWallet = ? OR toWallet = ? ORDER BY date DESC',
+            'SELECT * FROM transactions WHERE $dateWhere AND (fromWallet = ? OR toWallet = ?) ORDER BY date DESC',
             [wallet, wallet]);
 
       for (var record in records) {

@@ -48,7 +48,8 @@ class TransactionInmemory extends TransactionRepository {
   @override
   Future<double> balance(int wallet) {
     return Future(() async {
-      List<Transaction> transactions = await walletTransactions(wallet);
+      List<Transaction> transactions = _transactions.toList();
+      transactions.retainWhere((t) => t.from == wallet || t.to == wallet);
       double balance = 0;
       for (Transaction transaction in transactions) {
         if (transaction.from == wallet) balance -= transaction.amount;
@@ -60,10 +61,18 @@ class TransactionInmemory extends TransactionRepository {
   }
 
   @override
-  Future<List<Transaction>> walletTransactions(int wallet) {
+  Future<List<Transaction>> walletTransactions(
+      int wallet, int year, int month) {
     return Future(() {
+      DateTime start = DateTime(year, month);
+      DateTime end = DateTime(year, month + 1);
+      if (month == 12) end = DateTime(year + 1, 1);
+
       List<Transaction> transactions = _transactions.toList();
-      transactions.retainWhere((t) => t.from == wallet || t.to == wallet);
+      transactions.retainWhere((t) =>
+          (t.from == wallet || t.to == wallet) &&
+          t.when.compareTo(start) >= 0 &&
+          t.when.compareTo(end) < 0);
       transactions.sort((a, b) => b.when.compareTo(a.when));
       return transactions;
     });

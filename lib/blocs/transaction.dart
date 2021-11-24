@@ -57,7 +57,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   Future<WalletTransactionsLoaded> _selectedWalletTransactions() async {
     return WalletTransactionsLoaded(
-        await _transactionRepository.walletTransactions(_selectedWallet),
+        await _transactionRepository.walletTransactions(
+            _selectedWallet, DateTime.now().year, DateTime.now().month),
         await _transactionRepository.balance(_selectedWallet));
   }
 }

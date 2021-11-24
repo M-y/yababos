@@ -9,7 +9,7 @@ abstract class TransactionRepository {
   Future delete(int id);
 
   Future<double> balance(int wallet);
-  Future<List<Transaction>> walletTransactions(int wallet);
+  Future<List<Transaction>> walletTransactions(int wallet, int year, int month);
 
   Future clear();
 }

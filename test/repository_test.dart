@@ -162,8 +162,8 @@ void main() {
         await transactionRepository.add(yesterday);
         await transactionRepository.add(today);
         await transactionRepository.add(otherWalletTransaction);
-        List<Transaction> walletTransactions =
-            await transactionRepository.walletTransactions(1);
+        List<Transaction> walletTransactions = await transactionRepository
+            .walletTransactions(1, DateTime.now().year, DateTime.now().month);
 
         expect(walletTransactions.length, 2);
         expect(walletTransactions[0], today);
@@ -179,6 +179,55 @@ void main() {
         await transactionRepository.add(expense);
 
         expect(await transactionRepository.balance(1), 100.5);
+      });
+
+      test('wallet\'s transactions in year, month $transactionRepository',
+          () async {
+        Transaction november = Transaction(
+          id: 1,
+          from: null,
+          to: 1,
+          amount: 0,
+          when: DateTime(2020, 11, 1),
+        );
+        Transaction november2 = Transaction(
+          id: 2,
+          from: null,
+          to: 1,
+          amount: 0,
+          when: DateTime(2020, 11, 30, 23, 59, 59, 999, 999),
+        );
+        Transaction december = Transaction(
+          id: 3,
+          from: 1,
+          to: null,
+          amount: 0,
+          when: DateTime(2020, 12, 1),
+        );
+        Transaction nextYear = Transaction(
+          id: 4,
+          from: null,
+          to: 1,
+          amount: 0,
+          when: DateTime(2021, 1, 1),
+        );
+
+        await transactionRepository.clear();
+        await transactionRepository.add(november);
+        await transactionRepository.add(november2);
+        await transactionRepository.add(december);
+        await transactionRepository.add(nextYear);
+
+        List<Transaction> novemberTransactions =
+            await transactionRepository.walletTransactions(1, 2020, 11);
+        List<Transaction> decemberTransactions =
+            await transactionRepository.walletTransactions(1, 2020, 12);
+        List<Transaction> nextYearTransactions =
+            await transactionRepository.walletTransactions(1, 2021, 1);
+
+        expect(novemberTransactions, List.from([november2, november]));
+        expect(decemberTransactions, List.from([december]));
+        expect(nextYearTransactions, List.from([nextYear]));
       });
     }
   });
