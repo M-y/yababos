@@ -112,7 +112,7 @@ packages:
       name: csv
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.0.0"
+    version: "5.0.1"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -120,6 +120,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
+  date_time_picker:
+    dependency: "direct main"
+    description:
+      name: date_time_picker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
   diff_match_patch:
     dependency: transitive
     description:
@@ -161,7 +168,7 @@ packages:
       name: file_picker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.2.3"
+    version: "4.2.4"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -192,7 +199,7 @@ packages:
       name: flutter_plugin_android_lifecycle
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.4"
+    version: "2.0.5"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -641,7 +648,7 @@ packages:
       name: vm_service
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "7.4.0"
+    version: "7.5.0"
   watcher:
     dependency: transitive
     description:

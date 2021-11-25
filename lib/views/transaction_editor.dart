@@ -1,3 +1,4 @@
+import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chips_input/flutter_chips_input.dart';
@@ -82,26 +83,14 @@ class TransactionEditorState extends State<TransactionEditor> {
               selected: transaction.to,
             ),
             // When
-            TextFormField(
-              readOnly: true,
-              key: Key(transaction.when.hashCode.toString()),
-              initialValue: _isEdit()
-                  ? transaction.when.toString()
-                  : DateTime.now().toString(),
-              onTap: () async {
-                final DateTime picked = await showDatePicker(
-                  context: context,
-                  initialDate: _isEdit() ? transaction.when : DateTime.now(),
-                  firstDate: DateTime(1900, 1, 1),
-                  lastDate: DateTime.now().add(Duration(days: 365 * 100)),
-                );
-                if (picked != null && picked != transaction.when)
-                  setState(() {
-                    transaction.when = picked;
-                  });
-              },
+            DateTimePicker(
+              initialDate: transaction.when,
               onSaved: (newValue) =>
                   transaction.when = DateTime.parse(newValue),
+              initialValue: transaction.when.toIso8601String(),
+              icon: Icon(Icons.event),
+              firstDate: DateTime(1900, 1, 1),
+              lastDate: DateTime.now().add(Duration(days: 365 * 100)),
             ),
             // Amount
             TextFormField(
