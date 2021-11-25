@@ -392,15 +392,17 @@ void main() {
         from: 1,
         to: null,
         amount: 100,
-        when: null,
+        when: DateTime.now(),
         description: 'transaction with tags',
         tags: [Tag(name: 't1'), Tag(name: 't2')],
       );
 
       blocTest(
         'Transaction tags $tagRepository',
-        build: () {
+        setUp: () {
           TagBloc(tagRepository)..add(TagsAdd(transactionWithTags.tags));
+        },
+        build: () {
           return TransactionBloc(transactionRepository)
             ..add(TransactionAdd(transactionWithTags));
         },
