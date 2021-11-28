@@ -44,6 +44,7 @@ class WalletWidgetState extends State<WalletWidget> {
       builder: (context, state) {
         if (state is WalletTransactionsLoaded) {
           List<Transaction> transactions = state.transactions;
+          int lastDate;
 
           return Scaffold(
             appBar: AppBar(
@@ -128,10 +129,20 @@ class WalletWidgetState extends State<WalletWidget> {
                   child: ListView.builder(
                     itemCount: transactions.length,
                     itemBuilder: (context, index) {
+                      Transaction transaction = transactions[index];
+                      int date = transaction.when.year +
+                          transaction.when.month +
+                          transaction.when.day;
+                      bool showDate = false;
+                      if (lastDate != date) {
+                        showDate = true;
+                        lastDate = date;
+                      }
                       return TransactionWidget(
-                        transaction: transactions[index],
+                        transaction: transaction,
                         wallets: widget.wallets,
                         wallet: widget.selectedWallet,
+                        showDate: showDate,
                       );
                     },
                   ),
