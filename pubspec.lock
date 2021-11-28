@@ -239,7 +239,7 @@ packages:
     source: hosted
     version: "4.0.0"
   intl:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: intl
       url: "https://pub.dartlang.org"
@@ -294,6 +294,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.0"
+  month_picker_dialog:
+    dependency: "direct main"
+    description:
+      name: month_picker_dialog
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.0"
   nested:
     dependency: transitive
     description:
@@ -406,6 +413,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
+  rxdart:
+    dependency: transitive
+    description:
+      name: rxdart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.26.0"
   share_plus:
     dependency: "direct main"
     description:

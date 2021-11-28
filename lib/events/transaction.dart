@@ -26,8 +26,10 @@ class TransactionGetAll extends TransactionEvent {}
 
 class TransactionGetWallet extends TransactionEvent {
   final int wallet;
+  final int year;
+  final int month;
 
-  const TransactionGetWallet(this.wallet);
+  const TransactionGetWallet(this.wallet, this.year, this.month);
 }
 
 class TransactionDelete extends TransactionEvent {

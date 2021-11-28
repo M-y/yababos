@@ -31,7 +31,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     _selectedWallet = await _walletRepository.get(value);
     if (_selectedWallet != null) {
       this.add(WalletGetAll());
-      _transactionBloc.add(TransactionGetWallet(_selectedWallet.id));
+      _transactionBloc.add(TransactionGetWallet(
+          _selectedWallet.id, DateTime.now().year, DateTime.now().month));
     }
   }
 

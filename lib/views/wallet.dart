@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:yababos/blocs/settings.dart';
 import 'package:yababos/blocs/tag.dart';
 import 'package:yababos/events/settings.dart';
@@ -19,14 +21,23 @@ import 'package:yababos/views/wallet_list.dart';
 class WalletWidget extends StatefulWidget {
   final Wallet selectedWallet;
   final List<Wallet> wallets;
+  final DateTime month;
 
-  const WalletWidget({this.selectedWallet, this.wallets});
+  const WalletWidget({this.selectedWallet, this.wallets, this.month});
 
   @override
   State<StatefulWidget> createState() => WalletWidgetState();
 }
 
 class WalletWidgetState extends State<WalletWidget> {
+  DateTime _month;
+
+  @override
+  void initState() {
+    super.initState();
+    _month = widget.month;
+  }
+
   @override
   Widget build(BuildContext walletWidgetContext) {
     return BlocBuilder<TransactionBloc, TransactionState>(
@@ -94,15 +105,38 @@ class WalletWidgetState extends State<WalletWidget> {
                 ],
               ),
             ),
-            body: ListView.builder(
-              itemCount: transactions.length,
-              itemBuilder: (context, index) {
-                return TransactionWidget(
-                  transaction: transactions[index],
-                  wallets: widget.wallets,
-                  wallet: widget.selectedWallet,
-                );
-              },
+            body: Column(
+              children: [
+                TextButton(
+                  onPressed: () {
+                    showMonthPicker(context: context, initialDate: _month)
+                        .then((date) {
+                      setState(() {
+                        _month = date;
+                      });
+                      BlocProvider.of<TransactionBloc>(context).add(
+                          TransactionGetWallet(
+                              widget.selectedWallet.id, date.year, date.month));
+                    });
+                  },
+                  child: Text(
+                    '${DateFormat.MMMM().format(_month)}, ${_month.year}',
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: transactions.length,
+                    itemBuilder: (context, index) {
+                      return TransactionWidget(
+                        transaction: transactions[index],
+                        wallets: widget.wallets,
+                        wallet: widget.selectedWallet,
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
             floatingActionButton: FloatingActionButton(
               child: Icon(Icons.add),

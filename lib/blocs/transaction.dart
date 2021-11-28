@@ -6,6 +6,8 @@ import 'package:yababos/states/transaction.dart';
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final TransactionRepository _transactionRepository;
   int _selectedWallet;
+  int _year;
+  int _month;
 
   TransactionBloc(this._transactionRepository) : super(TransactionLoading());
 
@@ -51,6 +53,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   _mapGetWallettoState(TransactionGetWallet event) async {
     _selectedWallet = event.wallet;
+    _year = event.year;
+    _month = event.month;
 
     return await _selectedWalletTransactions();
   }
@@ -58,7 +62,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   Future<WalletTransactionsLoaded> _selectedWalletTransactions() async {
     return WalletTransactionsLoaded(
         await _transactionRepository.walletTransactions(
-            _selectedWallet, DateTime.now().year, DateTime.now().month),
+            _selectedWallet, _year, _month),
         await _transactionRepository.balance(_selectedWallet));
   }
 }

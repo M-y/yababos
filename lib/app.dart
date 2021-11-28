@@ -35,6 +35,7 @@ class Yababos extends StatelessWidget {
           return WalletWidget(
             selectedWallet: state.selectedWallet,
             wallets: state.wallets,
+            month: DateTime.now(),
           );
         }
         return const Center(child: CircularProgressIndicator());
