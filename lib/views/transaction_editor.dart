@@ -69,18 +69,26 @@ class TransactionEditorState extends State<TransactionEditor> {
         child: ListView(
           children: [
             // From
-            WalletList(
-              outside: true,
-              wallets: widget.wallets,
-              onTap: (id) => transaction.from = id,
-              selected: transaction.from,
-            ),
-            // To
-            WalletList(
-              outside: true,
-              wallets: widget.wallets,
-              onTap: (id) => transaction.to = id,
-              selected: transaction.to,
+            Row(
+              children: [
+                Expanded(
+                  child: WalletList(
+                    outside: true,
+                    wallets: widget.wallets,
+                    onTap: (id) => transaction.from = id,
+                    selected: transaction.from,
+                  ),
+                ),
+                // To
+                Expanded(
+                  child: WalletList(
+                    outside: true,
+                    wallets: widget.wallets,
+                    onTap: (id) => transaction.to = id,
+                    selected: transaction.to,
+                  ),
+                ),
+              ],
             ),
             // When
             DateTimePicker(
