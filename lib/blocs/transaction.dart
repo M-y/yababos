@@ -6,8 +6,8 @@ import 'package:yababos/states/transaction.dart';
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final TransactionRepository _transactionRepository;
   int _selectedWallet;
-  int _year;
-  int _month;
+  int _year = DateTime.now().year;
+  int _month = DateTime.now().month;
 
   TransactionBloc(this._transactionRepository) : super(TransactionLoading());
 
