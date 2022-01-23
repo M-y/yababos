@@ -300,7 +300,8 @@ void main() {
           ..add(TransactionAdd(walletTransaction)),
         act: (bloc) {
           walletTransaction.id = 3;
-          bloc.add(TransactionGetWallet(walletTransaction.to));
+          bloc.add(TransactionGetWallet(
+              walletTransaction.to, DateTime.now().year, DateTime.now().month));
         },
         skip: 2,
         expect: () => <TransactionState>[
