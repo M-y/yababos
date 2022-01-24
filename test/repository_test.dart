@@ -304,7 +304,7 @@ void main() {
                     from: null,
                     to: null,
                     amount: null,
-                    when: DateTime(2022, 1, 2),
+                    when: DateTime(2022, 1, 2, 0, 0, 0, 0, 1),
                   )),
               List.from([income2, income1]));
         });
