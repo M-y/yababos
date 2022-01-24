@@ -85,4 +85,10 @@ class TransactionInmemory extends TransactionRepository {
       _lastId = 0;
     });
   }
+
+  @override
+  Future<List<Transaction>> search(Transaction transaction, [Transaction transactionEnd]) {
+    // TODO: implement search
+    throw UnimplementedError();
+  }
 }

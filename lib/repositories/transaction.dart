@@ -10,6 +10,8 @@ abstract class TransactionRepository {
 
   Future<double> balance(int wallet);
   Future<List<Transaction>> walletTransactions(int wallet, int year, int month);
+  Future<List<Transaction>> search(Transaction transaction,
+      [Transaction transactionEnd]);
 
   Future clear();
 }

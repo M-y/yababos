@@ -229,6 +229,110 @@ void main() {
         expect(decemberTransactions, List.from([december]));
         expect(nextYearTransactions, List.from([nextYear]));
       });
+
+      group('search $transactionRepository', () {
+        Transaction income1 = Transaction(
+          id: null,
+          from: null,
+          to: 1,
+          amount: 10,
+          when: DateTime(2022, 1, 1),
+        );
+        Transaction income2 = Transaction(
+          id: null,
+          from: null,
+          to: 1,
+          amount: 20,
+          when: DateTime(2022, 1, 2),
+        );
+        Transaction withTag = Transaction(
+          id: null,
+          from: 1,
+          to: null,
+          amount: 1,
+          when: DateTime(2022, 1, 10),
+          tags: [Tag(name: 'tag1')],
+        );
+        Transaction withDescription = Transaction(
+          id: null,
+          from: 1,
+          to: null,
+          amount: 1,
+          when: DateTime(2022, 1, 10),
+          description: 'description',
+        );
+
+        test('date', () async {
+          await transactionRepository.clear();
+          await transactionRepository.add(income1);
+
+          expect(
+              await transactionRepository.search(Transaction(
+                id: null,
+                from: null,
+                to: null,
+                amount: null,
+                when: DateTime(2022, 1, 1),
+              )),
+              income1);
+        });
+
+        test('date between', () async {
+          await transactionRepository.clear();
+          await transactionRepository.add(income1);
+          await transactionRepository.add(income2);
+
+          expect(
+              await transactionRepository.search(
+                  Transaction(
+                    id: null,
+                    from: null,
+                    to: null,
+                    amount: null,
+                    when: DateTime(2022, 1, 1),
+                  ),
+                  Transaction(
+                    id: null,
+                    from: null,
+                    to: null,
+                    amount: null,
+                    when: DateTime(2022, 1, 2),
+                  )),
+              List.from([income1, income2]));
+        });
+
+        test('tag', () async {
+          await transactionRepository.clear();
+          await transactionRepository.add(withTag);
+
+          expect(
+              await transactionRepository.search(Transaction(
+                id: null,
+                from: null,
+                to: null,
+                amount: null,
+                when: null,
+                tags: [Tag(name: 'tag1')],
+              )),
+              withTag);
+        });
+
+        test('description', () async {
+          await transactionRepository.clear();
+          await transactionRepository.add(withDescription);
+
+          expect(
+              await transactionRepository.search(Transaction(
+                id: null,
+                from: null,
+                to: null,
+                amount: null,
+                when: null,
+                description: 'description',
+              )),
+              withDescription);
+        });
+      });
     }
   });
 

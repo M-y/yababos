@@ -232,4 +232,10 @@ class TransactionSqlite extends TransactionRepository {
           .rawDelete("DELETE FROM sqlite_sequence WHERE name='transactions'");
     });
   }
+
+  @override
+  Future<List<Transaction>> search(Transaction transaction, [Transaction transactionEnd]) {
+    // TODO: implement search
+    throw UnimplementedError();
+  }
 }
