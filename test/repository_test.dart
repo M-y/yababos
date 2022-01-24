@@ -253,6 +253,14 @@ void main() {
           when: DateTime(2022, 1, 10),
           tags: [Tag(name: 'tag1')],
         );
+        Transaction withTwoTags = Transaction(
+          id: null,
+          from: 1,
+          to: null,
+          amount: 1,
+          when: DateTime(2022, 1, 10),
+          tags: [Tag(name: 'tag1'), Tag(name: 'tag2')],
+        );
         Transaction withDescription = Transaction(
           id: null,
           from: 1,
@@ -304,6 +312,7 @@ void main() {
         test('tag', () async {
           await transactionRepository.clear();
           await transactionRepository.add(withTag);
+          await transactionRepository.add(withTwoTags);
 
           expect(
               await transactionRepository.search(Transaction(
@@ -314,7 +323,18 @@ void main() {
                 when: null,
                 tags: [Tag(name: 'tag1')],
               )),
-              List.from([withTag]));
+              List.from([withTag, withTwoTags]));
+
+          expect(
+              await transactionRepository.search(Transaction(
+                id: null,
+                from: null,
+                to: null,
+                amount: null,
+                when: null,
+                tags: [Tag(name: 'tag2')],
+              )),
+              List.from([withTwoTags]));
         });
 
         test('description', () async {
