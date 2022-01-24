@@ -274,7 +274,7 @@ void main() {
                 amount: null,
                 when: DateTime(2022, 1, 1),
               )),
-              income1);
+              List.from([income1]));
         });
 
         test('date between', () async {
@@ -298,7 +298,7 @@ void main() {
                     amount: null,
                     when: DateTime(2022, 1, 2),
                   )),
-              List.from([income1, income2]));
+              List.from([income2, income1]));
         });
 
         test('tag', () async {
@@ -314,7 +314,7 @@ void main() {
                 when: null,
                 tags: [Tag(name: 'tag1')],
               )),
-              withTag);
+              List.from([withTag]));
         });
 
         test('description', () async {
@@ -330,7 +330,7 @@ void main() {
                 when: null,
                 description: 'description',
               )),
-              withDescription);
+              List.from([withDescription]));
         });
       });
     }
