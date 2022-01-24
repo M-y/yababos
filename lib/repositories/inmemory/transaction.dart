@@ -1,3 +1,4 @@
+import 'package:yababos/models/tag.dart';
 import 'package:yababos/models/transaction.dart';
 import 'package:yababos/repositories/transaction.dart';
 
@@ -87,8 +88,50 @@ class TransactionInmemory extends TransactionRepository {
   }
 
   @override
-  Future<List<Transaction>> search(Transaction transaction, [Transaction transactionEnd]) {
-    // TODO: implement search
-    throw UnimplementedError();
+  Future<List<Transaction>> search(Transaction transaction,
+      [Transaction transactionEnd]) {
+    return Future(() {
+      DateTime start;
+      DateTime end;
+      if (transaction.when != null) {
+        start = transaction.when;
+        end = DateTime(transaction.when.year, transaction.when.month,
+            transaction.when.day + 1);
+        if (transactionEnd != null) end = transactionEnd.when;
+      }
+
+      List<Transaction> transactions = _transactions.toList();
+      transactions.retainWhere((t) {
+        bool test = true;
+
+        if (transaction.from != null) test = test && t.from == transaction.from;
+
+        if (transaction.to != null) test = test && t.to == transaction.to;
+
+        if (transaction.amount != null)
+          test = test && t.amount == transaction.amount;
+
+        if (transaction.description != null)
+          test = test && t.description.contains(transaction.description);
+
+        if (transaction.tags != null) {
+          bool tagTest = false;
+          for (Tag tag in transaction.tags)
+            tagTest = tagTest || t.tags.contains(tag);
+
+          test = test && tagTest;
+        }
+
+        if (start != null)
+          test = test &&
+              (t.when.isAtSameMomentAs(start) || t.when.isAfter(start)) &&
+              t.when.isBefore(end);
+
+        return test;
+      });
+
+      transactions.sort((a, b) => b.when.compareTo(a.when));
+      return transactions;
+    });
   }
 }
