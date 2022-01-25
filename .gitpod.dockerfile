@@ -1,6 +1,10 @@
 FROM gitpod/workspace-full-vnc
 SHELL ["/bin/bash", "-c"]
 
+# vnc resolution
+USER root
+RUN sed -i 's/1920x1080/400x800/g' /usr/bin/start-vnc-session.sh
+
 # Install dart
 USER root
 RUN curl -fsSL https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \

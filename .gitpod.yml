@@ -1,8 +1,9 @@
 image:
   file: .gitpod.dockerfile
 tasks:
+  - before: sudo mount -t tmpfs shm -osize=4096m /dev/shm
   - init: |
-      flutter channel beta
+      flutter channel stable
       flutter upgrade
       flutter config --enable-web
       flutter doctor
@@ -11,7 +12,6 @@ tasks:
       
   - command: |
       flutter devices
-      flutter run --web-port 8080
 
 
 ports:
