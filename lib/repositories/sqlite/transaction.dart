@@ -234,8 +234,51 @@ class TransactionSqlite extends TransactionRepository {
   }
 
   @override
-  Future<List<Transaction>> search(Transaction transaction, [Transaction transactionEnd]) {
-    // TODO: implement search
-    throw UnimplementedError();
+  Future<List<Transaction>> search(Transaction transaction,
+      [Transaction transactionEnd]) {
+    return Future(() async {
+      List<Transaction> transactions = List<Transaction>();
+      List<Map<String, Object>> records;
+      List<String> where = List.empty(growable: true);
+      String join = '';
+
+      DateTime start;
+      DateTime end;
+      if (transaction.when != null) {
+        start = transaction.when;
+        end = DateTime(transaction.when.year, transaction.when.month,
+            transaction.when.day + 1);
+        if (transactionEnd != null) end = transactionEnd.when;
+
+        where.add(
+            'date >= ${start.microsecondsSinceEpoch} AND date < ${end.microsecondsSinceEpoch}');
+      }
+
+      if (transaction.from != null) where.add('from = ${transaction.from}');
+      if (transaction.to != null) where.add('to = ${transaction.to}');
+
+      if (transaction.amount != null)
+        where.add('amount == ${transaction.amount}');
+
+      if (transaction.description != null)
+        where.add("description LIKE '%${transaction.description}%'");
+
+      if (transaction.tags != null) {
+        join = 'JOIN transaction_tags ON(transactionId = id)';
+        List<String> tagWhere = List.empty(growable: true);
+        for (Tag tag in transaction.tags) tagWhere.add("tag = '${tag.name}'");
+
+        where.add('(${tagWhere.join(" OR ")})');
+      }
+
+      records = await (await YababosSqlite.getDatabase()).rawQuery(
+          'SELECT * FROM transactions $join WHERE ${where.join(" AND ")} ORDER BY date DESC');
+
+      for (var record in records) {
+        transactions.add(await _mapRecord(record));
+      }
+
+      return transactions;
+    });
   }
 }
