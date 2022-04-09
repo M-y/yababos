@@ -310,6 +310,13 @@ void main() {
         });
 
         test('tag', () async {
+          TagRepository tagRepository = TagInmemory();
+          if (transactionRepository is TransactionSqlite)
+            tagRepository = TagSqlite();
+          await tagRepository.clear();
+          await tagRepository.add(Tag(name: 'tag1'));
+          await tagRepository.add(Tag(name: 'tag2'));
+
           await transactionRepository.clear();
           await transactionRepository.add(withTag);
           await transactionRepository.add(withTwoTags);
@@ -335,6 +342,8 @@ void main() {
                 tags: [Tag(name: 'tag2')],
               )),
               List.from([withTwoTags]));
+
+          await tagRepository.clear();
         });
 
         test('description', () async {
