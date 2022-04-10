@@ -312,6 +312,26 @@ void main() {
           ..add(TransactionDelete(2))
           ..add(TransactionDelete(3)),
       );
+
+      blocTest(
+        'TransactionSearch $transactionRepository',
+        build: () => TransactionBloc(transactionRepository)
+          ..add(TransactionAdd(sampleTransaction)),
+        skip: 1,
+        act: (bloc) => bloc.add(TransactionSearch(Transaction(
+          id: null,
+          from: null,
+          to: null,
+          amount: null,
+          when: null,
+          description: 'sample expense',
+        ))),
+        expect: () => <TransactionState>[
+          TransactionLoaded.many(List<Transaction>.from([sampleTransaction]))
+        ],
+        tearDown: () => TransactionBloc(transactionRepository)
+          ..add(TransactionDelete(4)),
+      );
     }
   });
 

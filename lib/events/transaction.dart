@@ -37,3 +37,10 @@ class TransactionDelete extends TransactionEvent {
 
   const TransactionDelete(this.id);
 }
+
+class TransactionSearch extends TransactionEvent {
+  final Transaction transaction;
+  final Transaction transactionEnd;
+
+  TransactionSearch(this.transaction, [this.transactionEnd]);
+}

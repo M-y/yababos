@@ -25,6 +25,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       yield await _mapGetAlltoState(event);
     } else if (event is TransactionGetWallet) {
       yield await _mapGetWallettoState(event);
+    } else if (event is TransactionSearch) {
+      yield await _mapSearchtoState(event);
     }
   }
 
@@ -64,5 +66,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         await _transactionRepository.walletTransactions(
             _selectedWallet, _year, _month),
         await _transactionRepository.balance(_selectedWallet));
+  }
+
+  Future<TransactionLoaded> _mapSearchtoState(TransactionSearch event) async {
+    return TransactionLoaded.many(await _transactionRepository.search(
+        event.transaction, event.transactionEnd));
   }
 }
