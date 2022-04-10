@@ -14,6 +14,7 @@ import 'package:yababos/models/setting.dart';
 import 'package:yababos/models/transaction.dart';
 import 'package:yababos/models/wallet.dart';
 import 'package:yababos/states/transaction.dart';
+import 'package:yababos/views/overview.dart';
 import 'package:yababos/views/transaction_editor.dart';
 import 'package:yababos/views/transaction.dart';
 import 'package:yababos/views/wallet_list.dart';
@@ -108,6 +109,10 @@ class WalletWidgetState extends State<WalletWidget> {
             ),
             body: Column(
               children: [
+                // Overiview
+                OverviewWidget(
+                    '${state.balance} ${widget.selectedWallet.curreny}'),
+                // Date
                 TextButton(
                   onPressed: () {
                     showMonthPicker(context: context, initialDate: _month)
@@ -125,6 +130,7 @@ class WalletWidgetState extends State<WalletWidget> {
                     style: Theme.of(context).textTheme.headline4,
                   ),
                 ),
+                // Transactions
                 Expanded(
                   child: ListView.builder(
                     itemCount: transactions.length,
