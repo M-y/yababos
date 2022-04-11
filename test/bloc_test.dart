@@ -327,10 +327,10 @@ void main() {
           description: 'sample expense',
         ))),
         expect: () => <TransactionState>[
-          TransactionLoaded.many(List<Transaction>.from([sampleTransaction]))
+          TransactionsFound(List<Transaction>.from([sampleTransaction]), -100)
         ],
-        tearDown: () => TransactionBloc(transactionRepository)
-          ..add(TransactionDelete(4)),
+        tearDown: () =>
+            TransactionBloc(transactionRepository)..add(TransactionDelete(4)),
       );
     }
   });

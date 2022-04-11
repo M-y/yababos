@@ -31,3 +31,13 @@ class WalletTransactionsLoaded extends TransactionState {
   @override
   List<Object> get props => [transactions, balance];
 }
+
+class TransactionsFound extends TransactionState {
+  final List<Transaction> transactions;
+  final double balance;
+
+  const TransactionsFound(this.transactions, this.balance);
+
+  @override
+  List<Object> get props => [transactions, balance];
+}

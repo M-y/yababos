@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yababos/events/transaction.dart';
+import 'package:yababos/models/transaction.dart';
 import 'package:yababos/repositories/transaction.dart';
 import 'package:yababos/states/transaction.dart';
 
@@ -68,8 +69,18 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         await _transactionRepository.balance(_selectedWallet));
   }
 
-  Future<TransactionLoaded> _mapSearchtoState(TransactionSearch event) async {
-    return TransactionLoaded.many(await _transactionRepository.search(
-        event.transaction, event.transactionEnd));
+  Future<TransactionsFound> _mapSearchtoState(TransactionSearch event) async {
+    List<Transaction> transactions = await _transactionRepository.search(
+        event.transaction, event.transactionEnd);
+
+    double balance = 0;
+    for (Transaction transaction in transactions) {
+      if (transaction.from == null)
+        balance += transaction.amount;
+      else
+        balance -= transaction.amount;
+    }
+
+    return TransactionsFound(transactions, balance);
   }
 }
