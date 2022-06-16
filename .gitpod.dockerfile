@@ -1,4 +1,4 @@
-FROM gitpod/workspace-full-vnc
+FROM gitpod/workspace-full-vnc:2022-01-28-04-35-05
 SHELL ["/bin/bash", "-c"]
 
 # vnc resolution
