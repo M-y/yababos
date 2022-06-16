@@ -3,15 +3,13 @@ image:
 tasks:
   - before: sudo mount -t tmpfs shm -osize=4096m /dev/shm
   - init: |
-      flutter channel stable
-      flutter upgrade
       flutter config --enable-web
       flutter doctor
       flutter pub get
       flutter build -v web
       
   - command: |
-      flutter devices
+      flutter pub get
 
 
 ports:
