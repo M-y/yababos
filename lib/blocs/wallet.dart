@@ -87,7 +87,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   Future<void> _mapGetNonetoState(
       WalletGetNone event, Emitter<WalletState> emit) async {
-    emit(WalletsLoaded(wallets: List<Wallet>(), selectedWallet: null));
+    emit(WalletsLoaded(wallets: <Wallet>[], selectedWallet: null));
   }
 
   Future _selectedWalletFix() async {

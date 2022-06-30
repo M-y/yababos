@@ -36,7 +36,7 @@ class TagSqlite extends TagRepository {
   @override
   Future<List<Tag>> find(Tag tag) {
     return Future(() async {
-      List<Tag> tags = List<Tag>();
+      List<Tag> tags = <Tag>[];
       List<Map<String, Object>> records =
           await (await YababosSqlite.getDatabase()).rawQuery(
               'SELECT * FROM tags WHERE name LIKE ?', ["%${tag.name}%"]);
@@ -61,7 +61,7 @@ class TagSqlite extends TagRepository {
   @override
   Future<List<Tag>> getAll() {
     return Future(() async {
-      List<Tag> tags = List<Tag>();
+      List<Tag> tags = <Tag>[];
       List<Map<String, Object>> records =
           await (await YababosSqlite.getDatabase())
               .rawQuery('SELECT * FROM tags');

@@ -154,7 +154,7 @@ void main() {
         build: () =>
             WalletBloc(walletRepository, settingsBloc, transactionBloc),
         act: (bloc) => bloc.add(WalletDelete(1)),
-        expect: () => <WalletState>[WalletsLoaded(wallets: List<Wallet>())],
+        expect: () => <WalletState>[WalletsLoaded(wallets: <Wallet>[])],
       );
 
       blocTest(
@@ -289,7 +289,7 @@ void main() {
         build: () => TransactionBloc(transactionRepository),
         act: (bloc) => bloc.add(TransactionDelete(1)),
         expect: () => <TransactionState>[
-          WalletTransactionsLoaded(List<Transaction>(), 0)
+          WalletTransactionsLoaded(<Transaction>[], 0)
         ],
       );
 

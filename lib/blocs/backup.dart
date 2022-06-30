@@ -27,7 +27,7 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
       BackupCreate event, Emitter<BackupState> emit) async {
     List<Transaction> transactions =
         await _transactionRepository.getAll(isUtc: true);
-    List<List<dynamic>> rows = List<List<dynamic>>();
+    List<List<dynamic>> rows = <List<dynamic>>[];
 
     // wallets' initial amounts
     for (Wallet wallet in await _walletRepository.getAll()) {
@@ -82,7 +82,7 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
     DateTime when = DateTime.tryParse(row.elementAt(4));
     String description = row.elementAt(6);
 
-    List<Tag> tags = List<Tag>();
+    List<Tag> tags = <Tag>[];
     String tagString = (row.elementAt(5) as String);
     if (tagString != null) {
       tagString = tagString.replaceAll(RegExp(r'\[|\]'), "");

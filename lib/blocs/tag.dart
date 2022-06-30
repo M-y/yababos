@@ -58,6 +58,6 @@ class TagBloc extends Bloc<TagEvent, TagState> {
 
   Future<void> _mapGetNonetoState(
       TagGetNone event, Emitter<TagState> emit) async {
-    return emit(TagLoaded(List<Tag>()));
+    return emit(TagLoaded(<Tag>[]));
   }
 }

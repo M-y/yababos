@@ -97,7 +97,7 @@ class SearchWidget extends StatelessWidget {
                     }
                     return TransactionWidget(
                       transaction: transaction,
-                      wallets: List<Wallet>(),
+                      wallets: <Wallet>[],
                       wallet: Wallet(id: null),
                       showDate: showDate,
                     );

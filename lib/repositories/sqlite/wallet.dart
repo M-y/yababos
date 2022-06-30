@@ -49,7 +49,7 @@ class WalletSqlite extends WalletRepository {
   @override
   Future<List<Wallet>> getAll() {
     return Future(() async {
-      List<Wallet> wallets = List<Wallet>();
+      List<Wallet> wallets = <Wallet>[];
       List<Map<String, Object>> records =
           await (await YababosSqlite.getDatabase())
               .rawQuery('SELECT * FROM wallets');
