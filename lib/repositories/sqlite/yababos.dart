@@ -66,7 +66,8 @@ CREATE TABLE "settings" (
           await db.execute(createSql);
         }
       },
-      onUpgrade: (db, oldVersion, newVersion) => db.execute(onUpgrade),
+      onUpgrade: (db, oldVersion, newVersion) async =>
+          await db.execute(onUpgrade),
       singleInstance: true,
     );
   }

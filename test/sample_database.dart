@@ -5,7 +5,7 @@ import 'package:yababos/repositories/tag.dart';
 import 'package:yababos/repositories/transaction.dart';
 import 'package:yababos/repositories/wallet.dart';
 
-void sampleDatabase(
+Future sampleDatabase(
     WalletRepository walletRepository,
     TagRepository tagRepository,
     TransactionRepository transactionRepository) async {

@@ -7,27 +7,23 @@ import 'package:yababos/states/settings.dart';
 class SettingsBloc extends Bloc<SettingEvent, SettingState> {
   final SettingsRepository _settingsRepository;
 
-  SettingsBloc(this._settingsRepository) : super(SettingsLoading());
-
-  @override
-  Stream<SettingState> mapEventToState(SettingEvent event) async* {
-    if (event is SettingAdd) {
-      yield await _mapAddtoState(event);
-    } else if (event is SettingGet) {
-      yield await _mapGettoState(event);
-    }
+  SettingsBloc(this._settingsRepository) : super(SettingsLoading()) {
+    on<SettingAdd>(_mapAddtoState);
+    on<SettingGet>(_mapGettoState);
   }
 
-  Future<SettingState> _mapAddtoState(SettingAdd event) async {
+  Future<void> _mapAddtoState(
+      SettingAdd event, Emitter<SettingState> emit) async {
     Setting oldSetting = await _settingsRepository.get(event.setting.name);
     await _settingsRepository.add(event.setting);
     if (oldSetting == null || oldSetting.value != event.setting.value)
-      return SettingChanged(event.setting);
-    return SettingLoaded(event.setting);
+      return emit(SettingChanged(event.setting));
+    return emit(SettingLoaded(event.setting));
   }
 
-  Future<SettingState> _mapGettoState(SettingGet event) async {
+  Future<void> _mapGettoState(
+      SettingGet event, Emitter<SettingState> emit) async {
     Setting setting = await _settingsRepository.get(event.name);
-    return SettingLoaded(setting);
+    return emit(SettingLoaded(setting));
   }
 }

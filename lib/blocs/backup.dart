@@ -18,18 +18,13 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
 
   BackupBloc(this._csvRepository, this._tagRepository,
       this._transactionRepository, this._walletRepository)
-      : super(BackupProcessing());
-
-  @override
-  Stream<BackupState> mapEventToState(BackupEvent event) async* {
-    if (event is BackupCreate) {
-      yield await _mapBackupCreatetoState(event);
-    } else if (event is BackupLoad) {
-      yield await _mapBackupLoadtoState(event);
-    }
+      : super(BackupProcessing()) {
+    on<BackupCreate>(_mapBackupCreatetoState);
+    on<BackupLoad>(_mapBackupLoadtoState);
   }
 
-  Future<BackupState> _mapBackupCreatetoState(BackupCreate event) async {
+  Future<void> _mapBackupCreatetoState(
+      BackupCreate event, Emitter<BackupState> emit) async {
     List<Transaction> transactions =
         await _transactionRepository.getAll(isUtc: true);
     List<List<dynamic>> rows = List<List<dynamic>>();
@@ -54,10 +49,11 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
     }
 
     String csv = _csvRepository.listToCsv(rows);
-    return BackupComplete(csv);
+    return emit(BackupComplete(csv));
   }
 
-  Future<BackupState> _mapBackupLoadtoState(BackupLoad event) async {
+  Future<void> _mapBackupLoadtoState(
+      BackupLoad event, Emitter<BackupState> emit) async {
     List<List<dynamic>> rows = _csvRepository.csvToList(event.csv);
     for (var row in rows) {
       if (_checkRow(row)) {
@@ -71,7 +67,7 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
       }
     }
 
-    return BackupLoaded(rows.length);
+    return emit(BackupLoaded(rows.length));
   }
 
   Future<Transaction> _mapRow(List<dynamic> row) async {
