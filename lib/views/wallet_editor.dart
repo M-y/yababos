@@ -30,7 +30,7 @@ class WalletEditor extends StatelessWidget {
             _isEdit() ? S.of(context).editWallet : S.of(context).newWallet),
         actions: [
           _isEdit()
-              ? FlatButton(
+              ? TextButton(
                   child: Text(
                     S.of(context).delete,
                     style: TextStyle(color: Colors.red),

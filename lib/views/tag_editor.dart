@@ -59,7 +59,7 @@ class TagEditorState extends State<TagEditor> {
         title: Text(_isEdit() ? S.of(context).editTag : S.of(context).newTag),
         actions: [
           _isEdit()
-              ? FlatButton(
+              ? TextButton(
                   child: Text(
                     S.of(context).delete,
                     style: TextStyle(color: Colors.red),

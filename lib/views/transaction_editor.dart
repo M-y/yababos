@@ -51,7 +51,7 @@ class TransactionEditorState extends State<TransactionEditor> {
             : S.of(context).newTransaction),
         actions: [
           _isEdit()
-              ? FlatButton(
+              ? TextButton(
                   child: Text(
                     S.of(context).delete,
                     style: TextStyle(color: Colors.red),
