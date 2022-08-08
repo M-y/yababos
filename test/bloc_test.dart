@@ -265,7 +265,7 @@ void main() {
           WalletTransactionsLoaded(
               List<Transaction>.from([sampleTransaction]), 100)
         ],
-        tearDown: () => transactionRepository.clear(),
+        tearDown: () async => await transactionRepository.clear(),
       );
 
       blocTest(
@@ -277,7 +277,7 @@ void main() {
         expect: () => <TransactionState>[
           TransactionLoaded.many(List<Transaction>.from([sampleTransaction]))
         ],
-        tearDown: () => transactionRepository.clear(),
+        tearDown: () async => await transactionRepository.clear(),
       );
 
       blocTest(
@@ -288,7 +288,7 @@ void main() {
         wait: Duration(milliseconds: 500),
         expect: () =>
             <TransactionState>[TransactionLoaded.one(sampleTransaction)],
-        tearDown: () => transactionRepository.clear(),
+        tearDown: () async => await transactionRepository.clear(),
       );
 
       blocTest(
@@ -301,7 +301,7 @@ void main() {
           WalletTransactionsLoaded(
               List<Transaction>.from([updatedTransaction]), 150)
         ],
-        tearDown: () => transactionRepository.clear(),
+        tearDown: () async => await transactionRepository.clear(),
       );
 
       blocTest(
@@ -312,7 +312,7 @@ void main() {
         wait: Duration(milliseconds: 500),
         expect: () =>
             <TransactionState>[WalletTransactionsLoaded(<Transaction>[], 0)],
-        tearDown: () => transactionRepository.clear(),
+        tearDown: () async => await transactionRepository.clear(),
       );
 
       blocTest(
@@ -329,7 +329,7 @@ void main() {
           WalletTransactionsLoaded(
               List<Transaction>.from([walletTransaction]), 100)
         ],
-        tearDown: () => transactionRepository.clear(),
+        tearDown: () async => await transactionRepository.clear(),
       );
 
       blocTest(
@@ -348,7 +348,7 @@ void main() {
         expect: () => <TransactionState>[
           TransactionsFound(List<Transaction>.from([sampleTransaction]), -100)
         ],
-        tearDown: () => transactionRepository.clear(),
+        tearDown: () async => await transactionRepository.clear(),
       );
     }
   });
@@ -372,7 +372,7 @@ void main() {
         act: (bloc) => bloc.add(TagAdd(sampleTag)),
         wait: Duration(milliseconds: 500),
         expect: () => <TagState>[TagLoaded(sampleTagList)],
-        tearDown: () => tagRepository.clear(),
+        tearDown: () async => await tagRepository.clear(),
       );
 
       blocTest(
@@ -382,7 +382,7 @@ void main() {
         act: (bloc) => bloc.add(TagUpdate(sampleTag.name, newTag)),
         wait: Duration(milliseconds: 500),
         expect: () => <TagState>[TagLoaded(newTagList)],
-        tearDown: () => tagRepository.clear(),
+        tearDown: () async => await tagRepository.clear(),
       );
 
       blocTest(
@@ -392,7 +392,7 @@ void main() {
         act: (bloc) => bloc.add(TagDelete(newTag)),
         wait: Duration(milliseconds: 500),
         expect: () => <TagState>[TagLoaded([])],
-        tearDown: () => tagRepository.clear(),
+        tearDown: () async => await tagRepository.clear(),
       );
 
       blocTest(
@@ -401,7 +401,7 @@ void main() {
         act: (bloc) => bloc.add(TagsAdd(allTags)),
         wait: Duration(milliseconds: 500),
         expect: () => <TagState>[TagLoaded(allTags)],
-        tearDown: () => tagRepository.clear(),
+        tearDown: () async => await tagRepository.clear(),
       );
 
       blocTest(
@@ -414,7 +414,7 @@ void main() {
         act: (bloc) => bloc.add(TagFind(Tag(name: 'sample'))),
         wait: Duration(milliseconds: 500),
         expect: () => <TagState>[TagLoaded(sampleTagList)],
-        tearDown: () => tagRepository.clear(),
+        tearDown: () async => await tagRepository.clear(),
       );
 
       blocTest(
@@ -427,7 +427,7 @@ void main() {
         act: (bloc) => bloc.add(TagGetAll()),
         wait: Duration(milliseconds: 500),
         expect: () => <TagState>[TagLoaded(allTags)],
-        tearDown: () => tagRepository.clear(),
+        tearDown: () async => await tagRepository.clear(),
       );
 
       blocTest(
@@ -440,6 +440,7 @@ void main() {
         act: (bloc) => bloc.add(TagAdd(sampleTag)),
         wait: Duration(milliseconds: 500),
         expect: () => <TagState>[TagLoaded(allTags)],
+        tearDown: () async => await tagRepository.clear(),
       );
     }
   });
