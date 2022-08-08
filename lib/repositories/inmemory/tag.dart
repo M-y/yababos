@@ -31,7 +31,7 @@ class TagInmemory extends TagRepository {
 
   @override
   Future<List<Tag>> getAll() {
-    return Future.delayed(Duration(seconds: 3), () => _tags);
+    return Future(() => _tags);
   }
 
   @override
