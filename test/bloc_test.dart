@@ -64,30 +64,37 @@ void main() {
         act: (bloc) => bloc.add(SettingAdd(sampleSetting)),
         wait: Duration(milliseconds: 500),
         expect: () => <SettingState>[SettingChanged(sampleSetting)],
+        tearDown: () async => settingsRepository.clear(),
       );
 
       blocTest(
         'add same setting $settingsRepository',
+        setUp: () async => await settingsRepository.add(sampleSetting),
         build: () => SettingsBloc(settingsRepository),
         act: (bloc) => bloc.add(SettingAdd(sampleSetting)),
         wait: Duration(milliseconds: 500),
         expect: () => <SettingState>[SettingLoaded(sampleSetting)],
+        tearDown: () async => settingsRepository.clear(),
       );
 
       blocTest(
         'update setting $settingsRepository',
+        setUp: () async => await settingsRepository.add(sampleSetting),
         build: () => SettingsBloc(settingsRepository),
         act: (bloc) => bloc.add(SettingAdd(sampleSettingChanged)),
         wait: Duration(milliseconds: 500),
         expect: () => <SettingState>[SettingChanged(sampleSettingChanged)],
+        tearDown: () async => settingsRepository.clear(),
       );
 
       blocTest(
         'get setting $settingsRepository',
+        setUp: () async => await settingsRepository.add(sampleSettingChanged),
         build: () => SettingsBloc(settingsRepository),
         act: (bloc) => bloc.add(SettingGet('sample')),
         wait: Duration(milliseconds: 500),
         expect: () => <SettingState>[SettingLoaded(sampleSettingChanged)],
+        tearDown: () async => settingsRepository.clear(),
       );
     }
   });
