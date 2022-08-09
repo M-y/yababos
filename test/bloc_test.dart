@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bloc_test/bloc_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:yababos/blocs/backup.dart';
 import 'package:yababos/blocs/settings.dart';
 import 'package:yababos/blocs/tag.dart';
@@ -36,8 +37,10 @@ import 'package:yababos/states/wallet.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 
+import 'bloc_test.mocks.dart';
 import 'sample_database.dart';
 
+@GenerateMocks([TagRepository])
 void main() {
   // Initialize FFI
   sqfliteFfiInit();
@@ -100,7 +103,8 @@ void main() {
       TransactionRepository transactionRepository = repository[2];
 
       SettingsBloc settingsBloc = SettingsBloc(settingsRepository);
-      TransactionBloc transactionBloc = TransactionBloc(transactionRepository);
+      TransactionBloc transactionBloc =
+          TransactionBloc(transactionRepository, MockTagRepository());
 
       Wallet sampleWallet = Wallet(
         id: 1,
@@ -258,7 +262,8 @@ void main() {
 
       blocTest(
         'TransactionAdd $transactionRepository',
-        build: () => TransactionBloc(transactionRepository),
+        build: () =>
+            TransactionBloc(transactionRepository, MockTagRepository()),
         act: (bloc) => bloc.add(TransactionAdd(sampleTransaction)),
         wait: Duration(milliseconds: 500),
         expect: () => <TransactionState>[
@@ -271,7 +276,8 @@ void main() {
       blocTest(
         'TransactionGetAll $transactionRepository',
         setUp: () async => await transactionRepository.add(sampleTransaction),
-        build: () => TransactionBloc(transactionRepository),
+        build: () =>
+            TransactionBloc(transactionRepository, MockTagRepository()),
         act: (bloc) => bloc.add(TransactionGetAll()),
         wait: Duration(milliseconds: 500),
         expect: () => <TransactionState>[
@@ -283,7 +289,8 @@ void main() {
       blocTest(
         'TransactionGet $transactionRepository',
         setUp: () async => await transactionRepository.add(sampleTransaction),
-        build: () => TransactionBloc(transactionRepository),
+        build: () =>
+            TransactionBloc(transactionRepository, MockTagRepository()),
         act: (bloc) => bloc.add(TransactionGet(1)),
         wait: Duration(milliseconds: 500),
         expect: () =>
@@ -294,7 +301,8 @@ void main() {
       blocTest(
         'TransactionUpdate $transactionRepository',
         setUp: () async => await transactionRepository.add(sampleTransaction),
-        build: () => TransactionBloc(transactionRepository),
+        build: () =>
+            TransactionBloc(transactionRepository, MockTagRepository()),
         act: (bloc) => bloc.add(TransactionUpdate(updatedTransaction)),
         wait: Duration(milliseconds: 500),
         expect: () => <TransactionState>[
@@ -307,7 +315,8 @@ void main() {
       blocTest(
         'TransactionDelete $transactionRepository',
         setUp: () async => await transactionRepository.add(sampleTransaction),
-        build: () => TransactionBloc(transactionRepository),
+        build: () =>
+            TransactionBloc(transactionRepository, MockTagRepository()),
         act: (bloc) => bloc.add(TransactionDelete(1)),
         wait: Duration(milliseconds: 500),
         expect: () =>
@@ -321,7 +330,8 @@ void main() {
           await transactionRepository.add(sampleTransaction);
           await transactionRepository.add(walletTransaction);
         },
-        build: () => TransactionBloc(transactionRepository),
+        build: () =>
+            TransactionBloc(transactionRepository, MockTagRepository()),
         act: (bloc) => bloc.add(TransactionGetWallet(
             walletTransaction.to, DateTime.now().year, DateTime.now().month)),
         wait: Duration(milliseconds: 500),
@@ -335,7 +345,8 @@ void main() {
       blocTest(
         'TransactionSearch $transactionRepository',
         setUp: () async => await transactionRepository.add(sampleTransaction),
-        build: () => TransactionBloc(transactionRepository),
+        build: () =>
+            TransactionBloc(transactionRepository, MockTagRepository()),
         act: (bloc) => bloc.add(TransactionSearch(Transaction(
           id: null,
           from: null,
@@ -467,16 +478,20 @@ void main() {
       blocTest(
         'Transaction tags $tagRepository',
         setUp: () async {
-          for (Tag t in transactionWithTags.tags) await tagRepository.add(t);
+          TransactionBloc(transactionRepository, tagRepository)
+            ..add(TransactionAdd(transactionWithTags));
+          await Future.delayed(Duration(seconds: 3));
         },
-        build: () => TransactionBloc(transactionRepository),
-        act: (bloc) => bloc
-          ..add(TransactionAdd(transactionWithTags))
-          ..add(TransactionGetAll()),
+        build: () => TransactionBloc(transactionRepository, tagRepository),
+        act: (bloc) => bloc.add(TransactionGetAll()),
         wait: Duration(milliseconds: 500),
         expect: () => <TransactionState>[
           TransactionLoaded.many(List<Transaction>.from([transactionWithTags]))
         ],
+        tearDown: () async {
+          await transactionRepository.clear();
+          await tagRepository.clear();
+        },
       );
     }
   });

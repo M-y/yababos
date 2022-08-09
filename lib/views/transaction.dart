@@ -54,10 +54,8 @@ class TransactionWidget extends StatelessWidget {
                     transaction: transaction,
                     onSave: (transaction) {
                       if (transaction.tags != null)
-                        BlocProvider.of<TagBloc>(context)
-                            .add(TagsAdd(transaction.tags));
-                      BlocProvider.of<TransactionBloc>(context)
-                          .add(TransactionUpdate(transaction));
+                        BlocProvider.of<TransactionBloc>(context)
+                            .add(TransactionUpdate(transaction));
                     },
                     onDelete: (transaction) =>
                         BlocProvider.of<TransactionBloc>(context)

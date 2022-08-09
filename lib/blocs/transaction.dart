@@ -1,16 +1,20 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yababos/events/transaction.dart';
+import 'package:yababos/models/tag.dart';
 import 'package:yababos/models/transaction.dart';
+import 'package:yababos/repositories/tag.dart';
 import 'package:yababos/repositories/transaction.dart';
 import 'package:yababos/states/transaction.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final TransactionRepository _transactionRepository;
+  final TagRepository _tagRepository;
   int _selectedWallet;
   int _year = DateTime.now().year;
   int _month = DateTime.now().month;
 
-  TransactionBloc(this._transactionRepository) : super(TransactionLoading()) {
+  TransactionBloc(this._transactionRepository, this._tagRepository)
+      : super(TransactionLoading()) {
     on<TransactionAdd>(_mapAddtoState);
     on<TransactionDelete>(_mapDeletetoState);
     on<TransactionUpdate>(_mapUpdatetoState);
@@ -23,6 +27,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   Future<void> _mapAddtoState(
       TransactionAdd event, Emitter<TransactionState> emit) async {
     await _transactionRepository.add(event.transaction);
+    if (event.transaction.tags != null)
+      await _addTags(event.transaction.tags);
     return emit(await _selectedWalletTransactions());
   }
 
@@ -35,6 +41,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   Future<void> _mapUpdatetoState(
       TransactionUpdate event, Emitter<TransactionState> emit) async {
     await _transactionRepository.update(event.transaction);
+    if (event.transaction.tags != null)
+      await _addTags(event.transaction.tags);
     return emit(await _selectedWalletTransactions());
   }
 
@@ -79,5 +87,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
 
     return emit(TransactionsFound(transactions, balance));
+  }
+
+  Future _addTags(List<Tag> tags) async {
+    for (Tag tag in tags) {
+      if (await _tagRepository.get(tag.name) == null)
+        await _tagRepository.add(tag);
+    }
   }
 }
