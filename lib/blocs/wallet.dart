@@ -18,7 +18,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   WalletBloc(this._walletRepository, this._settingsBloc, this._transactionBloc)
       : super(WalletLoading()) {
-        // TODO avoid tight-coupling
+    // TODO avoid tight-coupling
     // listen SettingsBloc for selected wallet change
     _settingsBloc.stream.listen((state) async {
       if (state is SettingChanged && state.setting.name == 'wallet')
@@ -38,7 +38,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   Future _loadSelectedWallet(Object value) async {
     _selectedWallet = await _walletRepository.get(value);
     if (_selectedWallet != null) {
-      this.add(WalletGetAll());
+      if (!this.isClosed) this.add(WalletGetAll());
       _transactionBloc.add(TransactionGetWallet(
           _selectedWallet.id, DateTime.now().year, DateTime.now().month));
     }

@@ -137,56 +137,65 @@ void main() {
         expect: () => <WalletState>[
           WalletsLoaded(wallets: sampleWalletList, selectedWallet: sampleWallet)
         ],
+        tearDown: () async => await walletRepository.clear(),
       );
 
       blocTest(
         'WalletGetAll $walletRepository',
+        setUp: () async => await walletRepository.add(sampleWallet),
         build: () =>
             WalletBloc(walletRepository, settingsBloc, transactionBloc),
         act: (bloc) => bloc.add(WalletGetAll()),
         wait: Duration(milliseconds: 500),
         expect: () => <WalletState>[WalletsLoaded(wallets: sampleWalletList)],
+        tearDown: () async => await walletRepository.clear(),
       );
 
       blocTest(
         'WalletGet $walletRepository',
+        setUp: () async => await walletRepository.add(sampleWallet),
         build: () =>
             WalletBloc(walletRepository, settingsBloc, transactionBloc),
         act: (bloc) => bloc.add(WalletGet(1)),
         wait: Duration(milliseconds: 500),
         expect: () => <WalletState>[WalletLoaded(sampleWallet)],
+        tearDown: () async => await walletRepository.clear(),
       );
 
       blocTest(
         'WalletUpdate $walletRepository',
+        setUp: () async => await walletRepository.add(sampleWallet),
         build: () =>
             WalletBloc(walletRepository, settingsBloc, transactionBloc),
         act: (bloc) => bloc.add(WalletUpdate(updatedWallet)),
         wait: Duration(milliseconds: 500),
         expect: () => <WalletState>[WalletsLoaded(wallets: updatedWalletList)],
+        tearDown: () async => await walletRepository.clear(),
       );
 
       blocTest(
         'WalletDelete $walletRepository',
+        setUp: () async => await walletRepository.add(updatedWallet),
         build: () =>
             WalletBloc(walletRepository, settingsBloc, transactionBloc),
         act: (bloc) => bloc.add(WalletDelete(1)),
         wait: Duration(milliseconds: 500),
         expect: () => <WalletState>[WalletsLoaded(wallets: <Wallet>[])],
+        tearDown: () async => await walletRepository.clear(),
       );
 
       blocTest(
         "selected wallet $walletRepository",
-        build: () {
-          sampleWallet.id = 2;
-          updatedWallet.id = 3;
-          walletRepository.add(sampleWallet);
-          walletRepository.add(updatedWallet);
-          return WalletBloc(walletRepository, settingsBloc, transactionBloc);
+        setUp: () async {
+          sampleWallet.id = 1;
+          updatedWallet.id = 2;
+          await walletRepository.add(sampleWallet);
+          await walletRepository.add(updatedWallet);
         },
-        act: (bloc) {
-          settingsBloc.add(SettingAdd(Setting(name: 'wallet', value: 3)));
-        },
+        build: () =>
+            WalletBloc(walletRepository, settingsBloc, transactionBloc),
+        act: (bloc) =>
+            settingsBloc.add(SettingAdd(Setting(name: 'wallet', value: 2))),
         wait: Duration(milliseconds: 500),
         expect: () => <WalletState>[
           WalletsLoaded(
@@ -194,11 +203,14 @@ void main() {
             selectedWallet: updatedWallet,
           )
         ],
+        tearDown: () async {
+          await walletRepository.clear();
+          await settingsRepository.clear();
+        },
       );
 
       blocTest(
         'set as selected wallet when first one added $walletRepository',
-        setUp: () => walletRepository = WalletInmemory(),
         build: () =>
             WalletBloc(walletRepository, settingsBloc, transactionBloc),
         act: (bloc) {
@@ -211,26 +223,34 @@ void main() {
             selectedWallet: sampleWallet,
           )
         ],
+        tearDown: () async {
+          await walletRepository.clear();
+          await settingsRepository.clear();
+        },
       );
 
       blocTest(
         'set as selected wallet when last one stands $walletRepository',
-        setUp: () => walletRepository = WalletInmemory(),
+        setUp: () async {
+          await walletRepository.add(sampleWallet);
+          await settingsRepository.add(Setting(name: "wallet", value: 1));
+          updatedWallet.id = 2;
+          await walletRepository.add(updatedWallet);
+        },
         build: () =>
             WalletBloc(walletRepository, settingsBloc, transactionBloc),
-        act: (bloc) {
-          bloc.add(WalletAdd(sampleWallet));
-          bloc.add(WalletAdd(updatedWallet));
-          bloc.add(WalletDelete(1));
-        },
+        act: (bloc) => bloc.add(WalletDelete(1)),
         wait: Duration(milliseconds: 500),
-        skip: 1,
         expect: () => <WalletState>[
           WalletsLoaded(
             wallets: List<Wallet>.from([updatedWallet]),
             selectedWallet: updatedWallet,
           )
         ],
+        tearDown: () async {
+          await walletRepository.clear();
+          await settingsRepository.clear();
+        },
       );
     }
   });
