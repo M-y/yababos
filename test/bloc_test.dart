@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bloc_test/bloc_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:yababos/blocs/backup.dart';
 import 'package:yababos/blocs/settings.dart';
 import 'package:yababos/blocs/tag.dart';
@@ -36,16 +37,16 @@ import 'package:yababos/states/wallet.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 
+import 'bloc_test.mocks.dart';
 import 'sample_database.dart';
 
+@GenerateMocks([TagRepository])
 void main() {
-  setUpAll(() {
-    // Initialize FFI
-    sqfliteFfiInit();
-    // Change the default factory
-    sqflite.databaseFactory = databaseFactoryFfi;
-    YababosSqlite.path = ':memory:';
-  });
+  // Initialize FFI
+  sqfliteFfiInit();
+  // Change the default factory
+  sqflite.databaseFactory = databaseFactoryFfi;
+  YababosSqlite.path = ':memory:';
 
   group('Settings', () {
     Setting sampleSetting = Setting(name: 'sample', value: 1);
@@ -61,28 +62,39 @@ void main() {
         'add setting $settingsRepository',
         build: () => SettingsBloc(settingsRepository),
         act: (bloc) => bloc.add(SettingAdd(sampleSetting)),
+        wait: Duration(milliseconds: 500),
         expect: () => <SettingState>[SettingChanged(sampleSetting)],
+        tearDown: () async => settingsRepository.clear(),
       );
 
       blocTest(
         'add same setting $settingsRepository',
+        setUp: () async => await settingsRepository.add(sampleSetting),
         build: () => SettingsBloc(settingsRepository),
         act: (bloc) => bloc.add(SettingAdd(sampleSetting)),
+        wait: Duration(milliseconds: 500),
         expect: () => <SettingState>[SettingLoaded(sampleSetting)],
+        tearDown: () async => settingsRepository.clear(),
       );
 
       blocTest(
         'update setting $settingsRepository',
+        setUp: () async => await settingsRepository.add(sampleSetting),
         build: () => SettingsBloc(settingsRepository),
         act: (bloc) => bloc.add(SettingAdd(sampleSettingChanged)),
+        wait: Duration(milliseconds: 500),
         expect: () => <SettingState>[SettingChanged(sampleSettingChanged)],
+        tearDown: () async => settingsRepository.clear(),
       );
 
       blocTest(
         'get setting $settingsRepository',
+        setUp: () async => await settingsRepository.add(sampleSettingChanged),
         build: () => SettingsBloc(settingsRepository),
         act: (bloc) => bloc.add(SettingGet('sample')),
+        wait: Duration(milliseconds: 500),
         expect: () => <SettingState>[SettingLoaded(sampleSettingChanged)],
+        tearDown: () async => settingsRepository.clear(),
       );
     }
   });
@@ -98,7 +110,8 @@ void main() {
       TransactionRepository transactionRepository = repository[2];
 
       SettingsBloc settingsBloc = SettingsBloc(settingsRepository);
-      TransactionBloc transactionBloc = TransactionBloc(transactionRepository);
+      TransactionBloc transactionBloc =
+          TransactionBloc(transactionRepository, MockTagRepository());
 
       Wallet sampleWallet = Wallet(
         id: 1,
@@ -120,97 +133,124 @@ void main() {
         build: () =>
             WalletBloc(walletRepository, settingsBloc, transactionBloc),
         act: (bloc) => bloc.add(WalletAdd(sampleWallet)),
+        wait: Duration(milliseconds: 500),
         expect: () => <WalletState>[
           WalletsLoaded(wallets: sampleWalletList, selectedWallet: sampleWallet)
         ],
+        tearDown: () async => await walletRepository.clear(),
       );
 
       blocTest(
         'WalletGetAll $walletRepository',
+        setUp: () async => await walletRepository.add(sampleWallet),
         build: () =>
             WalletBloc(walletRepository, settingsBloc, transactionBloc),
         act: (bloc) => bloc.add(WalletGetAll()),
+        wait: Duration(milliseconds: 500),
         expect: () => <WalletState>[WalletsLoaded(wallets: sampleWalletList)],
+        tearDown: () async => await walletRepository.clear(),
       );
 
       blocTest(
         'WalletGet $walletRepository',
+        setUp: () async => await walletRepository.add(sampleWallet),
         build: () =>
             WalletBloc(walletRepository, settingsBloc, transactionBloc),
         act: (bloc) => bloc.add(WalletGet(1)),
+        wait: Duration(milliseconds: 500),
         expect: () => <WalletState>[WalletLoaded(sampleWallet)],
+        tearDown: () async => await walletRepository.clear(),
       );
 
       blocTest(
         'WalletUpdate $walletRepository',
+        setUp: () async => await walletRepository.add(sampleWallet),
         build: () =>
             WalletBloc(walletRepository, settingsBloc, transactionBloc),
         act: (bloc) => bloc.add(WalletUpdate(updatedWallet)),
+        wait: Duration(milliseconds: 500),
         expect: () => <WalletState>[WalletsLoaded(wallets: updatedWalletList)],
+        tearDown: () async => await walletRepository.clear(),
       );
 
       blocTest(
         'WalletDelete $walletRepository',
+        setUp: () async => await walletRepository.add(updatedWallet),
         build: () =>
             WalletBloc(walletRepository, settingsBloc, transactionBloc),
         act: (bloc) => bloc.add(WalletDelete(1)),
-        expect: () => <WalletState>[WalletsLoaded(wallets: List<Wallet>())],
+        wait: Duration(milliseconds: 500),
+        expect: () => <WalletState>[WalletsLoaded(wallets: <Wallet>[])],
+        tearDown: () async => await walletRepository.clear(),
       );
 
       blocTest(
         "selected wallet $walletRepository",
-        build: () {
-          sampleWallet.id = 2;
-          updatedWallet.id = 3;
-          walletRepository.add(sampleWallet);
-          walletRepository.add(updatedWallet);
-          return WalletBloc(walletRepository, settingsBloc, transactionBloc);
+        setUp: () async {
+          sampleWallet.id = 1;
+          updatedWallet.id = 2;
+          await walletRepository.add(sampleWallet);
+          await walletRepository.add(updatedWallet);
         },
-        act: (bloc) {
-          settingsBloc.add(SettingAdd(Setting(name: 'wallet', value: 3)));
-        },
-        wait: Duration(seconds: 10),
+        build: () =>
+            WalletBloc(walletRepository, settingsBloc, transactionBloc),
+        act: (bloc) =>
+            settingsBloc.add(SettingAdd(Setting(name: 'wallet', value: 2))),
+        wait: Duration(milliseconds: 500),
         expect: () => <WalletState>[
           WalletsLoaded(
             wallets: List<Wallet>.from([sampleWallet, updatedWallet]),
             selectedWallet: updatedWallet,
           )
         ],
+        tearDown: () async {
+          await walletRepository.clear();
+          await settingsRepository.clear();
+        },
       );
 
       blocTest(
         'set as selected wallet when first one added $walletRepository',
-        setUp: () => walletRepository = WalletInmemory(),
         build: () =>
             WalletBloc(walletRepository, settingsBloc, transactionBloc),
         act: (bloc) {
           bloc.add(WalletAdd(sampleWallet));
         },
+        wait: Duration(milliseconds: 500),
         expect: () => <WalletState>[
           WalletsLoaded(
             wallets: List<Wallet>.from([sampleWallet]),
             selectedWallet: sampleWallet,
           )
         ],
+        tearDown: () async {
+          await walletRepository.clear();
+          await settingsRepository.clear();
+        },
       );
 
       blocTest(
         'set as selected wallet when last one stands $walletRepository',
-        setUp: () => walletRepository = WalletInmemory(),
+        setUp: () async {
+          await walletRepository.add(sampleWallet);
+          await settingsRepository.add(Setting(name: "wallet", value: 1));
+          updatedWallet.id = 2;
+          await walletRepository.add(updatedWallet);
+        },
         build: () =>
             WalletBloc(walletRepository, settingsBloc, transactionBloc),
-        act: (bloc) {
-          bloc.add(WalletAdd(sampleWallet));
-          bloc.add(WalletAdd(updatedWallet));
-          bloc.add(WalletDelete(1));
-        },
-        skip: 1,
+        act: (bloc) => bloc.add(WalletDelete(1)),
+        wait: Duration(milliseconds: 500),
         expect: () => <WalletState>[
           WalletsLoaded(
             wallets: List<Wallet>.from([updatedWallet]),
             selectedWallet: updatedWallet,
           )
         ],
+        tearDown: () async {
+          await walletRepository.clear();
+          await settingsRepository.clear();
+        },
       );
     }
   });
@@ -249,75 +289,91 @@ void main() {
 
       blocTest(
         'TransactionAdd $transactionRepository',
-        build: () => TransactionBloc(transactionRepository),
+        build: () =>
+            TransactionBloc(transactionRepository, MockTagRepository()),
         act: (bloc) => bloc.add(TransactionAdd(sampleTransaction)),
+        wait: Duration(milliseconds: 500),
         expect: () => <TransactionState>[
           WalletTransactionsLoaded(
               List<Transaction>.from([sampleTransaction]), 100)
         ],
+        tearDown: () async => await transactionRepository.clear(),
       );
 
       blocTest(
         'TransactionGetAll $transactionRepository',
-        build: () => TransactionBloc(transactionRepository),
+        setUp: () async => await transactionRepository.add(sampleTransaction),
+        build: () =>
+            TransactionBloc(transactionRepository, MockTagRepository()),
         act: (bloc) => bloc.add(TransactionGetAll()),
+        wait: Duration(milliseconds: 500),
         expect: () => <TransactionState>[
           TransactionLoaded.many(List<Transaction>.from([sampleTransaction]))
         ],
+        tearDown: () async => await transactionRepository.clear(),
       );
 
       blocTest(
         'TransactionGet $transactionRepository',
-        build: () => TransactionBloc(transactionRepository),
+        setUp: () async => await transactionRepository.add(sampleTransaction),
+        build: () =>
+            TransactionBloc(transactionRepository, MockTagRepository()),
         act: (bloc) => bloc.add(TransactionGet(1)),
+        wait: Duration(milliseconds: 500),
         expect: () =>
             <TransactionState>[TransactionLoaded.one(sampleTransaction)],
+        tearDown: () async => await transactionRepository.clear(),
       );
 
       blocTest(
         'TransactionUpdate $transactionRepository',
-        build: () => TransactionBloc(transactionRepository),
+        setUp: () async => await transactionRepository.add(sampleTransaction),
+        build: () =>
+            TransactionBloc(transactionRepository, MockTagRepository()),
         act: (bloc) => bloc.add(TransactionUpdate(updatedTransaction)),
+        wait: Duration(milliseconds: 500),
         expect: () => <TransactionState>[
           WalletTransactionsLoaded(
               List<Transaction>.from([updatedTransaction]), 150)
         ],
+        tearDown: () async => await transactionRepository.clear(),
       );
 
       blocTest(
         'TransactionDelete $transactionRepository',
-        build: () => TransactionBloc(transactionRepository),
+        setUp: () async => await transactionRepository.add(sampleTransaction),
+        build: () =>
+            TransactionBloc(transactionRepository, MockTagRepository()),
         act: (bloc) => bloc.add(TransactionDelete(1)),
-        expect: () => <TransactionState>[
-          WalletTransactionsLoaded(List<Transaction>(), 0)
-        ],
+        wait: Duration(milliseconds: 500),
+        expect: () =>
+            <TransactionState>[WalletTransactionsLoaded(<Transaction>[], 0)],
+        tearDown: () async => await transactionRepository.clear(),
       );
 
       blocTest(
         'Wallet\'s Transactions and balance $transactionRepository',
-        build: () => TransactionBloc(transactionRepository)
-          ..add(TransactionAdd(sampleTransaction))
-          ..add(TransactionAdd(walletTransaction)),
-        act: (bloc) {
-          walletTransaction.id = 3;
-          bloc.add(TransactionGetWallet(
-              walletTransaction.to, DateTime.now().year, DateTime.now().month));
+        setUp: () async {
+          await transactionRepository.add(sampleTransaction);
+          await transactionRepository.add(walletTransaction);
         },
-        skip: 2,
+        build: () =>
+            TransactionBloc(transactionRepository, MockTagRepository()),
+        act: (bloc) => bloc.add(TransactionGetWallet(
+            walletTransaction.to, DateTime.now().year, DateTime.now().month)),
+        wait: Duration(milliseconds: 500),
         expect: () => <TransactionState>[
           WalletTransactionsLoaded(
               List<Transaction>.from([walletTransaction]), 100)
         ],
-        tearDown: () => TransactionBloc(transactionRepository)
-          ..add(TransactionDelete(2))
-          ..add(TransactionDelete(3)),
+        tearDown: () async => await transactionRepository.clear(),
       );
 
       blocTest(
         'TransactionSearch $transactionRepository',
-        build: () => TransactionBloc(transactionRepository)
-          ..add(TransactionAdd(sampleTransaction)),
-        skip: 1,
+        setUp: () async => await transactionRepository.add(sampleTransaction),
+        build: () =>
+            TransactionBloc(transactionRepository, MockTagRepository()),
         act: (bloc) => bloc.add(TransactionSearch(Transaction(
           id: null,
           from: null,
@@ -326,11 +382,11 @@ void main() {
           when: null,
           description: 'sample expense',
         ))),
+        wait: Duration(milliseconds: 500),
         expect: () => <TransactionState>[
           TransactionsFound(List<Transaction>.from([sampleTransaction]), -100)
         ],
-        tearDown: () =>
-            TransactionBloc(transactionRepository)..add(TransactionDelete(4)),
+        tearDown: () async => await transactionRepository.clear(),
       );
     }
   });
@@ -352,49 +408,77 @@ void main() {
         'TagAdd $tagRepository',
         build: () => TagBloc(tagRepository),
         act: (bloc) => bloc.add(TagAdd(sampleTag)),
+        wait: Duration(milliseconds: 500),
         expect: () => <TagState>[TagLoaded(sampleTagList)],
+        tearDown: () async => await tagRepository.clear(),
       );
 
       blocTest(
         'TagUpdate $tagRepository',
+        setUp: () async => await tagRepository.add(sampleTag),
         build: () => TagBloc(tagRepository),
         act: (bloc) => bloc.add(TagUpdate(sampleTag.name, newTag)),
+        wait: Duration(milliseconds: 500),
         expect: () => <TagState>[TagLoaded(newTagList)],
+        tearDown: () async => await tagRepository.clear(),
       );
 
       blocTest(
         'TagDelete $tagRepository',
+        setUp: () async => await tagRepository.add(newTag),
         build: () => TagBloc(tagRepository),
         act: (bloc) => bloc.add(TagDelete(newTag)),
+        wait: Duration(milliseconds: 500),
         expect: () => <TagState>[TagLoaded([])],
+        tearDown: () async => await tagRepository.clear(),
       );
 
       blocTest(
         'TagsAdd $tagRepository',
         build: () => TagBloc(tagRepository),
         act: (bloc) => bloc.add(TagsAdd(allTags)),
+        wait: Duration(milliseconds: 500),
         expect: () => <TagState>[TagLoaded(allTags)],
+        tearDown: () async => await tagRepository.clear(),
       );
 
       blocTest(
         'TagFind $tagRepository',
+        setUp: () async {
+          await tagRepository.add(sampleTag);
+          await tagRepository.add(newTag);
+        },
         build: () => TagBloc(tagRepository),
         act: (bloc) => bloc.add(TagFind(Tag(name: 'sample'))),
+        wait: Duration(milliseconds: 500),
         expect: () => <TagState>[TagLoaded(sampleTagList)],
+        tearDown: () async => await tagRepository.clear(),
       );
 
       blocTest(
         'TagGetAll $tagRepository',
+        setUp: () async {
+          await tagRepository.add(sampleTag);
+          await tagRepository.add(newTag);
+        },
         build: () => TagBloc(tagRepository),
         act: (bloc) => bloc.add(TagGetAll()),
+        wait: Duration(milliseconds: 500),
         expect: () => <TagState>[TagLoaded(allTags)],
+        tearDown: () async => await tagRepository.clear(),
       );
 
       blocTest(
         'duplicate add $tagRepository',
+        setUp: () async {
+          await tagRepository.add(sampleTag);
+          await tagRepository.add(newTag);
+        },
         build: () => TagBloc(tagRepository),
         act: (bloc) => bloc.add(TagAdd(sampleTag)),
+        wait: Duration(milliseconds: 500),
         expect: () => <TagState>[TagLoaded(allTags)],
+        tearDown: () async => await tagRepository.clear(),
       );
     }
   });
@@ -409,7 +493,7 @@ void main() {
       TagRepository tagRepository = repository[0];
       TransactionRepository transactionRepository = repository[1];
       Transaction transactionWithTags = Transaction(
-        id: 4,
+        id: 1,
         from: 1,
         to: null,
         amount: 100,
@@ -420,20 +504,21 @@ void main() {
 
       blocTest(
         'Transaction tags $tagRepository',
-        setUp: () {
-          TagBloc(tagRepository)..add(TagsAdd(transactionWithTags.tags));
-        },
-        build: () {
-          return TransactionBloc(transactionRepository)
+        setUp: () async {
+          TransactionBloc(transactionRepository, tagRepository)
             ..add(TransactionAdd(transactionWithTags));
+          await Future.delayed(Duration(seconds: 3));
         },
-        act: (bloc) {
-          bloc.add(TransactionGetAll());
-        },
-        skip: 1,
+        build: () => TransactionBloc(transactionRepository, tagRepository),
+        act: (bloc) => bloc.add(TransactionGetAll()),
+        wait: Duration(milliseconds: 500),
         expect: () => <TransactionState>[
           TransactionLoaded.many(List<Transaction>.from([transactionWithTags]))
         ],
+        tearDown: () async {
+          await transactionRepository.clear();
+          await tagRepository.clear();
+        },
       );
     }
   });
@@ -465,6 +550,7 @@ void main() {
         act: (bloc) {
           bloc.add(BackupCreate());
         },
+        wait: Duration(milliseconds: 500),
         expect: () => <BackupState>[BackupComplete(csv)],
       );
 
@@ -477,6 +563,7 @@ void main() {
         act: (bloc) {
           bloc.add(BackupLoad(csv));
         },
+        wait: Duration(milliseconds: 500),
         expect: () => <BackupState>[BackupLoaded(4)],
       );
     }

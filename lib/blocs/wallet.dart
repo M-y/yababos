@@ -18,80 +18,77 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   WalletBloc(this._walletRepository, this._settingsBloc, this._transactionBloc)
       : super(WalletLoading()) {
+    // TODO avoid tight-coupling
     // listen SettingsBloc for selected wallet change
-    _settingsBloc.listen((state) async {
+    _settingsBloc.stream.listen((state) async {
       if (state is SettingChanged && state.setting.name == 'wallet')
         await _loadSelectedWallet(state.setting.value);
       if (state is SettingLoaded && state.setting.name == 'wallet')
         await _loadSelectedWallet(state.setting.value);
     });
+
+    on<WalletAdd>(_mapAddtoState);
+    on<WalletDelete>(_mapDeletetoState);
+    on<WalletUpdate>(_mapUpdatetoState);
+    on<WalletGet>(_mapGettoState);
+    on<WalletGetAll>(_mapGetAlltoState);
+    on<WalletGetNone>(_mapGetNonetoState);
   }
 
   Future _loadSelectedWallet(Object value) async {
     _selectedWallet = await _walletRepository.get(value);
     if (_selectedWallet != null) {
-      this.add(WalletGetAll());
+      if (!this.isClosed) this.add(WalletGetAll());
       _transactionBloc.add(TransactionGetWallet(
           _selectedWallet.id, DateTime.now().year, DateTime.now().month));
     }
   }
 
-  @override
-  Stream<WalletState> mapEventToState(WalletEvent event) async* {
-    if (event is WalletAdd) {
-      yield await _mapAddtoState(event);
-    } else if (event is WalletDelete) {
-      yield await _mapDeletetoState(event);
-    } else if (event is WalletUpdate) {
-      yield await _mapUpdatetoState(event);
-    } else if (event is WalletGet) {
-      yield await _mapGettoState(event);
-    } else if (event is WalletGetAll) {
-      yield await _mapGetAlltoState(event);
-    } else if (event is WalletGetNone) {
-      yield await _mapGetNonetoState(event);
-    }
-  }
-
-  Future<WalletState> _mapAddtoState(WalletAdd event) async {
+  Future<void> _mapAddtoState(
+      WalletAdd event, Emitter<WalletState> emit) async {
     await _walletRepository.add(event.wallet);
     await _selectedWalletFix();
-    return WalletsLoaded(
+    emit(WalletsLoaded(
       wallets: await _walletRepository.getAll(),
       selectedWallet: _selectedWallet,
-    );
+    ));
   }
 
-  Future<WalletState> _mapDeletetoState(WalletDelete event) async {
+  Future<void> _mapDeletetoState(
+      WalletDelete event, Emitter<WalletState> emit) async {
     await _walletRepository.delete(event.id);
     await _selectedWalletFix();
-    return WalletsLoaded(
+    emit(WalletsLoaded(
       wallets: await _walletRepository.getAll(),
       selectedWallet: _selectedWallet,
-    );
+    ));
   }
 
-  Future<WalletState> _mapUpdatetoState(WalletUpdate event) async {
+  Future<void> _mapUpdatetoState(
+      WalletUpdate event, Emitter<WalletState> emit) async {
     await _walletRepository.update(event.wallet);
-    return WalletsLoaded(
+    emit(WalletsLoaded(
       wallets: await _walletRepository.getAll(),
       selectedWallet: _selectedWallet,
-    );
+    ));
   }
 
-  Future<WalletState> _mapGettoState(WalletGet event) async {
-    return WalletLoaded(await _walletRepository.get(event.id));
+  Future<void> _mapGettoState(
+      WalletGet event, Emitter<WalletState> emit) async {
+    emit(WalletLoaded(await _walletRepository.get(event.id)));
   }
 
-  Future<WalletState> _mapGetAlltoState(WalletGetAll event) async {
-    return WalletsLoaded(
+  Future<void> _mapGetAlltoState(
+      WalletGetAll event, Emitter<WalletState> emit) async {
+    emit(WalletsLoaded(
       wallets: await _walletRepository.getAll(),
       selectedWallet: _selectedWallet,
-    );
+    ));
   }
 
-  Future<WalletState> _mapGetNonetoState(WalletGetNone event) async {
-    return WalletsLoaded(wallets: List<Wallet>(), selectedWallet: null);
+  Future<void> _mapGetNonetoState(
+      WalletGetNone event, Emitter<WalletState> emit) async {
+    emit(WalletsLoaded(wallets: <Wallet>[], selectedWallet: null));
   }
 
   Future _selectedWalletFix() async {

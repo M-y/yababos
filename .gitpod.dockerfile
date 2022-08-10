@@ -1,4 +1,4 @@
-FROM gitpod/workspace-full-vnc
+FROM gitpod/workspace-full-vnc:2022-01-28-04-35-05
 SHELL ["/bin/bash", "-c"]
 
 # vnc resolution
@@ -14,7 +14,7 @@ RUN curl -fsSL https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key a
 # Install flutter
 USER gitpod
 RUN cd /home/gitpod \
-    && wget https://storage.googleapis.com/flutter_infra_release/releases/beta/linux/flutter_linux_2.5.0-5.2.pre-beta.tar.xz \
+    && wget https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.0.2-stable.tar.xz \
     && tar -xvf flutter*.tar.xz \
     && rm -f flutter*.tar.xz
 

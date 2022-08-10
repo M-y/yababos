@@ -20,8 +20,9 @@ void main() {
               ..add(SettingGet('wallet')),
       ),
       BlocProvider(
-        create: (context) =>
-            TransactionBloc(RepositorySelections.transactionRepository),
+        create: (context) => TransactionBloc(
+            RepositorySelections.transactionRepository,
+            RepositorySelections.tagRepository),
       ),
       BlocProvider(
         create: (context) =>

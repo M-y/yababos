@@ -58,7 +58,7 @@ CREATE TABLE "settings" (
   static Future<Database> getDatabase() async {
     if (path == null) path = join(await getDatabasesPath(), 'yababos.db');
 
-    return openDatabase(
+    return await openDatabase(
       path,
       version: version,
       onCreate: (Database db, int version) async {
@@ -66,7 +66,8 @@ CREATE TABLE "settings" (
           await db.execute(createSql);
         }
       },
-      onUpgrade: (db, oldVersion, newVersion) => db.execute(onUpgrade),
+      onUpgrade: (db, oldVersion, newVersion) async =>
+          await db.execute(onUpgrade),
       singleInstance: true,
     );
   }

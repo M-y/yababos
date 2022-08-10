@@ -47,7 +47,7 @@ class TransactionSqlite extends TransactionRepository {
   @override
   Future<List<Transaction>> getAll({bool isUtc = false}) {
     return Future(() async {
-      List<Transaction> transactions = List<Transaction>();
+      List<Transaction> transactions = <Transaction>[];
       List<Map<String, Object>> records =
           await (await YababosSqlite.getDatabase())
               .rawQuery('SELECT * FROM transactions');
@@ -134,7 +134,7 @@ class TransactionSqlite extends TransactionRepository {
   Future<List<Transaction>> walletTransactions(
       int wallet, int year, int month) {
     return Future(() async {
-      List<Transaction> transactions = List<Transaction>();
+      List<Transaction> transactions = <Transaction>[];
       List<Map<String, Object>> records;
 
       DateTime start = DateTime(year, month);
@@ -178,7 +178,7 @@ class TransactionSqlite extends TransactionRepository {
 
   Future<List<Tag>> _transactionTags(int transactionId) {
     return Future(() async {
-      List<Tag> tags = List<Tag>();
+      List<Tag> tags = <Tag>[];
 
       List<Map<String, Object>> records =
           await (await YababosSqlite.getDatabase()).rawQuery(
@@ -237,7 +237,7 @@ class TransactionSqlite extends TransactionRepository {
   Future<List<Transaction>> search(Transaction transaction,
       [Transaction transactionEnd]) {
     return Future(() async {
-      List<Transaction> transactions = List<Transaction>();
+      List<Transaction> transactions = <Transaction>[];
       List<Map<String, Object>> records;
       List<String> where = List.empty(growable: true);
       String join = '';

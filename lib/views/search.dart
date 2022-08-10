@@ -47,10 +47,10 @@ class SearchWidget extends StatelessWidget {
               Tag queryTag = Tag(name: query);
 
               // fire TagFind event on TagBloc
-              Stream<TagState> fireEvent = BlocProvider.of<TagBloc>(context)
-                  .mapEventToState(TagFind(queryTag));
+              BlocProvider.of<TagBloc>(context).add(TagFind(queryTag));
               // wait for state
-              TagState findState = await fireEvent.last;
+              TagState findState =
+                  await BlocProvider.of<TagBloc>(context).stream.last;
 
               if (findState is TagLoaded) {
                 if (findState.tags.contains(queryTag)) return findState.tags;
@@ -97,7 +97,7 @@ class SearchWidget extends StatelessWidget {
                     }
                     return TransactionWidget(
                       transaction: transaction,
-                      wallets: List<Wallet>(),
+                      wallets: <Wallet>[],
                       wallet: Wallet(id: null),
                       showDate: showDate,
                     );

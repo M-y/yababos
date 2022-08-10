@@ -25,7 +25,7 @@ class WalletList extends StatefulWidget {
 class WalletListState extends State<WalletList> {
   @override
   Widget build(BuildContext context) {
-    List<ListTile> walletButtons = List<ListTile>();
+    List<ListTile> walletButtons = <ListTile>[];
     if (widget.outside)
       walletButtons.add(ListTile(
         selected: widget.selected == null,

@@ -1,65 +1,69 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yababos/events/transaction.dart';
+import 'package:yababos/models/tag.dart';
 import 'package:yababos/models/transaction.dart';
+import 'package:yababos/repositories/tag.dart';
 import 'package:yababos/repositories/transaction.dart';
 import 'package:yababos/states/transaction.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final TransactionRepository _transactionRepository;
+  final TagRepository _tagRepository;
   int _selectedWallet;
   int _year = DateTime.now().year;
   int _month = DateTime.now().month;
 
-  TransactionBloc(this._transactionRepository) : super(TransactionLoading());
-
-  @override
-  Stream<TransactionState> mapEventToState(TransactionEvent event) async* {
-    if (event is TransactionAdd) {
-      yield await _mapAddtoState(event);
-    } else if (event is TransactionDelete) {
-      yield await _mapDeletetoState(event);
-    } else if (event is TransactionUpdate) {
-      yield await _mapUpdatetoState(event);
-    } else if (event is TransactionGet) {
-      yield await _mapGettoState(event);
-    } else if (event is TransactionGetAll) {
-      yield await _mapGetAlltoState(event);
-    } else if (event is TransactionGetWallet) {
-      yield await _mapGetWallettoState(event);
-    } else if (event is TransactionSearch) {
-      yield await _mapSearchtoState(event);
-    }
+  TransactionBloc(this._transactionRepository, this._tagRepository)
+      : super(TransactionLoading()) {
+    on<TransactionAdd>(_mapAddtoState);
+    on<TransactionDelete>(_mapDeletetoState);
+    on<TransactionUpdate>(_mapUpdatetoState);
+    on<TransactionGet>(_mapGettoState);
+    on<TransactionGetAll>(_mapGetAlltoState);
+    on<TransactionGetWallet>(_mapGetWallettoState);
+    on<TransactionSearch>(_mapSearchtoState);
   }
 
-  Future<TransactionState> _mapAddtoState(TransactionAdd event) async {
+  Future<void> _mapAddtoState(
+      TransactionAdd event, Emitter<TransactionState> emit) async {
     await _transactionRepository.add(event.transaction);
-    return await _selectedWalletTransactions();
+    if (event.transaction.tags != null)
+      await _addTags(event.transaction.tags);
+    return emit(await _selectedWalletTransactions());
   }
 
-  Future<TransactionState> _mapDeletetoState(TransactionDelete event) async {
+  Future<void> _mapDeletetoState(
+      TransactionDelete event, Emitter<TransactionState> emit) async {
     await _transactionRepository.delete(event.id);
-    return await _selectedWalletTransactions();
+    return emit(await _selectedWalletTransactions());
   }
 
-  Future<TransactionState> _mapUpdatetoState(TransactionUpdate event) async {
+  Future<void> _mapUpdatetoState(
+      TransactionUpdate event, Emitter<TransactionState> emit) async {
     await _transactionRepository.update(event.transaction);
-    return await _selectedWalletTransactions();
+    if (event.transaction.tags != null)
+      await _addTags(event.transaction.tags);
+    return emit(await _selectedWalletTransactions());
   }
 
-  Future<TransactionState> _mapGettoState(TransactionGet event) async {
-    return TransactionLoaded.one(await _transactionRepository.get(event.id));
+  Future<void> _mapGettoState(
+      TransactionGet event, Emitter<TransactionState> emit) async {
+    return emit(
+        TransactionLoaded.one(await _transactionRepository.get(event.id)));
   }
 
-  _mapGetAlltoState(TransactionGetAll event) async {
-    return TransactionLoaded.many(await _transactionRepository.getAll());
+  Future<void> _mapGetAlltoState(
+      TransactionGetAll event, Emitter<TransactionState> emit) async {
+    return emit(TransactionLoaded.many(await _transactionRepository.getAll()));
   }
 
-  _mapGetWallettoState(TransactionGetWallet event) async {
+  Future<void> _mapGetWallettoState(
+      TransactionGetWallet event, Emitter<TransactionState> emit) async {
     _selectedWallet = event.wallet;
     _year = event.year;
     _month = event.month;
 
-    return await _selectedWalletTransactions();
+    return emit(await _selectedWalletTransactions());
   }
 
   Future<WalletTransactionsLoaded> _selectedWalletTransactions() async {
@@ -69,7 +73,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         await _transactionRepository.balance(_selectedWallet));
   }
 
-  Future<TransactionsFound> _mapSearchtoState(TransactionSearch event) async {
+  Future<void> _mapSearchtoState(
+      TransactionSearch event, Emitter<TransactionState> emit) async {
     List<Transaction> transactions = await _transactionRepository.search(
         event.transaction, event.transactionEnd);
 
@@ -81,6 +86,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         balance -= transaction.amount;
     }
 
-    return TransactionsFound(transactions, balance);
+    return emit(TransactionsFound(transactions, balance));
+  }
+
+  Future _addTags(List<Tag> tags) async {
+    for (Tag tag in tags) {
+      if (await _tagRepository.get(tag.name) == null)
+        await _tagRepository.add(tag);
+    }
   }
 }

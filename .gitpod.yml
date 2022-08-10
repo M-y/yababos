@@ -3,27 +3,33 @@ image:
 tasks:
   - before: sudo mount -t tmpfs shm -osize=4096m /dev/shm
   - init: |
-      flutter channel stable
-      flutter upgrade
       flutter config --enable-web
       flutter doctor
       flutter pub get
       flutter build -v web
-      
+
   - command: |
+      flutter pub get
       flutter devices
 
 
 ports:
   - port: 5900
     onOpen: ignore
-    # vnc
+# vnc
   - port: 6080
     onOpen: open-preview
-    # flutter
+# flutter
   - port: 8080
-    onOpen: open-preview
+    onOpen: ignore
+  - port: 5037
+    onOpen: ignore
+  - port: 9100-9101
+    onOpen: ignore
+  - port: 40000-50000
+    onOpen: ignore
 
 vscode:
   extensions:
     - dart-code.flutter
+    - dart-code.dart-code
