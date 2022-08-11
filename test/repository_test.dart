@@ -113,7 +113,7 @@ void main() {
     for (TransactionRepository transactionRepository in repositories) {
       test('add $transactionRepository', () async {
         Transaction sampleTransaction =
-            Transaction(id: 1, from: null, to: 1, amount: 0, when: null);
+            Transaction(id: 1, from: 0, to: 1, amount: 0, when: null);
         await transactionRepository.add(sampleTransaction);
 
         expect(await transactionRepository.get(1), sampleTransaction);
@@ -122,7 +122,7 @@ void main() {
       test('update $transactionRepository', () async {
         await transactionRepository.update(Transaction(
             id: 1,
-            from: null,
+            from: 0,
             to: 1,
             description: "test",
             amount: 0,
@@ -140,7 +140,7 @@ void main() {
       test('wallet\'s transactions $transactionRepository', () async {
         Transaction yesterday = Transaction(
           id: 2,
-          from: null,
+          from: 0,
           to: 1,
           amount: 0,
           when: DateTime.now().subtract(new Duration(days: 1)),
@@ -148,13 +148,13 @@ void main() {
         Transaction today = Transaction(
           id: 3,
           from: 1,
-          to: null,
+          to: 0,
           amount: 0,
           when: DateTime.now(),
         );
         Transaction otherWalletTransaction = Transaction(
           id: 4,
-          from: null,
+          from: 0,
           to: 2,
           amount: 0,
           when: DateTime.now(),
@@ -172,9 +172,9 @@ void main() {
 
       test('balance $transactionRepository', () async {
         Transaction income = Transaction(
-            id: null, from: null, to: 1, amount: 150.5, when: DateTime.now());
+            id: null, from: 0, to: 1, amount: 150.5, when: DateTime.now());
         Transaction expense = Transaction(
-            id: null, from: 1, to: null, amount: 50, when: DateTime.now());
+            id: null, from: 1, to: 0, amount: 50, when: DateTime.now());
         await transactionRepository.add(income);
         await transactionRepository.add(expense);
 
@@ -185,14 +185,14 @@ void main() {
           () async {
         Transaction november = Transaction(
           id: 1,
-          from: null,
+          from: 0,
           to: 1,
           amount: 0,
           when: DateTime(2020, 11, 1),
         );
         Transaction november2 = Transaction(
           id: 2,
-          from: null,
+          from: 0,
           to: 1,
           amount: 0,
           when: DateTime(2020, 11, 30, 23, 59, 59, 999, 999),
@@ -200,13 +200,13 @@ void main() {
         Transaction december = Transaction(
           id: 3,
           from: 1,
-          to: null,
+          to: 0,
           amount: 0,
           when: DateTime(2020, 12, 1),
         );
         Transaction nextYear = Transaction(
           id: 4,
-          from: null,
+          from: 0,
           to: 1,
           amount: 0,
           when: DateTime(2021, 1, 1),

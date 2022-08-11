@@ -28,15 +28,15 @@ class WalletListState extends State<WalletList> {
     List<ListTile> walletButtons = <ListTile>[];
     if (widget.outside)
       walletButtons.add(ListTile(
-        selected: widget.selected == null,
+        selected: widget.selected == 0,
         title: Text(
           S.of(context).outside,
           style: TextStyle(color: Colors.grey),
         ),
         onTap: () {
-          widget.onTap(null);
+          widget.onTap(0);
           setState(() {
-            widget.selected = null;
+            widget.selected = 0;
           });
         },
       ));

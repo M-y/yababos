@@ -265,7 +265,7 @@ void main() {
       Transaction sampleTransaction = Transaction(
         id: 1,
         from: 1,
-        to: null,
+        to: 0,
         amount: 100,
         when: DateTime.now(),
         description: 'sample expense',
@@ -273,14 +273,14 @@ void main() {
       Transaction updatedTransaction = Transaction(
         id: 1,
         from: 1,
-        to: null,
+        to: 0,
         amount: 150,
         when: DateTime.now(),
         description: 'updated expense',
       );
       Transaction walletTransaction = Transaction(
         id: 2,
-        from: null,
+        from: 0,
         to: 2,
         amount: 100,
         when: DateTime.now(),
@@ -495,7 +495,7 @@ void main() {
       Transaction transactionWithTags = Transaction(
         id: 1,
         from: 1,
-        to: null,
+        to: 0,
         amount: 100,
         when: DateTime.now(),
         description: 'transaction with tags',

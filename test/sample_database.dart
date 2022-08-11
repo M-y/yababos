@@ -24,7 +24,7 @@ Future sampleDatabase(
     Transaction(
       id: 1,
       from: 1,
-      to: null,
+      to: 0,
       amount: 100,
       when: DateTime.fromMillisecondsSinceEpoch(1637406526000, isUtc: true),
       description: 'transaction with tags',

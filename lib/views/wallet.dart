@@ -167,7 +167,7 @@ class WalletWidgetState extends State<WalletWidget> {
                         transaction: Transaction(
                           id: null,
                           from: widget.selectedWallet.id,
-                          to: null,
+                          to: 0,
                           amount: 0,
                           when: DateTime.now(),
                         ),
