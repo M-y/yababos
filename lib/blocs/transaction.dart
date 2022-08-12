@@ -80,7 +80,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
     double balance = 0;
     for (Transaction transaction in transactions) {
-      if (transaction.from == null)
+      if (transaction.from == 0)
         balance += transaction.amount;
       else
         balance -= transaction.amount;
