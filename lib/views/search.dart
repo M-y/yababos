@@ -7,6 +7,7 @@ import 'package:yababos/events/tag.dart';
 import 'package:yababos/events/transaction.dart';
 import 'package:yababos/models/tag.dart';
 import 'package:yababos/models/transaction.dart';
+import 'package:yababos/models/transaction_search.dart' as model;
 import 'package:yababos/models/wallet.dart';
 import 'package:yababos/states/tag.dart';
 import 'package:yababos/states/transaction.dart';
@@ -59,7 +60,7 @@ class SearchWidget extends StatelessWidget {
               return [null];
             },
             onChanged: (value) => BlocProvider.of<TransactionBloc>(context).add(
-                TransactionSearch(Transaction(
+                TransactionSearch(model.TransactionSearch(
                     id: null,
                     from: null,
                     to: null,

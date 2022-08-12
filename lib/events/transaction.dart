@@ -1,4 +1,5 @@
 import 'package:yababos/models/transaction.dart';
+import 'package:yababos/models/transaction_search.dart' as model;
 
 abstract class TransactionEvent {
   const TransactionEvent();
@@ -39,8 +40,8 @@ class TransactionDelete extends TransactionEvent {
 }
 
 class TransactionSearch extends TransactionEvent {
-  final Transaction transaction;
-  final Transaction transactionEnd;
+  final model.TransactionSearch transaction;
+  final model.TransactionSearch transactionEnd;
 
   TransactionSearch(this.transaction, [this.transactionEnd]);
 }

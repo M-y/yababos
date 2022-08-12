@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:yababos/models/transaction_search.dart';
 import 'package:yababos/repositories/csv.dart';
 import 'package:yababos/repositories/inmemory/settings.dart';
 import 'package:yababos/repositories/inmemory/tag.dart';
@@ -233,14 +234,14 @@ void main() {
       group('search $transactionRepository', () {
         Transaction income1 = Transaction(
           id: null,
-          from: null,
+          from: 0,
           to: 1,
           amount: 10,
           when: DateTime(2022, 1, 1),
         );
         Transaction income2 = Transaction(
           id: null,
-          from: null,
+          from: 0,
           to: 1,
           amount: 20,
           when: DateTime(2022, 1, 2),
@@ -248,7 +249,7 @@ void main() {
         Transaction withTag = Transaction(
           id: null,
           from: 1,
-          to: null,
+          to: 0,
           amount: 1,
           when: DateTime(2022, 1, 10),
           tags: [Tag(name: 'tag1')],
@@ -256,7 +257,7 @@ void main() {
         Transaction withTwoTags = Transaction(
           id: null,
           from: 1,
-          to: null,
+          to: 0,
           amount: 1,
           when: DateTime(2022, 1, 10),
           tags: [Tag(name: 'tag1'), Tag(name: 'tag2')],
@@ -264,7 +265,7 @@ void main() {
         Transaction withDescription = Transaction(
           id: null,
           from: 1,
-          to: null,
+          to: 0,
           amount: 1,
           when: DateTime(2022, 1, 10),
           description: 'description',
@@ -275,7 +276,7 @@ void main() {
           await transactionRepository.add(income1);
 
           expect(
-              await transactionRepository.search(Transaction(
+              await transactionRepository.search(TransactionSearch(
                 id: null,
                 from: null,
                 to: null,
@@ -292,14 +293,14 @@ void main() {
 
           expect(
               await transactionRepository.search(
-                  Transaction(
+                  TransactionSearch(
                     id: null,
                     from: null,
                     to: null,
                     amount: null,
                     when: DateTime(2022, 1, 1),
                   ),
-                  Transaction(
+                  TransactionSearch(
                     id: null,
                     from: null,
                     to: null,
@@ -322,7 +323,7 @@ void main() {
           await transactionRepository.add(withTwoTags);
 
           expect(
-              await transactionRepository.search(Transaction(
+              await transactionRepository.search(TransactionSearch(
                 id: null,
                 from: null,
                 to: null,
@@ -333,7 +334,7 @@ void main() {
               List.from([withTag, withTwoTags]));
 
           expect(
-              await transactionRepository.search(Transaction(
+              await transactionRepository.search(TransactionSearch(
                 id: null,
                 from: null,
                 to: null,
@@ -351,7 +352,7 @@ void main() {
           await transactionRepository.add(withDescription);
 
           expect(
-              await transactionRepository.search(Transaction(
+              await transactionRepository.search(TransactionSearch(
                 id: null,
                 from: null,
                 to: null,

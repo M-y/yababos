@@ -1,5 +1,6 @@
 import 'package:yababos/models/tag.dart';
 import 'package:yababos/models/transaction.dart';
+import 'package:yababos/models/transaction_search.dart';
 import 'package:yababos/repositories/sqlite/tag.dart';
 import 'package:yababos/repositories/sqlite/yababos.dart';
 import 'package:yababos/repositories/transaction.dart';
@@ -33,9 +34,7 @@ class TransactionSqlite extends TransactionRepository {
         transaction.from,
         transaction.to,
         transaction.amount,
-        transaction.when != null
-            ? transaction.when.microsecondsSinceEpoch
-            : null,
+        transaction.when.microsecondsSinceEpoch,
         transaction.description,
       ]);
 
@@ -93,9 +92,7 @@ class TransactionSqlite extends TransactionRepository {
         transaction.from,
         transaction.to,
         transaction.amount,
-        transaction.when != null
-            ? transaction.when.microsecondsSinceEpoch
-            : null,
+        transaction.when.microsecondsSinceEpoch,
         transaction.description,
         transaction.id,
       ]);
@@ -107,19 +104,11 @@ class TransactionSqlite extends TransactionRepository {
   }
 
   @override
-  Future<double> balance(int wallet) {
+  Future<double /*!*/ > balance(int wallet) {
     return Future(() async {
       List<Map<String, Object>> record;
-      if (wallet == null)
-        record = await (await YababosSqlite.getDatabase()).rawQuery('''
-          select 
-            IFNULL((SELECT SUM(amount) FROM transactions WHERE toWallet IS NULL),0.0)
-            -
-            IFNULL((SELECT SUM(amount) FROM transactions WHERE fromWallet IS NULL),0.0)
-          as balance
-          ''');
-      else
-        record = await (await YababosSqlite.getDatabase()).rawQuery('''
+
+      record = await (await YababosSqlite.getDatabase()).rawQuery('''
           select 
             IFNULL((SELECT SUM(amount) FROM transactions WHERE toWallet = ?),0.0)
             -
@@ -143,13 +132,9 @@ class TransactionSqlite extends TransactionRepository {
       String dateWhere =
           'date >= ${start.microsecondsSinceEpoch} AND date < ${end.microsecondsSinceEpoch}';
 
-      if (wallet == null)
-        records = await (await YababosSqlite.getDatabase()).rawQuery(
-            'SELECT * FROM transactions WHERE $dateWhere AND (fromWallet IS NULL OR toWallet IS NULL) ORDER BY date DESC');
-      else
-        records = await (await YababosSqlite.getDatabase()).rawQuery(
-            'SELECT * FROM transactions WHERE $dateWhere AND (fromWallet = ? OR toWallet = ?) ORDER BY date DESC',
-            [wallet, wallet]);
+      records = await (await YababosSqlite.getDatabase()).rawQuery(
+          'SELECT * FROM transactions WHERE $dateWhere AND (fromWallet = ? OR toWallet = ?) ORDER BY date DESC',
+          [wallet, wallet]);
 
       for (var record in records) {
         transactions.add(await _mapRecord(record));
@@ -165,20 +150,18 @@ class TransactionSqlite extends TransactionRepository {
       from: record['fromWallet'],
       to: record['toWallet'],
       amount: record['amount'],
-      when: record['date'] != null
-          ? (isUtc)
-              ? DateTime.fromMicrosecondsSinceEpoch(record['date'], isUtc: true)
-              : DateTime.fromMicrosecondsSinceEpoch(record['date'], isUtc: true)
-                  .toLocal()
-          : null,
+      when: (isUtc)
+          ? DateTime.fromMicrosecondsSinceEpoch(record['date'], isUtc: true)
+          : DateTime.fromMicrosecondsSinceEpoch(record['date'], isUtc: true)
+              .toLocal(),
       description: record['description'],
       tags: await _transactionTags(record['id']),
     );
   }
 
-  Future<List<Tag>> _transactionTags(int transactionId) {
+  Future<List<Tag /*!*/ >> _transactionTags(int /*!*/ transactionId) {
     return Future(() async {
-      List<Tag> tags = <Tag>[];
+      List<Tag /*!*/ > tags = <Tag>[];
 
       List<Map<String, Object>> records =
           await (await YababosSqlite.getDatabase()).rawQuery(
@@ -201,7 +184,7 @@ class TransactionSqlite extends TransactionRepository {
     });
   }
 
-  Future _addTransactionTags(int transactionId, List<Tag> tags) {
+  Future _addTransactionTags(int transactionId, List<Tag> /*!*/ tags) {
     return Future(() async {
       for (Tag tag in tags) {
         await (await YababosSqlite.getDatabase()).rawInsert('''
@@ -234,8 +217,8 @@ class TransactionSqlite extends TransactionRepository {
   }
 
   @override
-  Future<List<Transaction>> search(Transaction transaction,
-      [Transaction transactionEnd]) {
+  Future<List<Transaction>> search(TransactionSearch transaction,
+      [TransactionSearch transactionEnd]) {
     return Future(() async {
       List<Transaction> transactions = <Transaction>[];
       List<Map<String, Object>> records;
@@ -247,18 +230,18 @@ class TransactionSqlite extends TransactionRepository {
       if (transaction.when != null) {
         start = transaction.when;
         end = DateTime(transaction.when.year, transaction.when.month,
-            transaction.when.day + 1);
-        if (transactionEnd != null) end = transactionEnd.when;
+          transaction.when.day + 1);
+      if (transactionEnd != null) end = transactionEnd.when;
 
-        where.add(
-            'date >= ${start.microsecondsSinceEpoch} AND date < ${end.microsecondsSinceEpoch}');
+      where.add(
+          'date >= ${start.microsecondsSinceEpoch} AND date < ${end.microsecondsSinceEpoch}');
       }
 
       if (transaction.from != null) where.add('from = ${transaction.from}');
       if (transaction.to != null) where.add('to = ${transaction.to}');
 
       if (transaction.amount != null)
-        where.add('amount == ${transaction.amount}');
+      where.add('amount == ${transaction.amount}');
 
       if (transaction.description != null)
         where.add("description LIKE '%${transaction.description}%'");

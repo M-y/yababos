@@ -11,6 +11,7 @@ import 'package:yababos/events/settings.dart';
 import 'package:yababos/events/tag.dart';
 import 'package:yababos/events/transaction.dart';
 import 'package:yababos/events/wallet.dart';
+import 'package:yababos/models/transaction_search.dart' as model;
 import 'package:yababos/repositories/csv.dart';
 import 'package:yababos/repositories/inmemory/settings.dart';
 import 'package:yababos/repositories/inmemory/tag.dart';
@@ -374,7 +375,7 @@ void main() {
         setUp: () async => await transactionRepository.add(sampleTransaction),
         build: () =>
             TransactionBloc(transactionRepository, MockTagRepository()),
-        act: (bloc) => bloc.add(TransactionSearch(Transaction(
+        act: (bloc) => bloc.add(TransactionSearch(model.TransactionSearch(
           id: null,
           from: null,
           to: null,
