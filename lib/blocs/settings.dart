@@ -14,7 +14,7 @@ class SettingsBloc extends Bloc<SettingEvent, SettingState> {
 
   Future<void> _mapAddtoState(
       SettingAdd event, Emitter<SettingState> emit) async {
-    Setting oldSetting = await _settingsRepository.get(event.setting.name);
+    Setting? oldSetting = await _settingsRepository.get(event.setting.name);
     await _settingsRepository.add(event.setting);
     if (oldSetting == null || oldSetting.value != event.setting.value)
       return emit(SettingChanged(event.setting));
@@ -23,7 +23,7 @@ class SettingsBloc extends Bloc<SettingEvent, SettingState> {
 
   Future<void> _mapGettoState(
       SettingGet event, Emitter<SettingState> emit) async {
-    Setting setting = await _settingsRepository.get(event.name);
+    Setting? setting = await _settingsRepository.get(event.name);
     return emit(SettingLoaded(setting));
   }
 }

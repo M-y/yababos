@@ -14,9 +14,9 @@ Future sampleDatabase(
   await walletRepository.clear();
 
   Wallet wallet1 =
-      Wallet(id: null, name: 'Wallet 1', curreny: 'TRY', amount: 1);
+      Wallet(id: 1, name: 'Wallet 1', curreny: 'TRY', amount: 1);
   Wallet wallet2 =
-      Wallet(id: null, name: 'Wallet 2', curreny: 'TRY', amount: 10);
+      Wallet(id: 2, name: 'Wallet 2', curreny: 'TRY', amount: 10);
   await walletRepository.add(wallet1);
   await walletRepository.add(wallet2);
 
@@ -24,7 +24,7 @@ Future sampleDatabase(
     Transaction(
       id: 1,
       from: 1,
-      to: null,
+      to: 0,
       amount: 100,
       when: DateTime.fromMillisecondsSinceEpoch(1637406526000, isUtc: true),
       description: 'transaction with tags',
@@ -42,7 +42,7 @@ Future sampleDatabase(
 
   for (Transaction transaction in transactions) {
     if (transaction.tags != null)
-      for (Tag tag in transaction.tags) {
+      for (Tag tag in transaction.tags!) {
         if (await tagRepository.get(tag.name) == null)
           await tagRepository.add(tag);
       }

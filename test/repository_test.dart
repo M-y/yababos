@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:yababos/models/transaction_search.dart';
 import 'package:yababos/repositories/csv.dart';
 import 'package:yababos/repositories/inmemory/settings.dart';
 import 'package:yababos/repositories/inmemory/tag.dart';
@@ -42,14 +43,14 @@ void main() {
       });
 
       test('get $settingsRepository', () async {
-        expect((await settingsRepository.get('test')).value, 1);
+        expect((await settingsRepository.get('test'))!.value, 1);
         expect(await settingsRepository.get('not available'), null);
       });
       test('update $settingsRepository', () async {
         Setting tobeUpdateSetting = Setting(name: 'test', value: 2);
         await settingsRepository.add(tobeUpdateSetting);
 
-        expect((await settingsRepository.get('test')).value, 2);
+        expect((await settingsRepository.get('test'))!.value, 2);
       });
     }
   });
@@ -69,7 +70,7 @@ void main() {
       });
 
       test('get $tagRepository', () async {
-        expect((await tagRepository.get('test')).name, 'test');
+        expect((await tagRepository.get('test'))!.name, 'test');
         expect(await tagRepository.get('not available'), null);
       });
 
@@ -113,7 +114,7 @@ void main() {
     for (TransactionRepository transactionRepository in repositories) {
       test('add $transactionRepository', () async {
         Transaction sampleTransaction =
-            Transaction(id: 1, from: null, to: 1, amount: 0, when: null);
+            Transaction(id: 1, from: 0, to: 1, amount: 0, when: DateTime.now());
         await transactionRepository.add(sampleTransaction);
 
         expect(await transactionRepository.get(1), sampleTransaction);
@@ -122,13 +123,13 @@ void main() {
       test('update $transactionRepository', () async {
         await transactionRepository.update(Transaction(
             id: 1,
-            from: null,
+            from: 0,
             to: 1,
             description: "test",
             amount: 0,
-            when: null));
+            when: DateTime.now()));
 
-        expect((await transactionRepository.get(1)).description, "test");
+        expect((await transactionRepository.get(1))!.description, "test");
       });
 
       test('delete & getAll $transactionRepository', () async {
@@ -140,7 +141,7 @@ void main() {
       test('wallet\'s transactions $transactionRepository', () async {
         Transaction yesterday = Transaction(
           id: 2,
-          from: null,
+          from: 0,
           to: 1,
           amount: 0,
           when: DateTime.now().subtract(new Duration(days: 1)),
@@ -148,13 +149,13 @@ void main() {
         Transaction today = Transaction(
           id: 3,
           from: 1,
-          to: null,
+          to: 0,
           amount: 0,
           when: DateTime.now(),
         );
         Transaction otherWalletTransaction = Transaction(
           id: 4,
-          from: null,
+          from: 0,
           to: 2,
           amount: 0,
           when: DateTime.now(),
@@ -172,9 +173,9 @@ void main() {
 
       test('balance $transactionRepository', () async {
         Transaction income = Transaction(
-            id: null, from: null, to: 1, amount: 150.5, when: DateTime.now());
+            id: 0, from: 0, to: 1, amount: 150.5, when: DateTime.now());
         Transaction expense = Transaction(
-            id: null, from: 1, to: null, amount: 50, when: DateTime.now());
+            id: 0, from: 1, to: 0, amount: 50, when: DateTime.now());
         await transactionRepository.add(income);
         await transactionRepository.add(expense);
 
@@ -185,14 +186,14 @@ void main() {
           () async {
         Transaction november = Transaction(
           id: 1,
-          from: null,
+          from: 0,
           to: 1,
           amount: 0,
           when: DateTime(2020, 11, 1),
         );
         Transaction november2 = Transaction(
           id: 2,
-          from: null,
+          from: 0,
           to: 1,
           amount: 0,
           when: DateTime(2020, 11, 30, 23, 59, 59, 999, 999),
@@ -200,13 +201,13 @@ void main() {
         Transaction december = Transaction(
           id: 3,
           from: 1,
-          to: null,
+          to: 0,
           amount: 0,
           when: DateTime(2020, 12, 1),
         );
         Transaction nextYear = Transaction(
           id: 4,
-          from: null,
+          from: 0,
           to: 1,
           amount: 0,
           when: DateTime(2021, 1, 1),
@@ -232,39 +233,39 @@ void main() {
 
       group('search $transactionRepository', () {
         Transaction income1 = Transaction(
-          id: null,
-          from: null,
+          id: 0,
+          from: 0,
           to: 1,
           amount: 10,
           when: DateTime(2022, 1, 1),
         );
         Transaction income2 = Transaction(
-          id: null,
-          from: null,
+          id: 0,
+          from: 0,
           to: 1,
           amount: 20,
           when: DateTime(2022, 1, 2),
         );
         Transaction withTag = Transaction(
-          id: null,
+          id: 0,
           from: 1,
-          to: null,
+          to: 0,
           amount: 1,
           when: DateTime(2022, 1, 10),
           tags: [Tag(name: 'tag1')],
         );
         Transaction withTwoTags = Transaction(
-          id: null,
+          id: 0,
           from: 1,
-          to: null,
+          to: 0,
           amount: 1,
           when: DateTime(2022, 1, 10),
           tags: [Tag(name: 'tag1'), Tag(name: 'tag2')],
         );
         Transaction withDescription = Transaction(
-          id: null,
+          id: 0,
           from: 1,
-          to: null,
+          to: 0,
           amount: 1,
           when: DateTime(2022, 1, 10),
           description: 'description',
@@ -275,7 +276,7 @@ void main() {
           await transactionRepository.add(income1);
 
           expect(
-              await transactionRepository.search(Transaction(
+              await transactionRepository.search(TransactionSearch(
                 id: null,
                 from: null,
                 to: null,
@@ -292,14 +293,14 @@ void main() {
 
           expect(
               await transactionRepository.search(
-                  Transaction(
+                  TransactionSearch(
                     id: null,
                     from: null,
                     to: null,
                     amount: null,
                     when: DateTime(2022, 1, 1),
                   ),
-                  Transaction(
+                  TransactionSearch(
                     id: null,
                     from: null,
                     to: null,
@@ -322,7 +323,7 @@ void main() {
           await transactionRepository.add(withTwoTags);
 
           expect(
-              await transactionRepository.search(Transaction(
+              await transactionRepository.search(TransactionSearch(
                 id: null,
                 from: null,
                 to: null,
@@ -333,7 +334,7 @@ void main() {
               List.from([withTag, withTwoTags]));
 
           expect(
-              await transactionRepository.search(Transaction(
+              await transactionRepository.search(TransactionSearch(
                 id: null,
                 from: null,
                 to: null,
@@ -351,7 +352,7 @@ void main() {
           await transactionRepository.add(withDescription);
 
           expect(
-              await transactionRepository.search(Transaction(
+              await transactionRepository.search(TransactionSearch(
                 id: null,
                 from: null,
                 to: null,
@@ -384,8 +385,8 @@ void main() {
         await walletRepository
             .update(Wallet(id: 1, name: 'test', amount: 10, curreny: 'TRY'));
 
-        expect((await walletRepository.get(1)).name, 'test');
-        expect((await walletRepository.get(1)).amount, 10);
+        expect((await walletRepository.get(1))!.name, 'test');
+        expect((await walletRepository.get(1))!.amount, 10);
       });
 
       test('delete & getAll $walletRepository', () async {

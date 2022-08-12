@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:yababos/models/wallet.dart';
 import 'package:yababos/repositories/wallet.dart';
 
@@ -23,17 +24,16 @@ class WalletInmemory extends WalletRepository {
   @override
   Future delete(int id) {
     return Future(() async {
-      Wallet wallet = await get(id);
+      Wallet? wallet = await get(id);
       _wallets.remove(wallet);
     });
   }
 
   @override
-  Future<Wallet> get(int id) {
+  Future<Wallet?> get(int id) {
     return Future(() {
-      return _wallets.firstWhere(
+      return _wallets.firstWhereOrNull(
         (element) => element.id == id,
-        orElse: () => null,
       );
     });
   }

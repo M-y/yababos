@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:yababos/blocs/tag.dart';
 import 'package:yababos/blocs/transaction.dart';
-import 'package:yababos/events/tag.dart';
 import 'package:yababos/events/transaction.dart';
 import 'package:yababos/models/transaction.dart';
 import 'package:yababos/models/wallet.dart';
@@ -16,9 +14,9 @@ class TransactionWidget extends StatelessWidget {
   final bool showDate;
 
   const TransactionWidget({
-    @required this.transaction,
-    @required this.wallets,
-    @required this.wallet,
+    required this.transaction,
+    required this.wallets,
+    required this.wallet,
     this.showDate = false,
   });
 
@@ -73,7 +71,7 @@ class TransactionWidget extends StatelessWidget {
                     child: Wrap(
                       children: (transaction.tags == null)
                           ? []
-                          : transaction.tags
+                          : transaction.tags!
                               .map((tag) => Container(
                                     color: tag.color,
                                     padding: EdgeInsets.all(5),

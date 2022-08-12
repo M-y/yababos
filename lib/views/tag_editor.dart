@@ -8,7 +8,8 @@ typedef OnDelete = Function(Tag tag);
 class TagEditor extends StatefulWidget {
   final Tag tag;
   final OnSave onSave;
-  final OnDelete onDelete;
+  final OnDelete? onDelete;
+  final bool isNew;
 
   final List<Color> availableColors = List.from([
     Colors.white,
@@ -28,9 +29,10 @@ class TagEditor extends StatefulWidget {
   ]);
 
   TagEditor({
-    @required this.tag,
-    @required this.onSave,
+    required this.tag,
+    required this.onSave,
     this.onDelete,
+    this.isNew = false,
   });
 
   @override
@@ -39,7 +41,7 @@ class TagEditor extends StatefulWidget {
 
 class TagEditorState extends State<TagEditor> {
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  Color _pickedColor;
+  late Color _pickedColor;
 
   @override
   void initState() {
@@ -47,25 +49,20 @@ class TagEditorState extends State<TagEditor> {
     super.initState();
   }
 
-  bool _isEdit() {
-    if (widget.tag.name != null) return true;
-    return false;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEdit() ? S.of(context).editTag : S.of(context).newTag),
+        title: Text(!widget.isNew ? S.of(context)!.editTag : S.of(context)!.newTag),
         actions: [
-          _isEdit()
+          !widget.isNew
               ? TextButton(
                   child: Text(
-                    S.of(context).delete,
+                    S.of(context)!.delete,
                     style: TextStyle(color: Colors.red),
                   ),
                   onPressed: () {
-                    widget.onDelete(widget.tag);
+                    widget.onDelete!(widget.tag);
                     Navigator.pop(context);
                   },
                 )
@@ -78,9 +75,9 @@ class TagEditorState extends State<TagEditor> {
           children: [
             // Name
             TextFormField(
-              decoration: InputDecoration(labelText: S.of(context).name),
-              initialValue: _isEdit() ? widget.tag.name : null,
-              onSaved: (newValue) => widget.tag.name = newValue,
+              decoration: InputDecoration(labelText: S.of(context)!.name),
+              initialValue: !widget.isNew ? widget.tag.name : null,
+              onSaved: (newValue) => widget.tag.name = newValue!,
             ),
             // Color
             Container(
@@ -110,7 +107,7 @@ class TagEditorState extends State<TagEditor> {
                           color: itemColor,
                           shape: BoxShape.circle,
                           border:
-                              Border.all(width: 1, color: Colors.grey[300])),
+                              Border.all(width: 1, color: Colors.grey[300]!)),
                       child: itemColor.value == _pickedColor.value
                           ? Center(
                               child: Icon(
@@ -130,7 +127,7 @@ class TagEditorState extends State<TagEditor> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.check),
         onPressed: () {
-          _formKey.currentState.save();
+          _formKey.currentState!.save();
           widget.onSave(widget.tag);
           Navigator.pop(context);
         },

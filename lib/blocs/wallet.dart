@@ -14,7 +14,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WalletRepository _walletRepository;
   final SettingsBloc _settingsBloc;
   final TransactionBloc _transactionBloc;
-  Wallet _selectedWallet;
+  Wallet? _selectedWallet;
 
   WalletBloc(this._walletRepository, this._settingsBloc, this._transactionBloc)
       : super(WalletLoading()) {
@@ -22,9 +22,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     // listen SettingsBloc for selected wallet change
     _settingsBloc.stream.listen((state) async {
       if (state is SettingChanged && state.setting.name == 'wallet')
-        await _loadSelectedWallet(state.setting.value);
-      if (state is SettingLoaded && state.setting.name == 'wallet')
-        await _loadSelectedWallet(state.setting.value);
+        await _loadSelectedWallet(state.setting.value!);
+      if (state is SettingLoaded && state.setting!.name == 'wallet')
+        await _loadSelectedWallet(state.setting!.value!);
     });
 
     on<WalletAdd>(_mapAddtoState);
@@ -36,11 +36,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   }
 
   Future _loadSelectedWallet(Object value) async {
-    _selectedWallet = await _walletRepository.get(value);
+    _selectedWallet = await _walletRepository.get(value as int);
     if (_selectedWallet != null) {
       if (!this.isClosed) this.add(WalletGetAll());
       _transactionBloc.add(TransactionGetWallet(
-          _selectedWallet.id, DateTime.now().year, DateTime.now().month));
+          _selectedWallet!.id, DateTime.now().year, DateTime.now().month));
     }
   }
 
@@ -100,7 +100,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     } else {
       // check if selected wallet still exists
       if (_selectedWallet != null &&
-          await _walletRepository.get(_selectedWallet.id) == null)
+          await _walletRepository.get(_selectedWallet!.id) == null)
         _selectFirstWallet(wallets);
     }
   }
@@ -109,7 +109,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     _selectedWallet = wallets[0];
     _settingsBloc.add(SettingAdd(Setting(
       name: 'wallet',
-      value: _selectedWallet.id,
+      value: _selectedWallet!.id,
     )));
   }
 }

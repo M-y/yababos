@@ -1,5 +1,7 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:yababos/models/tag.dart';
 import 'package:yababos/models/transaction.dart';
+import 'package:yababos/models/transaction_search.dart';
 import 'package:yababos/repositories/transaction.dart';
 
 class TransactionInmemory extends TransactionRepository {
@@ -23,17 +25,16 @@ class TransactionInmemory extends TransactionRepository {
   @override
   Future delete(int id) {
     return Future(() async {
-      Transaction transaction = await get(id);
+      Transaction? transaction = await get(id);
       _transactions.remove(transaction);
     });
   }
 
   @override
-  Future<Transaction> get(int id) {
+  Future<Transaction? > get(int id) {
     return Future(() {
-      return _transactions.firstWhere(
+      return _transactions.firstWhereOrNull(
         (element) => element.id == id,
-        orElse: () => null,
       );
     });
   }
@@ -88,16 +89,16 @@ class TransactionInmemory extends TransactionRepository {
   }
 
   @override
-  Future<List<Transaction>> search(Transaction transaction,
-      [Transaction transactionEnd]) {
+  Future<List<Transaction>> search(TransactionSearch transaction,
+      [TransactionSearch? transactionEnd]) {
     return Future(() {
-      DateTime start;
-      DateTime end;
+      DateTime? start;
+      DateTime? end;
       if (transaction.when != null) {
         start = transaction.when;
-        end = DateTime(transaction.when.year, transaction.when.month,
-            transaction.when.day + 1);
-        if (transactionEnd != null) end = transactionEnd.when;
+        end = DateTime(transaction.when!.year, transaction.when!.month,
+          transaction.when!.day + 1);
+      if (transactionEnd != null) end = transactionEnd.when;
       }
 
       List<Transaction> transactions = _transactions.toList();
@@ -109,23 +110,23 @@ class TransactionInmemory extends TransactionRepository {
         if (transaction.to != null) test = test && t.to == transaction.to;
 
         if (transaction.amount != null)
-          test = test && t.amount == transaction.amount;
+        test = test && t.amount == transaction.amount;
 
         if (transaction.description != null)
-          test = test && t.description.contains(transaction.description);
+          test = test && t.description!.contains(transaction.description!);
 
         if (transaction.tags != null) {
           bool tagTest = false;
-          for (Tag tag in transaction.tags)
-            tagTest = tagTest || t.tags.contains(tag);
+          for (Tag tag in transaction.tags!)
+            tagTest = tagTest || t.tags!.contains(tag);
 
           test = test && tagTest;
         }
 
         if (start != null)
-          test = test &&
-              (t.when.isAtSameMomentAs(start) || t.when.isAfter(start)) &&
-              t.when.isBefore(end);
+        test = test &&
+            (t.when.isAtSameMomentAs(start) || t.when.isAfter(start)) &&
+            t.when.isBefore(end!);
 
         return test;
       });

@@ -2,7 +2,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class YababosSqlite {
-  static String path;
+  static String? path;
 
   static final int version = 1;
 
@@ -10,10 +10,10 @@ class YababosSqlite {
     '''
 CREATE TABLE "transactions" (
 	"id"	INTEGER,
-	"fromWallet"	INTEGER,
-	"toWallet"	INTEGER,
-	"amount"	REAL,
-	"date"	INTEGER,
+	"fromWallet"	INTEGER NOT NULL,
+	"toWallet"	INTEGER NOT NULL,
+	"amount"	REAL NOT NULL,
+	"date"	INTEGER NOT NULL,
 	"description"	TEXT,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
@@ -59,7 +59,7 @@ CREATE TABLE "settings" (
     if (path == null) path = join(await getDatabasesPath(), 'yababos.db');
 
     return await openDatabase(
-      path,
+      path!,
       version: version,
       onCreate: (Database db, int version) async {
         for (String createSql in onCreate) {

@@ -8,35 +8,32 @@ typedef OnDelete = Function(Wallet wallet);
 class WalletEditor extends StatelessWidget {
   final Wallet wallet;
   final OnSave onSave;
-  final OnDelete onDelete;
+  final OnDelete? onDelete;
+  final bool isNew;
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   const WalletEditor({
-    @required this.wallet,
-    @required this.onSave,
+    required this.wallet,
+    required this.onSave,
     this.onDelete,
+    this.isNew = false,
   });
-
-  bool _isEdit() {
-    if (wallet.id != null) return true;
-    return false;
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            _isEdit() ? S.of(context).editWallet : S.of(context).newWallet),
+        title:
+            Text(!isNew ? S.of(context)!.editWallet : S.of(context)!.newWallet),
         actions: [
-          _isEdit()
+          !isNew
               ? TextButton(
                   child: Text(
-                    S.of(context).delete,
+                    S.of(context)!.delete,
                     style: TextStyle(color: Colors.red),
                   ),
                   onPressed: () {
-                    onDelete(wallet);
+                    onDelete!(wallet);
                     Navigator.pop(context);
                   },
                 )
@@ -49,24 +46,24 @@ class WalletEditor extends StatelessWidget {
           children: [
             // Name
             TextFormField(
-              decoration: InputDecoration(labelText: S.of(context).name),
-              initialValue: _isEdit() ? wallet.name : null,
+              decoration: InputDecoration(labelText: S.of(context)!.name),
+              initialValue: !isNew ? wallet.name : null,
               onSaved: (newValue) => wallet.name = newValue,
             ),
             // Currency
             TextFormField(
-              decoration: InputDecoration(labelText: S.of(context).currency),
-              initialValue: _isEdit() ? wallet.curreny : null,
+              decoration: InputDecoration(labelText: S.of(context)!.currency),
+              initialValue: !isNew ? wallet.curreny : null,
               onSaved: (newValue) => wallet.curreny = newValue,
             ),
             // Amount
             TextFormField(
               decoration:
-                  InputDecoration(labelText: S.of(context).initialAmount),
-              initialValue: _isEdit() ? wallet.amount.toString() : null,
+                  InputDecoration(labelText: S.of(context)!.initialAmount),
+              initialValue: !isNew ? wallet.amount.toString() : null,
               keyboardType:
                   TextInputType.numberWithOptions(decimal: true, signed: false),
-              onSaved: (newValue) => wallet.amount = double.parse(newValue),
+              onSaved: (newValue) => wallet.amount = double.parse(newValue!),
             ),
           ],
         ),
@@ -74,7 +71,7 @@ class WalletEditor extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.check),
         onPressed: () {
-          _formKey.currentState.save();
+          _formKey.currentState!.save();
           onSave(wallet);
           Navigator.pop(context);
         },

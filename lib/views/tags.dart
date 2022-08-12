@@ -19,7 +19,7 @@ class TagsWidget extends StatelessWidget {
 
             if (tags.isEmpty) {
               return Center(
-                child: Text(S.of(context).noTags),
+                child: Text(S.of(context)!.noTags),
               );
             } else {
               return ListView.builder(
@@ -66,10 +66,11 @@ class TagsWidget extends StatelessWidget {
             MaterialPageRoute(
               builder: (econtext) {
                 return TagEditor(
-                  tag: Tag(name: null),
+                  tag: Tag(name: "new"),
                   onSave: (tag) => BlocProvider.of<TagBloc>(context)
                     ..add(TagGetNone())
                     ..add(TagAdd(tag)),
+                  isNew: true,
                 );
               },
             ),

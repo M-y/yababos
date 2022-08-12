@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:yababos/models/tag.dart';
 import 'package:yababos/repositories/tag.dart';
 
@@ -14,17 +15,16 @@ class TagInmemory extends TagRepository {
   @override
   Future delete(String name) {
     return Future(() async {
-      Tag tag = await get(name);
+      Tag? tag = await get(name);
       _tags.remove(tag);
     });
   }
 
   @override
-  Future<Tag> get(String name) {
+  Future<Tag?> get(String name) {
     return Future(() {
-      return _tags.firstWhere(
+      return _tags.firstWhereOrNull(
         (element) => element.name == name,
-        orElse: () => null,
       );
     });
   }

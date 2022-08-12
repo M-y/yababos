@@ -36,9 +36,9 @@ class WalletSqlite extends WalletRepository {
   }
 
   @override
-  Future<Wallet> get(int id) {
+  Future<Wallet?> get(int id) {
     return Future(() async {
-      List<Map<String, Object>> record =
+      List<Map<String, Object?>> record =
           await (await YababosSqlite.getDatabase())
               .rawQuery('SELECT * FROM wallets WHERE id = ?', [id]);
       if (record.isEmpty) return null;
@@ -50,7 +50,7 @@ class WalletSqlite extends WalletRepository {
   Future<List<Wallet>> getAll() {
     return Future(() async {
       List<Wallet> wallets = <Wallet>[];
-      List<Map<String, Object>> records =
+      List<Map<String, Object?>> records =
           await (await YababosSqlite.getDatabase())
               .rawQuery('SELECT * FROM wallets');
       for (var record in records) {
@@ -78,12 +78,12 @@ class WalletSqlite extends WalletRepository {
     });
   }
 
-  Wallet _mapRecord(Map<String, Object> record) {
+  Wallet _mapRecord(Map<String, Object?> record) {
     return Wallet(
-      id: record['id'],
-      name: record['name'],
-      amount: record['amount'],
-      curreny: record['curreny'],
+      id: record['id'] as int,
+      name: record['name'] as String?,
+      amount: record['amount'] as double?,
+      curreny: record['curreny'] as String?,
     );
   }
 
