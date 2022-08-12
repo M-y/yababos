@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:yababos/blocs/settings.dart';
-import 'package:yababos/blocs/tag.dart';
 import 'package:yababos/events/settings.dart';
-import 'package:yababos/events/tag.dart';
 import 'package:yababos/generated/l10n.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,18 +18,18 @@ import 'package:yababos/views/transaction.dart';
 import 'package:yababos/views/wallet_list.dart';
 
 class WalletWidget extends StatefulWidget {
-  final Wallet selectedWallet;
+  final Wallet? selectedWallet;
   final List<Wallet> wallets;
   final DateTime month;
 
-  const WalletWidget({this.selectedWallet, this.wallets, this.month});
+  const WalletWidget({this.selectedWallet, required this.wallets, required this.month});
 
   @override
   State<StatefulWidget> createState() => WalletWidgetState();
 }
 
 class WalletWidgetState extends State<WalletWidget> {
-  DateTime _month;
+  DateTime? _month;
 
   @override
   void initState() {
@@ -45,14 +43,14 @@ class WalletWidgetState extends State<WalletWidget> {
       builder: (context, state) {
         if (state is WalletTransactionsLoaded) {
           List<Transaction> transactions = state.transactions;
-          int lastDate;
+          int? lastDate;
 
           return Scaffold(
             appBar: AppBar(
               // Wallet select button
               title: TextButton(
                 child: Text(
-                  widget.selectedWallet.name,
+                  widget.selectedWallet!.name!,
                   style: TextStyle(color: Colors.white),
                 ),
                 onPressed: () {
@@ -69,7 +67,7 @@ class WalletWidgetState extends State<WalletWidget> {
                           )));
                           Navigator.pop(context);
                         },
-                        selected: widget.selectedWallet.id,
+                        selected: widget.selectedWallet!.id,
                       );
                     },
                   );
@@ -84,21 +82,21 @@ class WalletWidgetState extends State<WalletWidget> {
                     child: Text("Yababos"),
                   ),
                   ListTile(
-                    title: Text(S.of(context).wallets),
+                    title: Text(S.of(context)!.wallets),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.of(context).pushNamed('/wallets');
                     },
                   ),
                   ListTile(
-                    title: Text(S.of(context).tags),
+                    title: Text(S.of(context)!.tags),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.of(context).pushNamed('/tags');
                     },
                   ),
                   ListTile(
-                    title: Text(S.of(context).backup),
+                    title: Text(S.of(context)!.backup),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.of(context).pushNamed('/backup');
@@ -111,22 +109,22 @@ class WalletWidgetState extends State<WalletWidget> {
               children: [
                 // Overiview
                 OverviewWidget(
-                    '${state.balance} ${widget.selectedWallet.curreny}'),
+                    '${state.balance} ${widget.selectedWallet!.curreny}'),
                 // Date
                 TextButton(
                   onPressed: () {
-                    showMonthPicker(context: context, initialDate: _month)
+                    showMonthPicker(context: context, initialDate: _month!)
                         .then((date) {
                       setState(() {
                         _month = date;
                       });
                       BlocProvider.of<TransactionBloc>(context).add(
                           TransactionGetWallet(
-                              widget.selectedWallet.id, date.year, date.month));
+                              widget.selectedWallet!.id, date!.year, date.month));
                     });
                   },
                   child: Text(
-                    '${DateFormat.MMMM().format(_month)}, ${_month.year}',
+                    '${DateFormat.MMMM().format(_month!)}, ${_month!.year}',
                     style: Theme.of(context).textTheme.headline4,
                   ),
                 ),
@@ -147,7 +145,7 @@ class WalletWidgetState extends State<WalletWidget> {
                       return TransactionWidget(
                         transaction: transaction,
                         wallets: widget.wallets,
-                        wallet: widget.selectedWallet,
+                        wallet: widget.selectedWallet!,
                         showDate: showDate,
                       );
                     },
@@ -163,10 +161,11 @@ class WalletWidgetState extends State<WalletWidget> {
                   MaterialPageRoute(
                     builder: (econtext) {
                       return TransactionEditor(
+                        isNew: true,
                         wallets: widget.wallets.toList(),
                         transaction: Transaction(
-                          id: null,
-                          from: widget.selectedWallet.id,
+                          id: 0,
+                          from: widget.selectedWallet!.id,
                           to: 0,
                           amount: 0,
                           when: DateTime.now(),

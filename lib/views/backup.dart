@@ -45,7 +45,7 @@ class BackupWidget extends StatelessWidget {
                 TextButton(
                   onPressed: () {
                     FilePicker.platform.pickFiles().then((result) {
-                      File file = File(result.files.single.path);
+                      File file = File(result!.files.single.path!);
                       file.readAsString().then((csv) =>
                           BlocProvider.of<BackupBloc>(context)
                             ..add(BackupLoad(csv)));

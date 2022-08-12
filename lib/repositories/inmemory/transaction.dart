@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:yababos/models/tag.dart';
 import 'package:yababos/models/transaction.dart';
 import 'package:yababos/models/transaction_search.dart';
@@ -24,17 +25,16 @@ class TransactionInmemory extends TransactionRepository {
   @override
   Future delete(int id) {
     return Future(() async {
-      Transaction transaction = await get(id);
+      Transaction? transaction = await get(id);
       _transactions.remove(transaction);
     });
   }
 
   @override
-  Future<Transaction /*?*/ > get(int id) {
+  Future<Transaction? > get(int id) {
     return Future(() {
-      return _transactions.firstWhere(
+      return _transactions.firstWhereOrNull(
         (element) => element.id == id,
-        orElse: () => null,
       );
     });
   }
@@ -90,14 +90,14 @@ class TransactionInmemory extends TransactionRepository {
 
   @override
   Future<List<Transaction>> search(TransactionSearch transaction,
-      [TransactionSearch transactionEnd]) {
+      [TransactionSearch? transactionEnd]) {
     return Future(() {
-      DateTime start;
-      DateTime end;
+      DateTime? start;
+      DateTime? end;
       if (transaction.when != null) {
         start = transaction.when;
-        end = DateTime(transaction.when.year, transaction.when.month,
-          transaction.when.day + 1);
+        end = DateTime(transaction.when!.year, transaction.when!.month,
+          transaction.when!.day + 1);
       if (transactionEnd != null) end = transactionEnd.when;
       }
 
@@ -113,12 +113,12 @@ class TransactionInmemory extends TransactionRepository {
         test = test && t.amount == transaction.amount;
 
         if (transaction.description != null)
-          test = test && t.description.contains(transaction.description);
+          test = test && t.description!.contains(transaction.description!);
 
         if (transaction.tags != null) {
           bool tagTest = false;
-          for (Tag tag in transaction.tags)
-            tagTest = tagTest || t.tags.contains(tag);
+          for (Tag tag in transaction.tags!)
+            tagTest = tagTest || t.tags!.contains(tag);
 
           test = test && tagTest;
         }
@@ -126,7 +126,7 @@ class TransactionInmemory extends TransactionRepository {
         if (start != null)
         test = test &&
             (t.when.isAtSameMomentAs(start) || t.when.isAfter(start)) &&
-            t.when.isBefore(end);
+            t.when.isBefore(end!);
 
         return test;
       });

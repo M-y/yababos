@@ -19,13 +19,15 @@ class TransactionEditor extends StatefulWidget {
   final List<Wallet> wallets;
   final Transaction transaction;
   final OnSave onSave;
-  final OnDelete onDelete;
+  final OnDelete? onDelete;
+  final bool isNew;
 
   const TransactionEditor({
-    @required this.wallets,
-    @required this.transaction,
-    @required this.onSave,
+    required this.wallets,
+    required this.transaction,
+    required this.onSave,
     this.onDelete,
+    this.isNew = false,
   });
 
   @override
@@ -33,31 +35,26 @@ class TransactionEditor extends StatefulWidget {
 }
 
 class TransactionEditorState extends State<TransactionEditor> {
-  Transaction transaction;
+  late Transaction transaction;
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  bool _isEdit() {
-    if (transaction.id != null) return true;
-    return false;
-  }
 
   @override
   Widget build(BuildContext context) {
     transaction = widget.transaction;
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEdit()
-            ? S.of(context).editTransaction
-            : S.of(context).newTransaction),
+        title: Text(!widget.isNew
+            ? S.of(context)!.editTransaction
+            : S.of(context)!.newTransaction),
         actions: [
-          _isEdit()
+          !widget.isNew
               ? TextButton(
                   child: Text(
-                    S.of(context).delete,
+                    S.of(context)!.delete,
                     style: TextStyle(color: Colors.red),
                   ),
                   onPressed: () {
-                    widget.onDelete(transaction);
+                    widget.onDelete!(transaction);
                     Navigator.pop(context);
                   },
                 )
@@ -94,7 +91,7 @@ class TransactionEditorState extends State<TransactionEditor> {
             DateTimePicker(
               initialDate: transaction.when,
               onSaved: (newValue) =>
-                  transaction.when = DateTime.parse(newValue),
+                  transaction.when = DateTime.parse(newValue!),
               initialValue: transaction.when.toIso8601String(),
               icon: Icon(Icons.event),
               firstDate: DateTime(1900, 1, 1),
@@ -102,30 +99,31 @@ class TransactionEditorState extends State<TransactionEditor> {
             ),
             // Amount
             TextFormField(
-              decoration: InputDecoration(labelText: S.of(context).amount),
-              initialValue: _isEdit() ? transaction.amount.toString() : null,
+              decoration: InputDecoration(labelText: S.of(context)!.amount),
+              initialValue:
+                  !widget.isNew ? transaction.amount.toString() : null,
               keyboardType:
                   TextInputType.numberWithOptions(decimal: true, signed: false),
               onSaved: (newValue) =>
-                  transaction.amount = double.parse(newValue),
+                  transaction.amount = double.parse(newValue!),
             ),
             // Tags
             ChipsInput(
-              decoration: InputDecoration(labelText: S.of(context).tags),
+              decoration: InputDecoration(labelText: S.of(context)!.tags),
               initialValue: transaction.tags ?? [],
-              chipBuilder: (context, state, tag) {
+              chipBuilder: (context, state, dynamic tag) {
                 return InputChip(
                     label: Text((tag as Tag).name),
                     onDeleted: () => state.deleteChip(tag),
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap);
               },
-              suggestionBuilder: (context, chipsInputState, data) {
+              suggestionBuilder: (context, chipsInputState, dynamic data) {
                 if (data != null) {
                   return ListTile(
                     title: Text((data as Tag).name),
                     onTap: () {
-                      (data as Tag).name =
-                          (data as Tag).name.replaceFirst(RegExp('^\\+ '), '');
+                      data.name =
+                          data.name.replaceFirst(RegExp('^\\+ '), '');
                       chipsInputState.selectSuggestion(data);
                     },
                   );
@@ -152,12 +150,12 @@ class TransactionEditorState extends State<TransactionEditor> {
                 return [null];
               },
               onChanged: (value) =>
-                  transaction.tags = value.map((e) => (e as Tag)).toList(),
+                  transaction.tags = value.map((e) => (e as Tag?)).toList() as List<Tag>?,
             ),
             // Description
             TextFormField(
-              decoration: InputDecoration(labelText: S.of(context).description),
-              initialValue: _isEdit() ? transaction.description : null,
+              decoration: InputDecoration(labelText: S.of(context)!.description),
+              initialValue: !widget.isNew ? transaction.description : null,
               onSaved: (newValue) => transaction.description = newValue,
               maxLines: 10,
             ),
@@ -167,7 +165,7 @@ class TransactionEditorState extends State<TransactionEditor> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.check),
         onPressed: () {
-          _formKey.currentState.save();
+          _formKey.currentState!.save();
           widget.onSave(transaction);
           Navigator.pop(context);
         },

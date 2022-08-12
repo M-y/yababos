@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:yababos/models/setting.dart';
 import 'package:yababos/repositories/settings.dart';
 
@@ -17,10 +18,9 @@ class SettingsInmemory extends SettingsRepository {
   }
 
   @override
-  Future<Setting> get(String name) {
+  Future<Setting?> get(String name) {
     return Future(() {
-      return _settings.firstWhere((element) => element.name == name,
-          orElse: () => null);
+      return _settings.firstWhereOrNull((element) => element.name == name);
     });
   }
 

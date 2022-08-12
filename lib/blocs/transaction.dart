@@ -9,7 +9,7 @@ import 'package:yababos/states/transaction.dart';
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final TransactionRepository _transactionRepository;
   final TagRepository _tagRepository;
-  int _selectedWallet;
+  int _selectedWallet = 0;
   int _year = DateTime.now().year;
   int _month = DateTime.now().month;
 
@@ -27,8 +27,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   Future<void> _mapAddtoState(
       TransactionAdd event, Emitter<TransactionState> emit) async {
     await _transactionRepository.add(event.transaction);
-    if (event.transaction.tags != null)
-      await _addTags(event.transaction.tags);
+    if (event.transaction.tags != null) await _addTags(event.transaction.tags!);
     return emit(await _selectedWalletTransactions());
   }
 
@@ -41,8 +40,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   Future<void> _mapUpdatetoState(
       TransactionUpdate event, Emitter<TransactionState> emit) async {
     await _transactionRepository.update(event.transaction);
-    if (event.transaction.tags != null)
-      await _addTags(event.transaction.tags);
+    if (event.transaction.tags != null) await _addTags(event.transaction.tags!);
     return emit(await _selectedWalletTransactions());
   }
 

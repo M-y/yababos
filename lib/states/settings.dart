@@ -5,7 +5,7 @@ abstract class SettingState extends Equatable {
   const SettingState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class SettingsLoading extends SettingState {}
@@ -20,10 +20,10 @@ class SettingChanged extends SettingState {
 }
 
 class SettingLoaded extends SettingState {
-  final Setting setting;
+  final Setting? setting;
 
   const SettingLoaded(this.setting);
 
   @override
-  List<Object> get props => [setting];
+  List<Object?> get props => [setting];
 }

@@ -39,7 +39,7 @@ class TransactionSqlite extends TransactionRepository {
       ]);
 
       if (transaction.tags != null)
-        await _addTransactionTags(transaction.id, transaction.tags);
+        await _addTransactionTags(transaction.id, transaction.tags!);
     });
   }
 
@@ -47,7 +47,7 @@ class TransactionSqlite extends TransactionRepository {
   Future<List<Transaction>> getAll({bool isUtc = false}) {
     return Future(() async {
       List<Transaction> transactions = <Transaction>[];
-      List<Map<String, Object>> records =
+      List<Map<String, Object?>> records =
           await (await YababosSqlite.getDatabase())
               .rawQuery('SELECT * FROM transactions');
       for (var record in records) {
@@ -67,9 +67,9 @@ class TransactionSqlite extends TransactionRepository {
   }
 
   @override
-  Future<Transaction> get(int id) {
+  Future<Transaction?> get(int id) {
     return Future(() async {
-      List<Map<String, Object>> record =
+      List<Map<String, Object?>> record =
           await (await YababosSqlite.getDatabase())
               .rawQuery('SELECT * FROM transactions WHERE id = ?', [id]);
       if (record.isEmpty) return null;
@@ -99,14 +99,14 @@ class TransactionSqlite extends TransactionRepository {
 
       await _deleteTransactionTags(transaction.id);
       if (transaction.tags != null)
-        await _addTransactionTags(transaction.id, transaction.tags);
+        await _addTransactionTags(transaction.id, transaction.tags!);
     });
   }
 
   @override
-  Future<double /*!*/ > balance(int wallet) {
+  Future<double> balance(int wallet) {
     return Future(() async {
-      List<Map<String, Object>> record;
+      List<Map<String, Object?>> record;
 
       record = await (await YababosSqlite.getDatabase()).rawQuery('''
           select 
@@ -115,7 +115,7 @@ class TransactionSqlite extends TransactionRepository {
             IFNULL((SELECT SUM(amount) FROM transactions WHERE fromWallet = ?),0.0)
           as balance
           ''', [wallet, wallet]);
-      return record[0]['balance'];
+      return record[0]['balance'] as double;
     });
   }
 
@@ -124,7 +124,7 @@ class TransactionSqlite extends TransactionRepository {
       int wallet, int year, int month) {
     return Future(() async {
       List<Transaction> transactions = <Transaction>[];
-      List<Map<String, Object>> records;
+      List<Map<String, Object?>> records;
 
       DateTime start = DateTime(year, month);
       DateTime end = DateTime(year, month + 1);
@@ -143,32 +143,32 @@ class TransactionSqlite extends TransactionRepository {
     });
   }
 
-  Future<Transaction> _mapRecord(Map<String, Object> record,
+  Future<Transaction> _mapRecord(Map<String, Object?> record,
       {bool isUtc = false}) async {
     return Transaction(
-      id: record['id'],
-      from: record['fromWallet'],
-      to: record['toWallet'],
-      amount: record['amount'],
+      id: record['id'] as int,
+      from: record['fromWallet'] as int,
+      to: record['toWallet'] as int,
+      amount: record['amount'] as double,
       when: (isUtc)
-          ? DateTime.fromMicrosecondsSinceEpoch(record['date'], isUtc: true)
-          : DateTime.fromMicrosecondsSinceEpoch(record['date'], isUtc: true)
+          ? DateTime.fromMicrosecondsSinceEpoch(record['date'] as int, isUtc: true)
+          : DateTime.fromMicrosecondsSinceEpoch(record['date'] as int, isUtc: true)
               .toLocal(),
-      description: record['description'],
-      tags: await _transactionTags(record['id']),
+      description: record['description'] as String?,
+      tags: await _transactionTags(record['id'] as int),
     );
   }
 
-  Future<List<Tag /*!*/ >> _transactionTags(int /*!*/ transactionId) {
+  Future<List<Tag >?> _transactionTags(int transactionId) {
     return Future(() async {
-      List<Tag /*!*/ > tags = <Tag>[];
+      List<Tag > tags = <Tag>[];
 
-      List<Map<String, Object>> records =
+      List<Map<String, Object?>> records =
           await (await YababosSqlite.getDatabase()).rawQuery(
               'SELECT * FROM transaction_tags WHERE transactionId = ?',
               [transactionId]);
       for (var record in records) {
-        tags.add(await _tagRepository.get(record['tag']));
+        tags.add(await (_tagRepository.get(record['tag'] as String)) as Tag);
       }
 
       if (tags.isEmpty) return null;
@@ -184,7 +184,7 @@ class TransactionSqlite extends TransactionRepository {
     });
   }
 
-  Future _addTransactionTags(int transactionId, List<Tag> /*!*/ tags) {
+  Future _addTransactionTags(int transactionId, List<Tag> tags) {
     return Future(() async {
       for (Tag tag in tags) {
         await (await YababosSqlite.getDatabase()).rawInsert('''
@@ -218,23 +218,23 @@ class TransactionSqlite extends TransactionRepository {
 
   @override
   Future<List<Transaction>> search(TransactionSearch transaction,
-      [TransactionSearch transactionEnd]) {
+      [TransactionSearch? transactionEnd]) {
     return Future(() async {
       List<Transaction> transactions = <Transaction>[];
-      List<Map<String, Object>> records;
+      List<Map<String, Object?>> records;
       List<String> where = List.empty(growable: true);
       String join = '';
 
-      DateTime start;
-      DateTime end;
+      DateTime? start;
+      DateTime? end;
       if (transaction.when != null) {
         start = transaction.when;
-        end = DateTime(transaction.when.year, transaction.when.month,
-          transaction.when.day + 1);
+        end = DateTime(transaction.when!.year, transaction.when!.month,
+          transaction.when!.day + 1);
       if (transactionEnd != null) end = transactionEnd.when;
 
       where.add(
-          'date >= ${start.microsecondsSinceEpoch} AND date < ${end.microsecondsSinceEpoch}');
+          'date >= ${start!.microsecondsSinceEpoch} AND date < ${end!.microsecondsSinceEpoch}');
       }
 
       if (transaction.from != null) where.add('from = ${transaction.from}');
@@ -249,7 +249,7 @@ class TransactionSqlite extends TransactionRepository {
       if (transaction.tags != null) {
         join = 'JOIN transaction_tags ON(transactionId = id)';
         List<String> tagWhere = List.empty(growable: true);
-        for (Tag tag in transaction.tags) tagWhere.add("tag = '${tag.name}'");
+        for (Tag tag in transaction.tags!) tagWhere.add("tag = '${tag.name}'");
 
         where.add('(${tagWhere.join(" OR ")})');
       }

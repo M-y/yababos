@@ -14,15 +14,15 @@ class SettingsSqlite extends SettingsRepository {
   }
 
   @override
-  Future<Setting> get(String name) {
+  Future<Setting?> get(String name) {
     return Future(() async {
-      List<Map<String, Object>> record =
+      List<Map<String, Object?>> record =
           await (await YababosSqlite.getDatabase())
               .rawQuery('SELECT * FROM settings WHERE name = ?', [name]);
       if (record.isEmpty) return null;
 
       return Setting(
-        name: record[0]['name'],
+        name: record[0]['name'] as String,
         value: record[0]['value'],
       );
     });

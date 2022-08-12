@@ -37,7 +37,7 @@ class TagSqlite extends TagRepository {
   Future<List<Tag>> find(Tag tag) {
     return Future(() async {
       List<Tag> tags = <Tag>[];
-      List<Map<String, Object>> records =
+      List<Map<String, Object?>> records =
           await (await YababosSqlite.getDatabase()).rawQuery(
               'SELECT * FROM tags WHERE name LIKE ?', ["%${tag.name}%"]);
       for (var record in records) {
@@ -48,9 +48,9 @@ class TagSqlite extends TagRepository {
   }
 
   @override
-  Future<Tag> get(String name) {
+  Future<Tag?> get(String name) {
     return Future(() async {
-      List<Map<String, Object>> record =
+      List<Map<String, Object?>> record =
           await (await YababosSqlite.getDatabase())
               .rawQuery('SELECT * FROM tags WHERE name = ?', [name]);
       if (record.isEmpty) return null;
@@ -62,7 +62,7 @@ class TagSqlite extends TagRepository {
   Future<List<Tag>> getAll() {
     return Future(() async {
       List<Tag> tags = <Tag>[];
-      List<Map<String, Object>> records =
+      List<Map<String, Object?>> records =
           await (await YababosSqlite.getDatabase())
               .rawQuery('SELECT * FROM tags');
       for (var record in records) {
@@ -89,10 +89,10 @@ class TagSqlite extends TagRepository {
     });
   }
 
-  Tag _mapRecord(Map<String, Object> record) {
+  Tag _mapRecord(Map<String, Object?> record) {
     return Tag(
-      name: record['name'],
-      color: Color(record['color']),
+      name: record['name'] as String,
+      color: Color(record['color'] as int),
     );
   }
 

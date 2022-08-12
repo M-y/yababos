@@ -6,13 +6,13 @@ typedef OnTap = Function(int id);
 
 class WalletList extends StatefulWidget {
   final List<Wallet> wallets;
-  final OnTap onTap;
+  final OnTap? onTap;
   final bool outside;
-  int selected;
+  int? selected;
 
   WalletList(
-      {Key key,
-      @required this.wallets,
+      {Key? key,
+      required this.wallets,
       this.onTap,
       this.outside = false,
       this.selected})
@@ -30,11 +30,11 @@ class WalletListState extends State<WalletList> {
       walletButtons.add(ListTile(
         selected: widget.selected == 0,
         title: Text(
-          S.of(context).outside,
+          S.of(context)!.outside,
           style: TextStyle(color: Colors.grey),
         ),
         onTap: () {
-          widget.onTap(0);
+          widget.onTap!(0);
           setState(() {
             widget.selected = 0;
           });
@@ -44,9 +44,9 @@ class WalletListState extends State<WalletList> {
     for (Wallet wallet in widget.wallets) {
       walletButtons.add(ListTile(
         selected: widget.selected == wallet.id,
-        title: Text(wallet.name),
+        title: Text(wallet.name!),
         onTap: () {
-          widget.onTap(wallet.id);
+          widget.onTap!(wallet.id);
           setState(() {
             widget.selected = wallet.id;
           });

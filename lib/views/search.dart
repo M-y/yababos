@@ -21,19 +21,19 @@ class SearchWidget extends StatelessWidget {
         children: [
           ChipsInput(
             maxChips: 1,
-            chipBuilder: (context, state, tag) {
+            chipBuilder: (context, state, dynamic tag) {
               return InputChip(
                   label: Text((tag as Tag).name),
                   onDeleted: () => state.deleteChip(tag),
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap);
             },
-            suggestionBuilder: (context, chipsInputState, data) {
+            suggestionBuilder: (context, chipsInputState, dynamic data) {
               if (data != null) {
                 return ListTile(
                   title: Text((data as Tag).name),
                   onTap: () {
-                    (data as Tag).name =
-                        (data as Tag).name.replaceFirst(RegExp('^\\+ '), '');
+                    data.name =
+                        data.name.replaceFirst(RegExp('^\\+ '), '');
                     chipsInputState.selectSuggestion(data);
                   },
                 );
@@ -81,7 +81,7 @@ class SearchWidget extends StatelessWidget {
               builder: (context, state) {
             if (state is TransactionsFound) {
               List<Transaction> transactions = state.transactions;
-              int lastDate;
+              int? lastDate;
 
               return Expanded(
                 child: ListView.builder(
@@ -99,7 +99,7 @@ class SearchWidget extends StatelessWidget {
                     return TransactionWidget(
                       transaction: transaction,
                       wallets: <Wallet>[],
-                      wallet: Wallet(id: null),
+                      wallet: Wallet(id: 0),
                       showDate: showDate,
                     );
                   },

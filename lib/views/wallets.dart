@@ -18,7 +18,7 @@ class WalletsWidget extends StatelessWidget {
             List<Wallet> wallets = state.wallets;
 
             if (wallets.length == 0) {
-              return Center(child: Text(S.of(context).noWallets));
+              return Center(child: Text(S.of(context)!.noWallets));
             } else {
               return ListView.builder(
                 itemCount: wallets.length,
@@ -26,7 +26,7 @@ class WalletsWidget extends StatelessWidget {
                   return Card(
                     child: InkWell(
                       child: Center(
-                        child: Text(wallets[index].name),
+                        child: Text(wallets[index].name!),
                       ),
                       onTap: () {
                         Navigator.push(
@@ -65,7 +65,8 @@ class WalletsWidget extends StatelessWidget {
             MaterialPageRoute(
               builder: (econtext) {
                 return WalletEditor(
-                  wallet: Wallet(id: null),
+                  isNew: true,
+                  wallet: Wallet(id: 0),
                   onSave: (wallet) => BlocProvider.of<WalletBloc>(context)
                     ..add(WalletGetNone())
                     ..add(WalletAdd(wallet)),

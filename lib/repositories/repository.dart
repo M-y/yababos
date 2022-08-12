@@ -13,7 +13,7 @@ class RepositorySelections {
   static WalletRepository walletRepository = WalletSqlite();
   static TagRepository tagRepository = TagSqlite();
   static TransactionRepository transactionRepository =
-      TransactionSqlite(tagRepository);
+      TransactionSqlite(tagRepository as TagSqlite);
 
   static CsvRepository csvRepository = CsvRepository();
 }

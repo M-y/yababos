@@ -41,7 +41,7 @@ class TransactionDelete extends TransactionEvent {
 
 class TransactionSearch extends TransactionEvent {
   final model.TransactionSearch transaction;
-  final model.TransactionSearch transactionEnd;
+  final model.TransactionSearch? transactionEnd;
 
   TransactionSearch(this.transaction, [this.transactionEnd]);
 }
