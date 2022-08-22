@@ -113,6 +113,7 @@ class TagEditorState extends State<TagEditor> {
                               child: Icon(
                                 Icons.check,
                                 color: Colors.black,
+                                key: Key("pickedColor"),
                               ),
                             )
                           : Container(),
