@@ -65,11 +65,12 @@ class TransactionEditorState extends State<TransactionEditor> {
         key: _formKey,
         child: ListView(
           children: [
-            // From
             Row(
               children: [
+                // From
                 Expanded(
                   child: WalletList(
+                    key: Key("from"),
                     outside: true,
                     wallets: widget.wallets,
                     onTap: (id) => transaction.from = id,
@@ -79,6 +80,7 @@ class TransactionEditorState extends State<TransactionEditor> {
                 // To
                 Expanded(
                   child: WalletList(
+                    key: Key("to"),
                     outside: true,
                     wallets: widget.wallets,
                     onTap: (id) => transaction.to = id,
@@ -89,6 +91,7 @@ class TransactionEditorState extends State<TransactionEditor> {
             ),
             // When
             DateTimePicker(
+              key: Key("when"),
               initialDate: transaction.when,
               onSaved: (newValue) =>
                   transaction.when = DateTime.parse(newValue!),
@@ -99,6 +102,7 @@ class TransactionEditorState extends State<TransactionEditor> {
             ),
             // Amount
             TextFormField(
+              key: Key("amount"),
               decoration: InputDecoration(labelText: S.of(context)!.amount),
               initialValue:
                   !widget.isNew ? transaction.amount.toString() : null,
@@ -109,6 +113,7 @@ class TransactionEditorState extends State<TransactionEditor> {
             ),
             // Tags
             ChipsInput(
+              key: Key("tags"),
               decoration: InputDecoration(labelText: S.of(context)!.tags),
               initialValue: transaction.tags ?? [],
               chipBuilder: (context, state, dynamic tag) {
@@ -122,8 +127,7 @@ class TransactionEditorState extends State<TransactionEditor> {
                   return ListTile(
                     title: Text((data as Tag).name),
                     onTap: () {
-                      data.name =
-                          data.name.replaceFirst(RegExp('^\\+ '), '');
+                      data.name = data.name.replaceFirst(RegExp('^\\+ '), '');
                       chipsInputState.selectSuggestion(data);
                     },
                   );
@@ -149,12 +153,14 @@ class TransactionEditorState extends State<TransactionEditor> {
                 }
                 return [null];
               },
-              onChanged: (value) =>
-                  transaction.tags = value.map((e) => (e as Tag?)).toList() as List<Tag>?,
+              onChanged: (value) => transaction.tags =
+                  value.map((e) => (e as Tag?)).toList() as List<Tag>?,
             ),
             // Description
             TextFormField(
-              decoration: InputDecoration(labelText: S.of(context)!.description),
+              key: Key("description"),
+              decoration:
+                  InputDecoration(labelText: S.of(context)!.description),
               initialValue: !widget.isNew ? transaction.description : null,
               onSaved: (newValue) => transaction.description = newValue,
               maxLines: 10,
