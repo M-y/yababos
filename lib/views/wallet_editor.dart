@@ -46,18 +46,21 @@ class WalletEditor extends StatelessWidget {
           children: [
             // Name
             TextFormField(
+              key: Key("name"),
               decoration: InputDecoration(labelText: S.of(context)!.name),
               initialValue: !isNew ? wallet.name : null,
               onSaved: (newValue) => wallet.name = newValue,
             ),
             // Currency
             TextFormField(
+              key: Key("currency"),
               decoration: InputDecoration(labelText: S.of(context)!.currency),
               initialValue: !isNew ? wallet.curreny : null,
               onSaved: (newValue) => wallet.curreny = newValue,
             ),
             // Amount
             TextFormField(
+              key: Key("amount"),
               decoration:
                   InputDecoration(labelText: S.of(context)!.initialAmount),
               initialValue: !isNew ? wallet.amount.toString() : null,

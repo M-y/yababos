@@ -15,6 +15,7 @@ import 'package:yababos/views/tag_editor.dart';
 import 'package:yababos/views/tags.dart';
 import 'package:yababos/views/transaction.dart';
 import 'package:yababos/views/transaction_editor.dart';
+import 'package:yababos/views/wallet_editor.dart';
 import 'package:yababos/views/wallet_list.dart';
 import 'l10n_helper.dart';
 
@@ -407,6 +408,120 @@ void main() {
       await widgetTester.pumpAndSettle();
       Text amount = find.byKey(Key("amount")).evaluate().first.widget as Text;
       expect(amount.data, '-' + transaction.amount.toString());
+    });
+  });
+
+  group("Wallet Editor", () {
+    bool isCalled = false;
+    Wallet wallet = Wallet(
+      id: 1,
+      name: "Test Wallet",
+      amount: 1000000,
+      curreny: 'TRY',
+    );
+    Widget walletEditor = L10nHelper.build(WalletEditor(
+      wallet: wallet,
+      onSave: (tag) => isCalled = true,
+      onDelete: (tag) => isCalled = true,
+    ));
+
+    testWidgets("Calling onSave method", (widgetTester) async {
+      await widgetTester.pumpWidget(walletEditor);
+      await widgetTester.pumpAndSettle();
+
+      await widgetTester.tap(find.byType(FloatingActionButton));
+      expect(isCalled, true);
+      isCalled = false;
+    });
+
+    testWidgets("Calling onDelete method", (widgetTester) async {
+      await widgetTester.pumpWidget(walletEditor);
+      await widgetTester.pumpAndSettle();
+
+      String delete = L10nHelper.getLocalizations().delete;
+      await widgetTester.tap(find.descendant(
+          of: find.byType(TextButton), matching: find.text(delete)));
+
+      expect(isCalled, true);
+      isCalled = false;
+    });
+
+    group("New wallet / Edit wallet behaviour", () {
+      Widget newWalletWidget = L10nHelper.build(WalletEditor(
+        wallet: Wallet(id: 0),
+        onSave: (wallet) => null,
+        isNew: true,
+      ));
+      Widget editWalletWidget = L10nHelper.build(WalletEditor(
+        wallet: Wallet(id: 0),
+        onSave: (wallet) => null,
+      ));
+      String editWallet = L10nHelper.getLocalizations().editWallet;
+      String newWallet = L10nHelper.getLocalizations().newWallet;
+
+      testWidgets("Appbar title on edit", (widgetTester) async {
+        await widgetTester.pumpWidget(editWalletWidget);
+        await widgetTester.pumpAndSettle();
+
+        expect(find.text(editWallet), findsOneWidget);
+        expect(find.text(newWallet), findsNothing);
+      });
+
+      testWidgets("Appbar title on new", (widgetTester) async {
+        await widgetTester.pumpWidget(newWalletWidget);
+        await widgetTester.pumpAndSettle();
+
+        expect(find.text(newWallet), findsOneWidget);
+        expect(find.text(editWallet), findsNothing);
+      });
+
+      testWidgets("Delete button appears on edit", (widgetTester) async {
+        await widgetTester.pumpWidget(editWalletWidget);
+        await widgetTester.pumpAndSettle();
+
+        String delete = L10nHelper.getLocalizations().delete;
+        expect(find.text(delete), findsOneWidget);
+      });
+
+      testWidgets("Delete button disappears on new", (widgetTester) async {
+        await widgetTester.pumpWidget(newWalletWidget);
+        await widgetTester.pumpAndSettle();
+
+        String delete = L10nHelper.getLocalizations().delete;
+        expect(find.text(delete), findsNothing);
+      });
+    });
+
+    group("Form fields", () {
+      testWidgets("Name", (widgetTester) async {
+        await widgetTester.pumpWidget(walletEditor);
+        await widgetTester.pumpAndSettle();
+
+        Finder f = find.byKey(Key("name"));
+        expect(f, findsOneWidget);
+        TextFormField w = f.evaluate().first.widget as TextFormField;
+        expect(w.initialValue, wallet.name);
+      });
+
+      testWidgets("Currency", (widgetTester) async {
+        await widgetTester.pumpWidget(walletEditor);
+        await widgetTester.pumpAndSettle();
+
+        Finder f = find.byKey(Key("currency"));
+        expect(f, findsOneWidget);
+        TextFormField w = f.evaluate().first.widget as TextFormField;
+        expect(w.initialValue, wallet.curreny);
+      });
+
+      testWidgets("Amount", (widgetTester) async {
+        await widgetTester.pumpWidget(walletEditor);
+        await widgetTester.pumpAndSettle();
+
+        Finder f = find.byKey(Key("amount"));
+        expect(f, findsOneWidget);
+        TextFormField w = f.evaluate().first.widget as TextFormField;
+        expect(w.initialValue, wallet.amount.toString());
+      });
     });
   });
 }
