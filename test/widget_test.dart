@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chips_input/flutter_chips_input.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/intl.dart';
 import 'package:yababos/blocs/tag.dart';
 import 'package:yababos/events/tag.dart';
 import 'package:yababos/models/tag.dart';
@@ -12,6 +13,7 @@ import 'package:yababos/models/wallet.dart';
 import 'package:yababos/states/tag.dart';
 import 'package:yababos/views/tag_editor.dart';
 import 'package:yababos/views/tags.dart';
+import 'package:yababos/views/transaction.dart';
 import 'package:yababos/views/transaction_editor.dart';
 import 'package:yababos/views/wallet_list.dart';
 import 'l10n_helper.dart';
@@ -328,6 +330,83 @@ void main() {
         TextFormField w = f.evaluate().first.widget as TextFormField;
         expect(w.initialValue, transaction.description);
       });
+    });
+  });
+
+  group("Transaction", () {
+    Transaction transaction = Transaction(
+      id: 0,
+      amount: 100,
+      from: 0,
+      to: 1,
+      when: DateTime.now(),
+      tags: List.from([Tag(name: "t1"), Tag(name: "t2")]),
+      description: "A description",
+    );
+    Widget transactionWidget = L10nHelper.build(TransactionWidget(
+      transaction: transaction,
+      wallets: [],
+      wallet: Wallet(id: 1),
+    ));
+
+    testWidgets("Show Date", (widgetTester) async {
+      Widget showDate = L10nHelper.build(TransactionWidget(
+        transaction: transaction,
+        wallets: [],
+        wallet: Wallet(id: 0),
+        showDate: true,
+      ));
+      String date = DateFormat.MMMMEEEEd().format(transaction.when);
+
+      await widgetTester.pumpWidget(transactionWidget);
+      await widgetTester.pumpAndSettle();
+      expect(find.text(date), findsNothing);
+
+      await widgetTester.pumpWidget(showDate);
+      await widgetTester.pumpAndSettle();
+      expect(find.text(date), findsOneWidget);
+    });
+
+    testWidgets("Tags", (widgetTester) async {
+      await widgetTester.pumpWidget(transactionWidget);
+      await widgetTester.pumpAndSettle();
+      expect(find.text(transaction.tags![0].name), findsOneWidget);
+      expect(find.text(transaction.tags![1].name), findsOneWidget);
+    });
+
+    testWidgets("Description", (widgetTester) async {
+      await widgetTester.pumpWidget(transactionWidget);
+      await widgetTester.pumpAndSettle();
+      expect(find.text(transaction.description!), findsOneWidget);
+    });
+
+    testWidgets("Amount", (widgetTester) async {
+      await widgetTester.pumpWidget(transactionWidget);
+      await widgetTester.pumpAndSettle();
+      Text amount = find.byKey(Key("amount")).evaluate().first.widget as Text;
+      expect(amount.data, transaction.amount.toString());
+    });
+
+    testWidgets("Is expense", (widgetTester) async {
+      Transaction transaction = Transaction(
+        id: 0,
+        amount: 100,
+        from: 1,
+        to: 0,
+        when: DateTime.now(),
+        tags: List.from([Tag(name: "t1"), Tag(name: "t2")]),
+        description: "A description",
+      );
+      Widget transactionWidget = L10nHelper.build(TransactionWidget(
+        transaction: transaction,
+        wallets: [],
+        wallet: Wallet(id: 1),
+      ));
+
+      await widgetTester.pumpWidget(transactionWidget);
+      await widgetTester.pumpAndSettle();
+      Text amount = find.byKey(Key("amount")).evaluate().first.widget as Text;
+      expect(amount.data, '-' + transaction.amount.toString());
     });
   });
 }
