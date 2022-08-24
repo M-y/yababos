@@ -6,20 +6,27 @@ import 'package:flutter_chips_input/flutter_chips_input.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 import 'package:yababos/blocs/tag.dart';
+import 'package:yababos/blocs/wallet.dart';
 import 'package:yababos/events/tag.dart';
+import 'package:yababos/events/wallet.dart';
 import 'package:yababos/models/tag.dart';
 import 'package:yababos/models/transaction.dart';
 import 'package:yababos/models/wallet.dart';
 import 'package:yababos/states/tag.dart';
+import 'package:yababos/states/wallet.dart';
 import 'package:yababos/views/tag_editor.dart';
 import 'package:yababos/views/tags.dart';
 import 'package:yababos/views/transaction.dart';
 import 'package:yababos/views/transaction_editor.dart';
 import 'package:yababos/views/wallet_editor.dart';
 import 'package:yababos/views/wallet_list.dart';
+import 'package:yababos/views/wallets.dart';
 import 'l10n_helper.dart';
 
 class TagBlocMock extends MockBloc<TagEvent, TagState> implements TagBloc {}
+
+class WalletBlocMock extends MockBloc<WalletEvent, WalletState>
+    implements WalletBloc {}
 
 void main() {
   group("Tag Editor", () {
@@ -522,6 +529,51 @@ void main() {
         TextFormField w = f.evaluate().first.widget as TextFormField;
         expect(w.initialValue, wallet.amount.toString());
       });
+    });
+  });
+
+  group("Wallets", () {
+    testWidgets("no wallets label", (widgetTester) async {
+      final walletBloc = WalletBlocMock();
+      whenListen<WalletState>(
+        walletBloc,
+        Stream<WalletState>.fromIterable(
+            [WalletsLoaded(wallets: List.empty())]),
+        initialState: WalletLoading(),
+      );
+      await widgetTester.pumpWidget(
+        L10nHelper.build(BlocProvider<WalletBloc>(
+            create: (c) => walletBloc, child: WalletsWidget())),
+      );
+      await widgetTester.pumpAndSettle();
+
+      expect(
+          find.text(L10nHelper.getLocalizations().noWallets), findsOneWidget);
+    });
+
+    testWidgets("wallet cards", (widgetTester) async {
+      final walletBloc = WalletBlocMock();
+      whenListen<WalletState>(
+        walletBloc,
+        Stream<WalletState>.fromIterable([
+          WalletsLoaded(
+            wallets: List.from([
+              Wallet(id: 1, name: "Wallet 1"),
+              Wallet(id: 2, name: "Wallet 2"),
+            ]),
+            selectedWallet: null,
+          )
+        ]),
+        initialState: WalletLoading(),
+      );
+      await widgetTester.pumpWidget(
+        L10nHelper.build(BlocProvider<WalletBloc>(
+            create: (c) => walletBloc, child: WalletsWidget())),
+      );
+      await widgetTester.pumpAndSettle();
+
+      expect(find.text("Wallet 1"), findsOneWidget);
+      expect(find.text("Wallet 2"), findsOneWidget);
     });
   });
 }
