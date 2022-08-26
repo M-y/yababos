@@ -576,4 +576,141 @@ void main() {
       expect(find.text("Wallet 2"), findsOneWidget);
     });
   });
+
+  group("Wallet List", () {
+    int? tapId;
+    List<Wallet> wallets = List.from([
+      Wallet(id: 1, name: "Wallet 1"),
+      Wallet(id: 2, name: "Wallet 2"),
+    ]);
+
+    // Should be used in a Scaffold
+    // because ListTile widgets require a Material widget ancestor
+    Widget walletList = L10nHelper.build(Scaffold(
+      body: WalletList(
+        wallets: wallets,
+        onTap: (id) => tapId = id,
+      ),
+    ));
+
+    testWidgets("wallets will shown on Listview", (widgetTester) async {
+      await widgetTester.pumpWidget(walletList);
+      await widgetTester.pumpAndSettle();
+
+      expect(find.byType(ListTile), findsNWidgets(2));
+      expect(find.text(wallets.first.name!), findsOneWidget);
+      expect(find.text(wallets.last.name!), findsOneWidget);
+    });
+
+    testWidgets("outside doesn't shows up", (widgetTester) async {
+      await widgetTester.pumpWidget(walletList);
+      await widgetTester.pumpAndSettle();
+
+      expect(find.byType(ListTile), findsNWidgets(2));
+      expect(find.text(L10nHelper.getLocalizations().outside), findsNothing);
+    });
+    testWidgets("outside shows up", (widgetTester) async {
+      Widget walletListWithOutside = L10nHelper.build(Scaffold(
+        body: WalletList(
+          outside: true,
+          wallets: List.empty(),
+          onTap: (id) => null,
+        ),
+      ));
+
+      await widgetTester.pumpWidget(walletListWithOutside);
+      await widgetTester.pumpAndSettle();
+
+      expect(find.byType(ListTile), findsOneWidget);
+      expect(find.text(L10nHelper.getLocalizations().outside), findsOneWidget);
+    });
+
+    testWidgets("tap on second wallet", (widgetTester) async {
+      await widgetTester.pumpWidget(walletList);
+      await widgetTester.pumpAndSettle();
+
+      await widgetTester.tap(find.ancestor(
+          of: find.text(wallets.last.name!), matching: find.byType(ListTile)));
+      expect(tapId, 2);
+      tapId = null;
+    });
+    testWidgets("tap on outside", (widgetTester) async {
+      Widget walletList = L10nHelper.build(Scaffold(
+        body: WalletList(
+          outside: true,
+          wallets: List.empty(),
+          onTap: (id) => tapId = id,
+        ),
+      ));
+      await widgetTester.pumpWidget(walletList);
+      await widgetTester.pumpAndSettle();
+
+      await widgetTester.tap(find.ancestor(
+          of: find.text(L10nHelper.getLocalizations().outside),
+          matching: find.byType(ListTile)));
+      expect(tapId, 0);
+      tapId = null;
+    });
+
+    testWidgets("set outside as selected", (widgetTester) async {
+      Widget walletList = L10nHelper.build(Scaffold(
+        body: WalletList(
+          outside: true,
+          wallets: wallets,
+          onTap: (id) => null,
+          selected: 0,
+        ),
+      ));
+      await widgetTester.pumpWidget(walletList);
+      await widgetTester.pumpAndSettle();
+
+      Finder f = find.byWidgetPredicate((widget) =>
+          widget is ListTile &&
+          widget.selected &&
+          (widget.title as Text).data == L10nHelper.getLocalizations().outside);
+      expect(f, findsOneWidget);
+    });
+
+    testWidgets("set first wallet as selected", (widgetTester) async {
+      Widget walletList = L10nHelper.build(Scaffold(
+        body: WalletList(
+          outside: true,
+          wallets: wallets,
+          onTap: (id) => null,
+          selected: 1,
+        ),
+      ));
+      await widgetTester.pumpWidget(walletList);
+      await widgetTester.pumpAndSettle();
+
+      Finder f = find.byWidgetPredicate((widget) =>
+          widget is ListTile &&
+          widget.selected &&
+          (widget.title as Text).data == wallets.first.name);
+      expect(f, findsOneWidget);
+    });
+
+    testWidgets("set last wallet as selected by tapping", (widgetTester) async {
+      Widget walletList = L10nHelper.build(Scaffold(
+        body: WalletList(
+          outside: true,
+          wallets: wallets,
+          onTap: (id) => null,
+          selected: 1,
+        ),
+      ));
+      await widgetTester.pumpWidget(walletList);
+      await widgetTester.pumpAndSettle();
+
+      await widgetTester.tap(find.ancestor(
+          of: find.text(wallets.last.name!), matching: find.byType(ListTile)));
+      await widgetTester.pumpAndSettle();
+      
+      Finder f = find.byWidgetPredicate((widget) =>
+          widget is ListTile &&
+          widget.selected &&
+          (widget.title as Text).data == wallets.last.name);
+      expect(f, findsOneWidget);
+    });
+  });
 }
