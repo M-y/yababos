@@ -86,9 +86,12 @@ class TransactionWidget extends StatelessWidget {
                     child: Text(transaction.description ?? ''),
                   ),
                   Expanded(
-                      flex: 1,
-                      child: Text((_isExpense() ? '-' : '') +
-                          transaction.amount.toString()))
+                    flex: 1,
+                    child: Text(
+                      (_isExpense() ? '-' : '') + transaction.amount.toString(),
+                      key: Key("amount"),
+                    ),
+                  )
                 ],
               ),
             ),

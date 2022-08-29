@@ -18,7 +18,7 @@ class WalletsWidget extends StatelessWidget {
             List<Wallet> wallets = state.wallets;
 
             if (wallets.length == 0) {
-              return Center(child: Text(S.of(context)!.noWallets));
+              return Center(child: Text(S.of(context).noWallets));
             } else {
               return ListView.builder(
                 itemCount: wallets.length,

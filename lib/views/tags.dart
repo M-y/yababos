@@ -19,7 +19,7 @@ class TagsWidget extends StatelessWidget {
 
             if (tags.isEmpty) {
               return Center(
-                child: Text(S.of(context)!.noTags),
+                child: Text(S.of(context).noTags),
               );
             } else {
               return ListView.builder(

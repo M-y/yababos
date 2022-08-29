@@ -82,21 +82,21 @@ class WalletWidgetState extends State<WalletWidget> {
                     child: Text("Yababos"),
                   ),
                   ListTile(
-                    title: Text(S.of(context)!.wallets),
+                    title: Text(S.of(context).wallets),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.of(context).pushNamed('/wallets');
                     },
                   ),
                   ListTile(
-                    title: Text(S.of(context)!.tags),
+                    title: Text(S.of(context).tags),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.of(context).pushNamed('/tags');
                     },
                   ),
                   ListTile(
-                    title: Text(S.of(context)!.backup),
+                    title: Text(S.of(context).backup),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.of(context).pushNamed('/backup');

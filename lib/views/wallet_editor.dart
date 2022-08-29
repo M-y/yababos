@@ -24,12 +24,12 @@ class WalletEditor extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title:
-            Text(!isNew ? S.of(context)!.editWallet : S.of(context)!.newWallet),
+            Text(!isNew ? S.of(context).editWallet : S.of(context).newWallet),
         actions: [
           !isNew
               ? TextButton(
                   child: Text(
-                    S.of(context)!.delete,
+                    S.of(context).delete,
                     style: TextStyle(color: Colors.red),
                   ),
                   onPressed: () {
@@ -46,20 +46,23 @@ class WalletEditor extends StatelessWidget {
           children: [
             // Name
             TextFormField(
-              decoration: InputDecoration(labelText: S.of(context)!.name),
+              key: Key("name"),
+              decoration: InputDecoration(labelText: S.of(context).name),
               initialValue: !isNew ? wallet.name : null,
               onSaved: (newValue) => wallet.name = newValue,
             ),
             // Currency
             TextFormField(
-              decoration: InputDecoration(labelText: S.of(context)!.currency),
+              key: Key("currency"),
+              decoration: InputDecoration(labelText: S.of(context).currency),
               initialValue: !isNew ? wallet.curreny : null,
               onSaved: (newValue) => wallet.curreny = newValue,
             ),
             // Amount
             TextFormField(
+              key: Key("amount"),
               decoration:
-                  InputDecoration(labelText: S.of(context)!.initialAmount),
+                  InputDecoration(labelText: S.of(context).initialAmount),
               initialValue: !isNew ? wallet.amount.toString() : null,
               keyboardType:
                   TextInputType.numberWithOptions(decimal: true, signed: false),
