@@ -6,18 +6,22 @@ import 'package:flutter_chips_input/flutter_chips_input.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 import 'package:yababos/blocs/tag.dart';
+import 'package:yababos/blocs/transaction.dart';
 import 'package:yababos/blocs/wallet.dart';
 import 'package:yababos/events/tag.dart';
+import 'package:yababos/events/transaction.dart';
 import 'package:yababos/events/wallet.dart';
 import 'package:yababos/models/tag.dart';
 import 'package:yababos/models/transaction.dart';
 import 'package:yababos/models/wallet.dart';
 import 'package:yababos/states/tag.dart';
+import 'package:yababos/states/transaction.dart';
 import 'package:yababos/states/wallet.dart';
 import 'package:yababos/views/tag_editor.dart';
 import 'package:yababos/views/tags.dart';
 import 'package:yababos/views/transaction.dart';
 import 'package:yababos/views/transaction_editor.dart';
+import 'package:yababos/views/wallet.dart';
 import 'package:yababos/views/wallet_editor.dart';
 import 'package:yababos/views/wallet_list.dart';
 import 'package:yababos/views/wallets.dart';
@@ -27,6 +31,9 @@ class TagBlocMock extends MockBloc<TagEvent, TagState> implements TagBloc {}
 
 class WalletBlocMock extends MockBloc<WalletEvent, WalletState>
     implements WalletBloc {}
+
+class TransactionBlocMock extends MockBloc<TransactionEvent, TransactionState>
+    implements TransactionBloc {}
 
 void main() {
   group("Tag Editor", () {
@@ -705,12 +712,44 @@ void main() {
       await widgetTester.tap(find.ancestor(
           of: find.text(wallets.last.name!), matching: find.byType(ListTile)));
       await widgetTester.pumpAndSettle();
-      
+
       Finder f = find.byWidgetPredicate((widget) =>
           widget is ListTile &&
           widget.selected &&
           (widget.title as Text).data == wallets.last.name);
       expect(f, findsOneWidget);
+    });
+  });
+
+  group("Wallet", () {
+    testWidgets("TransactionWidget count", (widgetTester) async {
+      final transactionBloc = TransactionBlocMock();
+      List<Transaction> transactions = List.from([
+        Transaction(id: 1, from: 0, to: 1, amount: 1, when: DateTime.now()),
+        Transaction(id: 2, from: 1, to: 0, amount: 1, when: DateTime.now()),
+      ]);
+      Wallet wallet = Wallet(id: 1, name: "1");
+
+      whenListen<TransactionState>(
+        transactionBloc,
+        Stream<TransactionState>.fromIterable([
+          WalletTransactionsLoaded(transactions, 0),
+        ]),
+        initialState: TransactionLoading(),
+      );
+      await widgetTester.pumpWidget(
+        L10nHelper.build(BlocProvider<TransactionBloc>(
+          create: (c) => transactionBloc,
+          child: WalletWidget(
+            month: DateTime.now(),
+            wallets: [wallet],
+            selectedWallet: wallet,
+          ),
+        )),
+      );
+      await widgetTester.pumpAndSettle();
+
+      expect(find.byType(TransactionWidget), findsNWidgets(2));
     });
   });
 }
