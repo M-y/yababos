@@ -44,13 +44,13 @@ class TransactionEditorState extends State<TransactionEditor> {
     return Scaffold(
       appBar: AppBar(
         title: Text(!widget.isNew
-            ? S.of(context)!.editTransaction
-            : S.of(context)!.newTransaction),
+            ? S.of(context).editTransaction
+            : S.of(context).newTransaction),
         actions: [
           !widget.isNew
               ? TextButton(
                   child: Text(
-                    S.of(context)!.delete,
+                    S.of(context).delete,
                     style: TextStyle(color: Colors.red),
                   ),
                   onPressed: () {
@@ -103,7 +103,7 @@ class TransactionEditorState extends State<TransactionEditor> {
             // Amount
             TextFormField(
               key: Key("amount"),
-              decoration: InputDecoration(labelText: S.of(context)!.amount),
+              decoration: InputDecoration(labelText: S.of(context).amount),
               initialValue:
                   !widget.isNew ? transaction.amount.toString() : null,
               keyboardType:
@@ -114,7 +114,7 @@ class TransactionEditorState extends State<TransactionEditor> {
             // Tags
             ChipsInput(
               key: Key("tags"),
-              decoration: InputDecoration(labelText: S.of(context)!.tags),
+              decoration: InputDecoration(labelText: S.of(context).tags),
               initialValue: transaction.tags ?? [],
               chipBuilder: (context, state, dynamic tag) {
                 return InputChip(
@@ -160,7 +160,7 @@ class TransactionEditorState extends State<TransactionEditor> {
             TextFormField(
               key: Key("description"),
               decoration:
-                  InputDecoration(labelText: S.of(context)!.description),
+                  InputDecoration(labelText: S.of(context).description),
               initialValue: !widget.isNew ? transaction.description : null,
               onSaved: (newValue) => transaction.description = newValue,
               maxLines: 10,

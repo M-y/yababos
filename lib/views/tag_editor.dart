@@ -53,12 +53,12 @@ class TagEditorState extends State<TagEditor> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(!widget.isNew ? S.of(context)!.editTag : S.of(context)!.newTag),
+        title: Text(!widget.isNew ? S.of(context).editTag : S.of(context).newTag),
         actions: [
           !widget.isNew
               ? TextButton(
                   child: Text(
-                    S.of(context)!.delete,
+                    S.of(context).delete,
                     style: TextStyle(color: Colors.red),
                   ),
                   onPressed: () {
@@ -75,7 +75,7 @@ class TagEditorState extends State<TagEditor> {
           children: [
             // Name
             TextFormField(
-              decoration: InputDecoration(labelText: S.of(context)!.name),
+              decoration: InputDecoration(labelText: S.of(context).name),
               initialValue: !widget.isNew ? widget.tag.name : null,
               onSaved: (newValue) => widget.tag.name = newValue!,
             ),

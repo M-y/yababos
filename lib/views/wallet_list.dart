@@ -30,7 +30,7 @@ class WalletListState extends State<WalletList> {
       walletButtons.add(ListTile(
         selected: widget.selected == 0,
         title: Text(
-          S.of(context)!.outside,
+          S.of(context).outside,
           style: TextStyle(color: Colors.grey),
         ),
         onTap: () {
