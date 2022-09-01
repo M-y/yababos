@@ -3,6 +3,11 @@ name: Build
 on:
   push:
     branches: [ dev ]
+  workflow_run:
+    workflows: [Test]
+    branches: [dev]
+    types:
+      - completed
 
 jobs:
   build:

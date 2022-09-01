@@ -3,6 +3,11 @@ name: Codecov
 on:
   push:
     branches: [ dev ]
+  workflow_run:
+    workflows: [Test]
+    branches: [dev]
+    types:
+      - completed
 
 jobs:
   upload_lcov:
