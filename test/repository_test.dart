@@ -144,27 +144,27 @@ void main() {
           from: 0,
           to: 1,
           amount: 0,
-          when: DateTime.now().subtract(new Duration(days: 1)),
+          when: DateTime.fromMillisecondsSinceEpoch(1637406526000).subtract(new Duration(days: 1)),
         );
         Transaction today = Transaction(
           id: 3,
           from: 1,
           to: 0,
           amount: 0,
-          when: DateTime.now(),
+          when: DateTime.fromMillisecondsSinceEpoch(1637406526000),
         );
         Transaction otherWalletTransaction = Transaction(
           id: 4,
           from: 0,
           to: 2,
           amount: 0,
-          when: DateTime.now(),
+          when: DateTime.fromMillisecondsSinceEpoch(1637406526000),
         );
         await transactionRepository.add(yesterday);
         await transactionRepository.add(today);
         await transactionRepository.add(otherWalletTransaction);
         List<Transaction> walletTransactions = await transactionRepository
-            .walletTransactions(1, DateTime.now().year, DateTime.now().month);
+            .walletTransactions(1, 2021, 11);
 
         expect(walletTransactions.length, 2);
         expect(walletTransactions[0], today);
