@@ -19,6 +19,7 @@ jobs:
     - uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
+        flutter-version: '3.0.2'
     - run: flutter pub get
     
     - name: Android
@@ -40,6 +41,7 @@ jobs:
     - uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
+        flutter-version: '3.0.2'
     - run: flutter pub get
     - run: flutter build ios --release --no-codesign
     
