@@ -9,6 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - run: rm lib/repositories/repository.dart
+    - run: mv lib/repositories/repository.prod lib/repositories/repository.dart
+    
     - uses: actions/setup-java@v2
       with:
         distribution: 'zulu'
@@ -31,6 +34,9 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
+    - run: rm lib/repositories/repository.dart
+    - run: mv lib/repositories/repository.prod lib/repositories/repository.dart
+
     - uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
