@@ -11,7 +11,9 @@ import 'blocs/tag.dart';
 import 'blocs/transaction.dart';
 import 'repositories/repository.dart';
 
-void main() {
+void main() async {
+  await RepositorySelections.initalize();
+  
   runApp(MultiBlocProvider(
     providers: [
       BlocProvider(
