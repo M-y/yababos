@@ -14,7 +14,7 @@ import 'package:yababos/models/wallet.dart';
 import 'package:yababos/states/transaction.dart';
 import 'package:yababos/views/overview.dart';
 import 'package:yababos/views/transaction_editor.dart';
-import 'package:yababos/views/transaction.dart';
+import 'package:yababos/views/transactions.dart';
 import 'package:yababos/views/wallet_list.dart';
 
 class WalletWidget extends StatefulWidget {
@@ -22,7 +22,8 @@ class WalletWidget extends StatefulWidget {
   final List<Wallet> wallets;
   final DateTime month;
 
-  const WalletWidget({this.selectedWallet, required this.wallets, required this.month});
+  const WalletWidget(
+      {this.selectedWallet, required this.wallets, required this.month});
 
   @override
   State<StatefulWidget> createState() => WalletWidgetState();
@@ -42,9 +43,6 @@ class WalletWidgetState extends State<WalletWidget> {
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
         if (state is WalletTransactionsLoaded) {
-          List<Transaction> transactions = state.transactions;
-          int? lastDate;
-
           return Scaffold(
             appBar: AppBar(
               // Wallet select button
@@ -107,7 +105,7 @@ class WalletWidgetState extends State<WalletWidget> {
             ),
             body: Column(
               children: [
-                // Overiview
+                // Overview
                 OverviewWidget(
                     '${state.balance} ${widget.selectedWallet!.curreny}'),
                 // Date
@@ -119,8 +117,8 @@ class WalletWidgetState extends State<WalletWidget> {
                         _month = date;
                       });
                       BlocProvider.of<TransactionBloc>(context).add(
-                          TransactionGetWallet(
-                              widget.selectedWallet!.id, date!.year, date.month));
+                          TransactionGetWallet(widget.selectedWallet!.id,
+                              date!.year, date.month));
                     });
                   },
                   child: Text(
@@ -130,25 +128,10 @@ class WalletWidgetState extends State<WalletWidget> {
                 ),
                 // Transactions
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: transactions.length,
-                    itemBuilder: (context, index) {
-                      Transaction transaction = transactions[index];
-                      int date = transaction.when.year +
-                          transaction.when.month +
-                          transaction.when.day;
-                      bool showDate = false;
-                      if (lastDate != date) {
-                        showDate = true;
-                        lastDate = date;
-                      }
-                      return TransactionWidget(
-                        transaction: transaction,
-                        wallets: widget.wallets,
-                        wallet: widget.selectedWallet!,
-                        showDate: showDate,
-                      );
-                    },
+                  child: TransactionsWidget(
+                    transactions: state.transactions,
+                    wallets: widget.wallets,
+                    selectedWallet: widget.selectedWallet!,
                   ),
                 ),
               ],
