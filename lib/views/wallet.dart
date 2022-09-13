@@ -45,31 +45,41 @@ class WalletWidgetState extends State<WalletWidget> {
         if (state is WalletTransactionsLoaded) {
           return Scaffold(
             appBar: AppBar(
-              // Wallet select button
-              title: TextButton(
-                child: Text(
-                  widget.selectedWallet!.name!,
-                  style: TextStyle(color: Colors.white),
-                ),
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return WalletList(
-                        wallets: widget.wallets,
-                        onTap: (id) {
-                          BlocProvider.of<SettingsBloc>(context)
-                              .add(SettingAdd(Setting(
-                            name: 'wallet',
-                            value: id,
-                          )));
-                          Navigator.pop(context);
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Wallet select button
+                  TextButton(
+                    child: Text(
+                      widget.selectedWallet!.name!,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return WalletList(
+                            wallets: widget.wallets,
+                            onTap: (id) {
+                              BlocProvider.of<SettingsBloc>(context)
+                                  .add(SettingAdd(Setting(
+                                name: 'wallet',
+                                value: id,
+                              )));
+                              Navigator.pop(context);
+                            },
+                            selected: widget.selectedWallet!.id,
+                          );
                         },
-                        selected: widget.selectedWallet!.id,
                       );
                     },
-                  );
-                },
+                  ),
+                  // Search button
+                  IconButton(
+                    icon: Icon(Icons.search),
+                    onPressed: () => Navigator.of(context).pushNamed('/search'),
+                  ),
+                ],
               ),
             ),
             drawer: Drawer(
