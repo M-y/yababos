@@ -399,14 +399,14 @@ void main() {
         from: 0,
         to: 1,
         amount: 1000,
-        when: DateTime.now(),
+        when: DateTime.fromMillisecondsSinceEpoch(1663147017000),
       );
       Transaction expense = Transaction(
         id: 2,
         from: 1,
         to: 0,
         amount: 100,
-        when: DateTime.now(),
+        when: DateTime.fromMillisecondsSinceEpoch(1663233417000),
       );
       blocTest(
         'Income, expense and balance $transactionRepository',
@@ -416,8 +416,7 @@ void main() {
         },
         build: () =>
             TransactionBloc(transactionRepository, MockTagRepository()),
-        act: (dynamic bloc) => bloc.add(
-            TransactionGetWallet(1, DateTime.now().year, DateTime.now().month)),
+        act: (dynamic bloc) => bloc.add(TransactionGetWallet(1, 2022, 9)),
         wait: Duration(milliseconds: 500),
         expect: () => <TransactionState>[
           WalletTransactionsLoaded(
