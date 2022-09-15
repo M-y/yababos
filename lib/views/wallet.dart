@@ -117,7 +117,10 @@ class WalletWidgetState extends State<WalletWidget> {
               children: [
                 // Overview
                 OverviewWidget(
-                    '${state.balance} ${widget.selectedWallet!.curreny}'),
+                  balance: '${state.balance} ${widget.selectedWallet!.curreny}',
+                  income: state.income.toString(),
+                  expense: state.expense.toString(),
+                ),
                 // Date
                 TextButton(
                   onPressed: () {

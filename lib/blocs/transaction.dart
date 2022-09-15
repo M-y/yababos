@@ -65,10 +65,23 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   Future<WalletTransactionsLoaded> _selectedWalletTransactions() async {
+    List<Transaction> transactions = await _transactionRepository
+        .walletTransactions(_selectedWallet, _year, _month);
+    double expense = 0;
+    double income = 0;
+    for (Transaction transaction in transactions) {
+      if (transaction.from == _selectedWallet)
+        expense += transaction.amount;
+      else
+        income += transaction.amount;
+    }
+
     return WalletTransactionsLoaded(
-        await _transactionRepository.walletTransactions(
-            _selectedWallet, _year, _month),
-        await _transactionRepository.balance(_selectedWallet));
+      transactions,
+      await _transactionRepository.balance(_selectedWallet),
+      income,
+      expense,
+    );
   }
 
   Future<void> _mapSearchtoState(
