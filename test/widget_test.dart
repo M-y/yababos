@@ -733,7 +733,7 @@ void main() {
       whenListen<TransactionState>(
         transactionBloc,
         Stream<TransactionState>.fromIterable([
-          WalletTransactionsLoaded(transactions, 0),
+          WalletTransactionsLoaded(transactions, 0, 1, 1),
         ]),
         initialState: TransactionLoading(),
       );
