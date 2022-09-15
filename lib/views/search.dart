@@ -6,12 +6,11 @@ import 'package:yababos/blocs/transaction.dart';
 import 'package:yababos/events/tag.dart';
 import 'package:yababos/events/transaction.dart';
 import 'package:yababos/models/tag.dart';
-import 'package:yababos/models/transaction.dart';
 import 'package:yababos/models/transaction_search.dart' as model;
 import 'package:yababos/models/wallet.dart';
 import 'package:yababos/states/tag.dart';
 import 'package:yababos/states/transaction.dart';
-import 'package:yababos/views/transaction.dart';
+import 'package:yababos/views/transactions.dart';
 
 class SearchWidget extends StatelessWidget {
   @override
@@ -32,8 +31,7 @@ class SearchWidget extends StatelessWidget {
                 return ListTile(
                   title: Text((data as Tag).name),
                   onTap: () {
-                    data.name =
-                        data.name.replaceFirst(RegExp('^\\+ '), '');
+                    data.name = data.name.replaceFirst(RegExp('^\\+ '), '');
                     chipsInputState.selectSuggestion(data);
                   },
                 );
@@ -80,29 +78,11 @@ class SearchWidget extends StatelessWidget {
           BlocBuilder<TransactionBloc, TransactionState>(
               builder: (context, state) {
             if (state is TransactionsFound) {
-              List<Transaction> transactions = state.transactions;
-              int? lastDate;
-
               return Expanded(
-                child: ListView.builder(
-                  itemCount: transactions.length,
-                  itemBuilder: (context, index) {
-                    Transaction transaction = transactions[index];
-                    int date = transaction.when.year +
-                        transaction.when.month +
-                        transaction.when.day;
-                    bool showDate = false;
-                    if (lastDate != date) {
-                      showDate = true;
-                      lastDate = date;
-                    }
-                    return TransactionWidget(
-                      transaction: transaction,
-                      wallets: <Wallet>[],
-                      wallet: Wallet(id: 0),
-                      showDate: showDate,
-                    );
-                  },
+                child: TransactionsWidget(
+                  transactions: state.transactions,
+                  wallets: <Wallet>[],
+                  selectedWallet: Wallet(id: 0),
                 ),
               );
             }

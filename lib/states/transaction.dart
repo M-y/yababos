@@ -25,11 +25,14 @@ class TransactionLoaded extends TransactionState {
 class WalletTransactionsLoaded extends TransactionState {
   List<Transaction> transactions;
   double balance;
+  double expense;
+  double income;
 
-  WalletTransactionsLoaded(this.transactions, this.balance);
+  WalletTransactionsLoaded(
+      this.transactions, this.balance, this.income, this.expense);
 
   @override
-  List<Object> get props => [transactions, balance];
+  List<Object> get props => [transactions, balance, income, expense];
 }
 
 class TransactionsFound extends TransactionState {

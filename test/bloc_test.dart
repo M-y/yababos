@@ -107,8 +107,10 @@ void main() {
     ];
     for (var repository in repositories) {
       WalletRepository walletRepository = repository[0] as WalletRepository;
-      SettingsRepository settingsRepository = repository[1] as SettingsRepository;
-      TransactionRepository transactionRepository = repository[2] as TransactionRepository;
+      SettingsRepository settingsRepository =
+          repository[1] as SettingsRepository;
+      TransactionRepository transactionRepository =
+          repository[2] as TransactionRepository;
 
       SettingsBloc settingsBloc = SettingsBloc(settingsRepository);
       TransactionBloc transactionBloc =
@@ -296,7 +298,7 @@ void main() {
         wait: Duration(milliseconds: 500),
         expect: () => <TransactionState>[
           WalletTransactionsLoaded(
-              List<Transaction>.from([sampleTransaction]), 100)
+              List<Transaction>.from([sampleTransaction]), 100, 100, 0)
         ],
         tearDown: () async => await transactionRepository.clear(),
       );
@@ -335,7 +337,7 @@ void main() {
         wait: Duration(milliseconds: 500),
         expect: () => <TransactionState>[
           WalletTransactionsLoaded(
-              List<Transaction>.from([updatedTransaction]), 150)
+              List<Transaction>.from([updatedTransaction]), 150, 150, 0)
         ],
         tearDown: () async => await transactionRepository.clear(),
       );
@@ -347,8 +349,9 @@ void main() {
             TransactionBloc(transactionRepository, MockTagRepository()),
         act: (dynamic bloc) => bloc.add(TransactionDelete(1)),
         wait: Duration(milliseconds: 500),
-        expect: () =>
-            <TransactionState>[WalletTransactionsLoaded(<Transaction>[], 0)],
+        expect: () => <TransactionState>[
+          WalletTransactionsLoaded(<Transaction>[], 0, 0, 0)
+        ],
         tearDown: () async => await transactionRepository.clear(),
       );
 
@@ -365,7 +368,7 @@ void main() {
         wait: Duration(milliseconds: 500),
         expect: () => <TransactionState>[
           WalletTransactionsLoaded(
-              List<Transaction>.from([walletTransaction]), 100)
+              List<Transaction>.from([walletTransaction]), 100, 100, 0)
         ],
         tearDown: () async => await transactionRepository.clear(),
       );
@@ -375,7 +378,8 @@ void main() {
         setUp: () async => await transactionRepository.add(sampleTransaction),
         build: () =>
             TransactionBloc(transactionRepository, MockTagRepository()),
-        act: (dynamic bloc) => bloc.add(TransactionSearch(model.TransactionSearch(
+        act: (dynamic bloc) =>
+            bloc.add(TransactionSearch(model.TransactionSearch(
           id: null,
           from: null,
           to: null,
@@ -386,6 +390,37 @@ void main() {
         wait: Duration(milliseconds: 500),
         expect: () => <TransactionState>[
           TransactionsFound(List<Transaction>.from([sampleTransaction]), -100)
+        ],
+        tearDown: () async => await transactionRepository.clear(),
+      );
+
+      Transaction income = Transaction(
+        id: 1,
+        from: 0,
+        to: 1,
+        amount: 1000,
+        when: DateTime.fromMillisecondsSinceEpoch(1663147017000),
+      );
+      Transaction expense = Transaction(
+        id: 2,
+        from: 1,
+        to: 0,
+        amount: 100,
+        when: DateTime.fromMillisecondsSinceEpoch(1663233417000),
+      );
+      blocTest(
+        'Income, expense and balance $transactionRepository',
+        setUp: () async {
+          await transactionRepository.add(income);
+          await transactionRepository.add(expense);
+        },
+        build: () =>
+            TransactionBloc(transactionRepository, MockTagRepository()),
+        act: (dynamic bloc) => bloc.add(TransactionGetWallet(1, 2022, 9)),
+        wait: Duration(milliseconds: 500),
+        expect: () => <TransactionState>[
+          WalletTransactionsLoaded(
+              List<Transaction>.from([expense, income]), 900, 1000, 100)
         ],
         tearDown: () async => await transactionRepository.clear(),
       );
@@ -492,7 +527,8 @@ void main() {
 
     for (var repository in repositories) {
       TagRepository tagRepository = repository[0] as TagRepository;
-      TransactionRepository transactionRepository = repository[1] as TransactionRepository;
+      TransactionRepository transactionRepository =
+          repository[1] as TransactionRepository;
       Transaction transactionWithTags = Transaction(
         id: 1,
         from: 1,
@@ -532,7 +568,8 @@ void main() {
 
     for (var repository in repositories) {
       TagRepository tagRepository = repository[0] as TagRepository;
-      TransactionRepository transactionRepository = repository[1] as TransactionRepository;
+      TransactionRepository transactionRepository =
+          repository[1] as TransactionRepository;
       WalletRepository walletRepository = repository[2] as WalletRepository;
 
       String csv = '1,Wallet 1,null,100.0,2021-11-20 11:08:46.000Z,"[[t1, 4294967295], [t2, 4294967295]]",transaction with tags\r\n' +
