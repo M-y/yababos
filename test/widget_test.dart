@@ -21,6 +21,7 @@ import 'package:yababos/views/tag_editor.dart';
 import 'package:yababos/views/tags.dart';
 import 'package:yababos/views/transaction.dart';
 import 'package:yababos/views/transaction_editor.dart';
+import 'package:yababos/views/transactions.dart';
 import 'package:yababos/views/wallet.dart';
 import 'package:yababos/views/wallet_editor.dart';
 import 'package:yababos/views/wallet_list.dart';
@@ -64,6 +65,7 @@ void main() {
       expect(isCalled, true);
       isCalled = false;
     });
+
     group("New tag / Edit tag behaviour", () {
       Widget newTagWidget = L10nHelper.build(TagEditor(
         tag: Tag(name: ""),
@@ -422,6 +424,124 @@ void main() {
       await widgetTester.pumpAndSettle();
       Text amount = find.byKey(Key("amount")).evaluate().first.widget as Text;
       expect(amount.data, '-' + transaction.amount.toString());
+    });
+  });
+
+  group("Transactions", () {
+    List<Transaction> transactions = List.from([
+      Transaction(
+        id: 1,
+        from: 0,
+        to: 1,
+        amount: 100,
+        when: DateTime.fromMillisecondsSinceEpoch(1663573604000),
+      ),
+      Transaction(
+        id: 2,
+        from: 1,
+        to: 0,
+        amount: 100,
+        when: DateTime.fromMillisecondsSinceEpoch(1663487204000),
+      ),
+      Transaction(
+        id: 3,
+        from: 1,
+        to: 0,
+        amount: 100,
+        when: DateTime.fromMillisecondsSinceEpoch(1662796004000),
+      ),
+      Transaction(
+        id: 4,
+        from: 0,
+        to: 1,
+        amount: 100,
+        when: DateTime.fromMillisecondsSinceEpoch(1662796004000),
+      ),
+    ]);
+    Widget transactionsWidget = L10nHelper.build(TransactionsWidget(
+      transactions: transactions,
+      wallets: [],
+      selectedWallet: Wallet(id: 1),
+    ));
+
+    testWidgets("Expansion tiles", (widgetTester) async {
+      await widgetTester.pumpWidget(transactionsWidget);
+      await widgetTester.pumpAndSettle();
+
+      expect(find.byKey(Key("tile" + DateTime(2022, 9, 19).toString())),
+          findsOneWidget);
+      expect(find.byKey(Key("tile" + DateTime(2022, 9, 18).toString())),
+          findsOneWidget);
+      expect(find.byKey(Key("tile" + DateTime(2022, 9, 10).toString())),
+          findsOneWidget);
+    });
+
+    testWidgets("2022-09-19 has 1 widget", (widgetTester) async {
+      await widgetTester.pumpWidget(transactionsWidget);
+      await widgetTester.pumpAndSettle();
+
+      Finder expansionTile =
+          find.byKey(Key("tile" + DateTime(2022, 9, 19).toString()));
+
+      await widgetTester.tap(expansionTile);
+      await widgetTester.pumpAndSettle();
+
+      Finder f = find.descendant(
+          of: expansionTile, matching: find.byType(TransactionWidget));
+      expect(f, findsOneWidget);
+    });
+
+    testWidgets("2022-09-18 has 1 widget", (widgetTester) async {
+      await widgetTester.pumpWidget(transactionsWidget);
+      await widgetTester.pumpAndSettle();
+
+      Finder expansionTile =
+          find.byKey(Key("tile" + DateTime(2022, 9, 18).toString()));
+
+      await widgetTester.tap(expansionTile);
+      await widgetTester.pumpAndSettle();
+
+      Finder f = find.descendant(
+          of: expansionTile, matching: find.byType(TransactionWidget));
+      expect(f, findsOneWidget);
+    });
+
+    testWidgets("2022-09-10 has 2 widgets", (widgetTester) async {
+      await widgetTester.pumpWidget(transactionsWidget);
+      await widgetTester.pumpAndSettle();
+
+      Finder expansionTile =
+          find.byKey(Key("tile" + DateTime(2022, 9, 10).toString()));
+
+      await widgetTester.tap(expansionTile);
+      await widgetTester.pumpAndSettle();
+
+      Finder f = find.descendant(
+          of: expansionTile, matching: find.byType(TransactionWidget));
+      expect(f, findsNWidgets(2));
+    });
+
+    testWidgets("Day balances", (widgetTester) async {
+      await widgetTester.pumpWidget(transactionsWidget);
+      await widgetTester.pumpAndSettle();
+
+      Finder f19 = find.descendant(
+        of: find.byKey(Key("tile" + DateTime(2022, 9, 19).toString())),
+        matching: find.text('100.0'),
+      );
+      expect(f19, findsOneWidget);
+
+      Finder f18 = find.descendant(
+        of: find.byKey(Key("tile" + DateTime(2022, 9, 18).toString())),
+        matching: find.text('-100.0'),
+      );
+      expect(f18, findsOneWidget);
+
+      Finder f10 = find.descendant(
+        of: find.byKey(Key("tile" + DateTime(2022, 9, 10).toString())),
+        matching: find.text('0.0'),
+      );
+      expect(f10, findsOneWidget);
     });
   });
 
