@@ -869,6 +869,14 @@ void main() {
       );
       await widgetTester.pumpAndSettle();
 
+      Finder expansionTile = find.byKey(Key("tile" +
+          DateTime(
+                  DateTime.now().year, DateTime.now().month, DateTime.now().day)
+              .toString()));
+
+      await widgetTester.tap(expansionTile);
+      await widgetTester.pumpAndSettle();
+
       expect(find.byType(TransactionWidget), findsNWidgets(2));
     });
   });
