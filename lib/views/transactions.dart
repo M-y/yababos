@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:yababos/models/transaction.dart';
@@ -16,37 +18,7 @@ class TransactionsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DateTime? lastDate;
-    List<ExpansionTile> expansionTiles = List.empty(growable: true);
-    List<Widget> children = List.empty(growable: true);
-    double balance = 0;
-
-    for (Transaction transaction in transactions) {
-      DateTime date = DateTime(
-          transaction.when.year, transaction.when.month, transaction.when.day);
-
-      if (date != lastDate) {
-        if (lastDate != null) {
-          expansionTiles
-              .add(expansionTile(lastDate, context, balance, children));
-          children = List.empty(growable: true);
-          balance = 0;
-        }
-        lastDate = date;
-      }
-
-      children.add(TransactionWidget(
-        transaction: transaction,
-        wallets: wallets,
-        wallet: selectedWallet,
-        showDate: false,
-      ));
-      if (_isExpense(transaction, selectedWallet))
-        balance -= transaction.amount;
-      else
-        balance += transaction.amount;
-    }
-    expansionTiles.add(expansionTile(lastDate!, context, balance, children));
+    List<ExpansionTile> expansionTiles = _buildExpansionTiles(context);
 
     return ListView.builder(
       itemCount: expansionTiles.length,
@@ -56,7 +28,51 @@ class TransactionsWidget extends StatelessWidget {
     );
   }
 
-  ExpansionTile expansionTile(DateTime date, BuildContext context,
+  List<ExpansionTile> _buildExpansionTiles(BuildContext context) {
+    List<ExpansionTile> expansionTiles = List.empty(growable: true);
+
+    _getDayMaps().forEach((day, dayTransactions) {
+      double dayBalance = 0;
+      List<Widget> children = List.empty(growable: true);
+
+      for (Transaction transaction in dayTransactions) {
+        children.add(TransactionWidget(
+          transaction: transaction,
+          wallets: wallets,
+          wallet: selectedWallet,
+          showDate: false,
+        ));
+
+        if (_isExpense(transaction, selectedWallet))
+          dayBalance -= transaction.amount;
+        else
+          dayBalance += transaction.amount;
+      }
+
+      expansionTiles
+          .add(_buildExpansionTile(context, day, dayBalance, children));
+    });
+
+    return expansionTiles;
+  }
+
+  HashMap<DateTime, List<Transaction>> _getDayMaps() {
+    HashMap<DateTime, List<Transaction>> map =
+        HashMap<DateTime, List<Transaction>>();
+
+    for (Transaction transaction in transactions) {
+      DateTime date = DateTime(
+          transaction.when.year, transaction.when.month, transaction.when.day);
+
+      if (!map.containsKey(date))
+        map[date] = List<Transaction>.empty(growable: true);
+      (map[date] as List).add(transaction);
+    }
+
+    return map;
+  }
+
+  ExpansionTile _buildExpansionTile(BuildContext context, DateTime date,
       double balance, List<Widget> children) {
     return ExpansionTile(
       key: Key("tile" + date.toString()),
