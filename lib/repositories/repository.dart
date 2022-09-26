@@ -54,12 +54,28 @@ class RepositorySelections {
       ),
       Transaction(
         id: 2,
+        from: 1,
+        to: 0,
+        amount: 50,
+        when: DateTime.now(),
+        description: 'expense',
+      ),
+      Transaction(
+        id: 3,
         from: 2,
         to: 1,
-        amount: 10,
+        amount: 1000,
         when: DateTime.now().subtract(Duration(days: 1)),
         description: 'transaction from wallet2 to wallet1',
-      )
+      ),
+      Transaction(
+        id: 4,
+        from: 1,
+        to: 0,
+        amount: 100,
+        when: DateTime.now().subtract(Duration(days: 1)),
+        description: 'expense',
+      ),
     ]);
 
     for (Transaction transaction in transactions) {
