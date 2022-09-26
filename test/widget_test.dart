@@ -366,24 +366,6 @@ void main() {
       wallet: Wallet(id: 1),
     ));
 
-    testWidgets("Show Date", (widgetTester) async {
-      Widget showDate = L10nHelper.build(TransactionWidget(
-        transaction: transaction,
-        wallets: [],
-        wallet: Wallet(id: 0),
-        showDate: true,
-      ));
-      String date = DateFormat.MMMMEEEEd().format(transaction.when);
-
-      await widgetTester.pumpWidget(transactionWidget);
-      await widgetTester.pumpAndSettle();
-      expect(find.text(date), findsNothing);
-
-      await widgetTester.pumpWidget(showDate);
-      await widgetTester.pumpAndSettle();
-      expect(find.text(date), findsOneWidget);
-    });
-
     testWidgets("Tags", (widgetTester) async {
       await widgetTester.pumpWidget(transactionWidget);
       await widgetTester.pumpAndSettle();

@@ -40,7 +40,6 @@ class TransactionsWidget extends StatelessWidget {
           transaction: transaction,
           wallets: wallets,
           wallet: selectedWallet,
-          showDate: false,
         ));
 
         if (_isExpense(transaction, selectedWallet))
