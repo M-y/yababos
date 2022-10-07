@@ -373,26 +373,46 @@ void main() {
         tearDown: () async => await transactionRepository.clear(),
       );
 
-      blocTest(
-        'TransactionSearch $transactionRepository',
-        setUp: () async => await transactionRepository.add(sampleTransaction),
-        build: () =>
-            TransactionBloc(transactionRepository, MockTagRepository()),
-        act: (dynamic bloc) =>
-            bloc.add(TransactionSearch(model.TransactionSearch(
-          id: null,
-          from: null,
-          to: null,
-          amount: null,
-          when: null,
-          description: 'sample expense',
-        ))),
-        wait: Duration(milliseconds: 500),
-        expect: () => <TransactionState>[
-          TransactionsFound(List<Transaction>.from([sampleTransaction]), -100)
-        ],
-        tearDown: () async => await transactionRepository.clear(),
-      );
+      group('TransactionSearch $transactionRepository', () {
+        blocTest(
+          'Find by description $transactionRepository',
+          setUp: () async => await transactionRepository.add(sampleTransaction),
+          build: () =>
+              TransactionBloc(transactionRepository, MockTagRepository()),
+          act: (dynamic bloc) =>
+              bloc.add(TransactionSearch(model.TransactionSearch(
+            id: null,
+            from: null,
+            to: null,
+            amount: null,
+            when: null,
+            description: 'sample expense',
+          ))),
+          wait: Duration(milliseconds: 500),
+          expect: () => <TransactionState>[
+            TransactionsFound(List<Transaction>.from([sampleTransaction]), -100)
+          ],
+          tearDown: () async => await transactionRepository.clear(),
+        );
+
+        blocTest(
+          'Searchs by tag and not founds $transactionRepository',
+          build: () =>
+              TransactionBloc(transactionRepository, MockTagRepository()),
+          act: (dynamic bloc) =>
+              bloc.add(TransactionSearch(model.TransactionSearch(
+            id: null,
+            from: null,
+            to: null,
+            amount: null,
+            when: null,
+            tags: List.from([Tag(name: 'name')]),
+          ))),
+          wait: Duration(milliseconds: 500),
+          expect: () => <TransactionState>[TransactionsFound(List.empty(), 0)],
+          tearDown: () async => await transactionRepository.clear(),
+        );
+      });
 
       Transaction income = Transaction(
         id: 1,
@@ -542,15 +562,43 @@ void main() {
       blocTest(
         'Transaction tags $tagRepository',
         setUp: () async {
-          TransactionBloc(transactionRepository, tagRepository)
-            ..add(TransactionAdd(transactionWithTags));
-          await Future.delayed(Duration(seconds: 3));
+          await tagRepository.add(transactionWithTags.tags![0]);
+          await tagRepository.add(transactionWithTags.tags![1]);
+          await transactionRepository.add(transactionWithTags);
         },
         build: () => TransactionBloc(transactionRepository, tagRepository),
         act: (dynamic bloc) => bloc.add(TransactionGetAll()),
         wait: Duration(milliseconds: 500),
         expect: () => <TransactionState>[
           TransactionLoaded.many(List<Transaction>.from([transactionWithTags]))
+        ],
+        tearDown: () async {
+          await transactionRepository.clear();
+          await tagRepository.clear();
+        },
+      );
+
+      blocTest(
+        'Searchs by tag $transactionRepository',
+        setUp: () async {
+          await tagRepository.add(transactionWithTags.tags![0]);
+          await tagRepository.add(transactionWithTags.tags![1]);
+          await transactionRepository.add(transactionWithTags);
+        },
+        build: () =>
+            TransactionBloc(transactionRepository, MockTagRepository()),
+        act: (dynamic bloc) =>
+            bloc.add(TransactionSearch(model.TransactionSearch(
+          id: null,
+          from: null,
+          to: null,
+          amount: null,
+          when: null,
+          tags: List.from([Tag(name: 't2')]),
+        ))),
+        wait: Duration(milliseconds: 500),
+        expect: () => <TransactionState>[
+          TransactionsFound(List<Transaction>.from([transactionWithTags]), -100)
         ],
         tearDown: () async {
           await transactionRepository.clear();
