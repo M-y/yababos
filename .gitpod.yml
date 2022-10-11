@@ -33,3 +33,4 @@ vscode:
   extensions:
     - dart-code.flutter
     - dart-code.dart-code
+    - localizely.flutter-intl

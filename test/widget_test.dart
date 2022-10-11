@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chips_input/flutter_chips_input.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:intl/intl.dart';
 import 'package:yababos/blocs/tag.dart';
 import 'package:yababos/blocs/transaction.dart';
 import 'package:yababos/blocs/wallet.dart';
@@ -17,6 +16,7 @@ import 'package:yababos/models/wallet.dart';
 import 'package:yababos/states/tag.dart';
 import 'package:yababos/states/transaction.dart';
 import 'package:yababos/states/wallet.dart';
+import 'package:yababos/views/search.dart';
 import 'package:yababos/views/tag_editor.dart';
 import 'package:yababos/views/tags.dart';
 import 'package:yababos/views/transaction.dart';
@@ -860,6 +860,72 @@ void main() {
       await widgetTester.pumpAndSettle();
 
       expect(find.byType(TransactionWidget), findsNWidgets(2));
+    });
+  });
+
+  group("Search", () {
+    final transactionBloc = TransactionBlocMock();
+    whenListen<TransactionState>(
+      transactionBloc,
+      Stream<TransactionState>.fromIterable([
+        TransactionsFound([
+          Transaction(
+            id: 1,
+            from: 0,
+            to: 1,
+            amount: 100,
+            when: DateTime.now(),
+            description: "text to be found",
+          ),
+          Transaction(
+            id: 2,
+            from: 1,
+            to: 0,
+            amount: 50,
+            when: DateTime.now(),
+          ),
+          Transaction(
+            id: 3,
+            from: 1,
+            to: 0,
+            amount: 25,
+            tags: List.from([Tag(name: "t1")]),
+            when: DateTime.now(),
+          )
+        ], 25)
+      ]),
+      initialState: TransactionLoading(),
+    );
+    Widget searchWidget = L10nHelper.build(BlocProvider<TransactionBloc>(
+      create: (c) => transactionBloc,
+      child: SearchWidget(),
+    ));
+
+    testWidgets("TransactionWidgets", (widgetTester) async {
+      await widgetTester.pumpWidget(searchWidget);
+      await widgetTester.pumpAndSettle();
+      await widgetTester.tap(find.byType(ExpansionTile));
+      await widgetTester.pumpAndSettle();
+
+      expect(find.byType(TransactionWidget), findsNWidgets(3));
+      expect(find.text("text to be found"), findsOneWidget);
+    });
+
+    testWidgets("balance", (widgetTester) async {
+      await widgetTester.pumpWidget(searchWidget);
+      await widgetTester.pumpAndSettle();
+
+      Text balanceWidget =
+          widgetTester.element(find.byKey(Key("balance"))).widget as Text;
+      String? balance = balanceWidget.data;
+      expect(balance, '25.0');
+    });
+
+    testWidgets("found transactions count", (widgetTester) async {
+      await widgetTester.pumpWidget(searchWidget);
+      await widgetTester.pumpAndSettle();
+
+      expect(find.text("3 found"), findsOneWidget);
     });
   });
 }
