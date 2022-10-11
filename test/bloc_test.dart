@@ -376,7 +376,10 @@ void main() {
       group('TransactionSearch $transactionRepository', () {
         blocTest(
           'Find by description $transactionRepository',
-          setUp: () async => await transactionRepository.add(sampleTransaction),
+          setUp: () async {
+            await transactionRepository.add(sampleTransaction);
+            await transactionRepository.add(walletTransaction);
+          },
           build: () =>
               TransactionBloc(transactionRepository, MockTagRepository()),
           act: (dynamic bloc) =>
@@ -397,6 +400,10 @@ void main() {
 
         blocTest(
           'Searchs by tag and not founds $transactionRepository',
+          setUp: () async {
+            await transactionRepository.add(sampleTransaction);
+            await transactionRepository.add(walletTransaction);
+          },
           build: () =>
               TransactionBloc(transactionRepository, MockTagRepository()),
           act: (dynamic bloc) =>
@@ -584,6 +591,13 @@ void main() {
           await tagRepository.add(transactionWithTags.tags![0]);
           await tagRepository.add(transactionWithTags.tags![1]);
           await transactionRepository.add(transactionWithTags);
+          await transactionRepository.add(Transaction(
+            id: 2,
+            from: 0,
+            to: 1,
+            amount: 0,
+            when: DateTime.now(),
+          ));
         },
         build: () =>
             TransactionBloc(transactionRepository, MockTagRepository()),
