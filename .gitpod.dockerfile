@@ -3,7 +3,7 @@ SHELL ["/bin/bash", "-c"]
 
 # vnc resolution
 USER root
-RUN sed -i 's/1920x1080/400x800/g' /usr/bin/start-vnc-session.sh
+RUN sed -i 's/1920x1080/500x800/g' /usr/bin/start-vnc-session.sh
 
 # Install dart
 USER root
