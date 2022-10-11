@@ -18,5 +18,6 @@
   "backup": "Backup",
   "noTags": "No tags",
   "editTag": "Edit Tag",
-  "newTag": "New Tag"
+  "newTag": "New Tag",
+  "search": "Search"
 }

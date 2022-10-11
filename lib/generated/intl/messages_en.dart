@@ -41,6 +41,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "noTags": MessageLookupByLibrary.simpleMessage("No tags"),
         "noWallets": MessageLookupByLibrary.simpleMessage("No wallets"),
         "outside": MessageLookupByLibrary.simpleMessage("Outside"),
+        "search": MessageLookupByLibrary.simpleMessage("Search"),
         "tags": MessageLookupByLibrary.simpleMessage("Tags"),
         "wallet": MessageLookupByLibrary.simpleMessage("Wallet"),
         "wallets": MessageLookupByLibrary.simpleMessage("Wallets")
