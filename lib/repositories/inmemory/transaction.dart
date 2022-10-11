@@ -112,8 +112,12 @@ class TransactionInmemory extends TransactionRepository {
         if (transaction.amount != null)
           test = test && t.amount == transaction.amount;
 
-        if (transaction.description != null)
-          test = test && t.description!.contains(transaction.description!);
+        if (transaction.description != null) {
+          if (t.description == null)
+            test = false;
+          else
+            test = test && t.description!.contains(transaction.description!);
+        }
 
         if (transaction.tags != null) {
           bool tagTest = false;
