@@ -45,3 +45,9 @@ class TransactionSearch extends TransactionEvent {
 
   TransactionSearch(this.transaction, [this.transactionEnd]);
 }
+
+class TransactionSearchOr extends TransactionEvent {
+  final model.TransactionSearch transaction;
+
+  TransactionSearchOr(this.transaction);
+}

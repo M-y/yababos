@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yababos/events/transaction.dart';
 import 'package:yababos/models/tag.dart';
 import 'package:yababos/models/transaction.dart';
+import 'package:yababos/models/transaction_search.dart' as model;
 import 'package:yababos/repositories/tag.dart';
 import 'package:yababos/repositories/transaction.dart';
 import 'package:yababos/states/transaction.dart';
@@ -22,6 +23,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     on<TransactionGetAll>(_mapGetAlltoState);
     on<TransactionGetWallet>(_mapGetWallettoState);
     on<TransactionSearch>(_mapSearchtoState);
+    on<TransactionSearchOr>(_mapSearchOrtoState);
   }
 
   Future<void> _mapAddtoState(
@@ -88,6 +90,46 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       TransactionSearch event, Emitter<TransactionState> emit) async {
     List<Transaction> transactions = await _transactionRepository.search(
         event.transaction, event.transactionEnd);
+
+    double balance = 0;
+    for (Transaction transaction in transactions) {
+      if (transaction.from == 0)
+        balance += transaction.amount;
+      else
+        balance -= transaction.amount;
+    }
+
+    return emit(TransactionsFound(transactions, balance));
+  }
+
+  Future<void> _mapSearchOrtoState(
+      TransactionSearchOr event, Emitter<TransactionState> emit) async {
+    List<Transaction> transactions = List.empty(growable: true);
+    if (event.transaction.from != null) {
+      transactions.addAll(await _transactionRepository
+          .search(model.TransactionSearch(from: event.transaction.from)));
+    }
+    if (event.transaction.to != null) {
+      transactions.addAll(await _transactionRepository
+          .search(model.TransactionSearch(to: event.transaction.to)));
+    }
+    if (event.transaction.amount != null) {
+      transactions.addAll(await _transactionRepository
+          .search(model.TransactionSearch(amount: event.transaction.amount)));
+    }
+    if (event.transaction.when != null) {
+      transactions.addAll(await _transactionRepository
+          .search(model.TransactionSearch(when: event.transaction.when)));
+    }
+    if (event.transaction.tags != null) {
+      transactions.addAll(await _transactionRepository
+          .search(model.TransactionSearch(tags: event.transaction.tags)));
+    }
+    if (event.transaction.description != null) {
+      transactions.addAll(await _transactionRepository.search(
+          model.TransactionSearch(description: event.transaction.description)));
+    }
+    transactions.sort((a, b) => b.when.compareTo(a.when));
 
     double balance = 0;
     for (Transaction transaction in transactions) {

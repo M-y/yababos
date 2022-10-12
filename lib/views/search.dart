@@ -18,7 +18,7 @@ class SearchWidget extends StatelessWidget {
           TextFormField(
             decoration: InputDecoration(labelText: S.of(context).search),
             onChanged: (value) => BlocProvider.of<TransactionBloc>(context)
-                .add(TransactionSearch(model.TransactionSearch(
+                .add(TransactionSearchOr(model.TransactionSearch(
               id: null,
               from: null,
               to: null,
