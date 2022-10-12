@@ -116,7 +116,10 @@ class TransactionInmemory extends TransactionRepository {
           if (t.description == null)
             test = false;
           else
-            test = test && t.description!.contains(transaction.description!);
+            test = test &&
+                t.description!
+                    .toLowerCase()
+                    .contains(transaction.description!.toLowerCase());
         }
 
         if (transaction.tags != null) {
