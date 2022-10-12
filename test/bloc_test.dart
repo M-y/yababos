@@ -399,6 +399,44 @@ void main() {
         );
 
         blocTest(
+          'Searches description case insensitive $transactionRepository',
+          setUp: () async {
+            await transactionRepository.add(sampleTransaction);
+            await transactionRepository.add(walletTransaction);
+          },
+          build: () =>
+              TransactionBloc(transactionRepository, MockTagRepository()),
+          act: (dynamic bloc) =>
+              bloc.add(TransactionSearch(model.TransactionSearch(
+            description: 'Sample Expense',
+          ))),
+          wait: Duration(milliseconds: 500),
+          expect: () => <TransactionState>[
+            TransactionsFound(List<Transaction>.from([sampleTransaction]), -100)
+          ],
+          tearDown: () async => await transactionRepository.clear(),
+        );
+
+        blocTest(
+          'Searches description with partial match $transactionRepository',
+          setUp: () async {
+            await transactionRepository.add(sampleTransaction);
+            await transactionRepository.add(walletTransaction);
+          },
+          build: () =>
+              TransactionBloc(transactionRepository, MockTagRepository()),
+          act: (dynamic bloc) =>
+              bloc.add(TransactionSearch(model.TransactionSearch(
+            description: 'ample',
+          ))),
+          wait: Duration(milliseconds: 500),
+          expect: () => <TransactionState>[
+            TransactionsFound(List<Transaction>.from([sampleTransaction]), -100)
+          ],
+          tearDown: () async => await transactionRepository.clear(),
+        );
+
+        blocTest(
           'Searchs by tag and not founds $transactionRepository',
           setUp: () async {
             await transactionRepository.add(sampleTransaction);
