@@ -151,17 +151,19 @@ class TransactionSqlite extends TransactionRepository {
       to: record['toWallet'] as int,
       amount: record['amount'] as double,
       when: (isUtc)
-          ? DateTime.fromMicrosecondsSinceEpoch(record['date'] as int, isUtc: true)
-          : DateTime.fromMicrosecondsSinceEpoch(record['date'] as int, isUtc: true)
+          ? DateTime.fromMicrosecondsSinceEpoch(record['date'] as int,
+              isUtc: true)
+          : DateTime.fromMicrosecondsSinceEpoch(record['date'] as int,
+                  isUtc: true)
               .toLocal(),
       description: record['description'] as String?,
       tags: await _transactionTags(record['id'] as int),
     );
   }
 
-  Future<List<Tag >?> _transactionTags(int transactionId) {
+  Future<List<Tag>?> _transactionTags(int transactionId) {
     return Future(() async {
-      List<Tag > tags = <Tag>[];
+      List<Tag> tags = <Tag>[];
 
       List<Map<String, Object?>> records =
           await (await YababosSqlite.getDatabase()).rawQuery(
@@ -230,18 +232,19 @@ class TransactionSqlite extends TransactionRepository {
       if (transaction.when != null) {
         start = transaction.when;
         end = DateTime(transaction.when!.year, transaction.when!.month,
-          transaction.when!.day + 1);
-      if (transactionEnd != null) end = transactionEnd.when;
+            transaction.when!.day + 1);
+        if (transactionEnd != null) end = transactionEnd.when;
 
-      where.add(
-          'date >= ${start!.microsecondsSinceEpoch} AND date < ${end!.microsecondsSinceEpoch}');
+        where.add(
+            'date >= ${start!.microsecondsSinceEpoch} AND date < ${end!.microsecondsSinceEpoch}');
       }
 
-      if (transaction.from != null) where.add('from = ${transaction.from}');
-      if (transaction.to != null) where.add('to = ${transaction.to}');
+      if (transaction.from != null)
+        where.add('fromWallet = ${transaction.from}');
+      if (transaction.to != null) where.add('toWallet = ${transaction.to}');
 
       if (transaction.amount != null)
-      where.add('amount == ${transaction.amount}');
+        where.add('amount == ${transaction.amount}');
 
       if (transaction.description != null)
         where.add("description LIKE '%${transaction.description}%'");

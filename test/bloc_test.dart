@@ -399,6 +399,44 @@ void main() {
         );
 
         blocTest(
+          'Searches description case insensitive $transactionRepository',
+          setUp: () async {
+            await transactionRepository.add(sampleTransaction);
+            await transactionRepository.add(walletTransaction);
+          },
+          build: () =>
+              TransactionBloc(transactionRepository, MockTagRepository()),
+          act: (dynamic bloc) =>
+              bloc.add(TransactionSearch(model.TransactionSearch(
+            description: 'Sample Expense',
+          ))),
+          wait: Duration(milliseconds: 500),
+          expect: () => <TransactionState>[
+            TransactionsFound(List<Transaction>.from([sampleTransaction]), -100)
+          ],
+          tearDown: () async => await transactionRepository.clear(),
+        );
+
+        blocTest(
+          'Searches description with partial match $transactionRepository',
+          setUp: () async {
+            await transactionRepository.add(sampleTransaction);
+            await transactionRepository.add(walletTransaction);
+          },
+          build: () =>
+              TransactionBloc(transactionRepository, MockTagRepository()),
+          act: (dynamic bloc) =>
+              bloc.add(TransactionSearch(model.TransactionSearch(
+            description: 'ample',
+          ))),
+          wait: Duration(milliseconds: 500),
+          expect: () => <TransactionState>[
+            TransactionsFound(List<Transaction>.from([sampleTransaction]), -100)
+          ],
+          tearDown: () async => await transactionRepository.clear(),
+        );
+
+        blocTest(
           'Searchs by tag and not founds $transactionRepository',
           setUp: () async {
             await transactionRepository.add(sampleTransaction);
@@ -613,6 +651,100 @@ void main() {
         wait: Duration(milliseconds: 500),
         expect: () => <TransactionState>[
           TransactionsFound(List<Transaction>.from([transactionWithTags]), -100)
+        ],
+        tearDown: () async {
+          await transactionRepository.clear();
+          await tagRepository.clear();
+        },
+      );
+
+      Transaction transaction_from = Transaction(
+        id: 1,
+        from: 91,
+        to: 92,
+        amount: 1,
+        when: DateTime.fromMillisecondsSinceEpoch(1662987019000),
+      );
+      Transaction transaction_to = Transaction(
+        id: 2,
+        from: 93,
+        to: 94,
+        amount: 2,
+        when: DateTime.fromMillisecondsSinceEpoch(1663073419000),
+      );
+      Transaction transaction_amount = Transaction(
+        id: 3,
+        from: 1,
+        to: 0,
+        amount: 3,
+        when: DateTime.fromMillisecondsSinceEpoch(1663159819000),
+      );
+      Transaction transaction_when = Transaction(
+        id: 4,
+        from: 1,
+        to: 0,
+        amount: 4,
+        when: DateTime.fromMillisecondsSinceEpoch(1663246219000),
+      );
+      Transaction transaction_description = Transaction(
+        id: 5,
+        from: 1,
+        to: 0,
+        amount: 5,
+        when: DateTime.fromMillisecondsSinceEpoch(1663332619000),
+        description: "Sample Transaction",
+      );
+      Transaction transaction_tags = Transaction(
+        id: 6,
+        from: 1,
+        to: 0,
+        amount: 6,
+        when: DateTime.fromMillisecondsSinceEpoch(1663419019000),
+        tags: List.from([Tag(name: "t1"), Tag(name: "t2")]),
+      );
+      Transaction transaction_irrelevant = Transaction(
+        id: 7,
+        from: 1,
+        to: 0,
+        amount: 7,
+        when: DateTime.fromMillisecondsSinceEpoch(1663505419000),
+      );
+      blocTest(
+        'Or Search $transactionRepository',
+        setUp: () async {
+          await transactionRepository.add(transaction_from);
+          await transactionRepository.add(transaction_to);
+          await transactionRepository.add(transaction_amount);
+          await transactionRepository.add(transaction_when);
+          await transactionRepository.add(transaction_description);
+          await tagRepository.add(transaction_tags.tags![0]);
+          await tagRepository.add(transaction_tags.tags![1]);
+          await transactionRepository.add(transaction_tags);
+          await transactionRepository.add(transaction_irrelevant);
+        },
+        build: () =>
+            TransactionBloc(transactionRepository, MockTagRepository()),
+        act: (dynamic bloc) =>
+            bloc.add(TransactionSearchOr(model.TransactionSearch(
+          from: 91,
+          to: 94,
+          amount: 3,
+          when: DateTime.fromMillisecondsSinceEpoch(1663246219000),
+          description: "sample",
+          tags: List.from([Tag(name: 't2')]),
+        ))),
+        wait: Duration(milliseconds: 500),
+        expect: () => <TransactionState>[
+          TransactionsFound(
+              List<Transaction>.from([
+                transaction_tags,
+                transaction_description,
+                transaction_when,
+                transaction_amount,
+                transaction_to,
+                transaction_from,
+              ]),
+              -21)
         ],
         tearDown: () async {
           await transactionRepository.clear();
