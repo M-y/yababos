@@ -13,6 +13,9 @@ class SearchWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: BackButton(),
+      ),
       body: Column(
         children: [
           TextFormField(
@@ -28,20 +31,33 @@ class SearchWidget extends StatelessWidget {
               tags: List<Tag>.from([Tag(name: value)]),
             ))),
           ),
+          // Summary
           BlocBuilder<TransactionBloc, TransactionState>(
               builder: (context, state) {
+            Widget? balance;
+            if (state is TransactionsFound && state.transactions.length > 0) {
+              balance = Text(state.balance.toString(), key: Key("balance"));
+            }
+
             if (state is TransactionsFound) {
-              return Text(state.balance.toString(), key: Key("balance"));
+              Widget foundLength = Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Text(
+                  "${state.transactions.length} found",
+                  style: Theme.of(context).textTheme.caption,
+                ),
+              );
+
+              if (balance == null)
+                return foundLength;
+              else
+                return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [balance, foundLength]);
             }
             return const Text('');
           }),
-          BlocBuilder<TransactionBloc, TransactionState>(
-              builder: (context, state) {
-            if (state is TransactionsFound) {
-              return Text("${state.transactions.length} found");
-            }
-            return const Text('');
-          }),
+          // Transactions
           BlocBuilder<TransactionBloc, TransactionState>(
               builder: (context, state) {
             if (state is TransactionsFound) {
@@ -53,7 +69,10 @@ class SearchWidget extends StatelessWidget {
                 ),
               );
             }
-            return const Center(child: CircularProgressIndicator());
+            
+            if (state is TransactionLoading)
+              return const Center(child: CircularProgressIndicator());
+            return const Text('');
           })
         ],
       ),
