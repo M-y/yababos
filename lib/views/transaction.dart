@@ -25,7 +25,7 @@ class TransactionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: _isExpense() ? Colors.white : Colors.lightGreenAccent,
+      color: _isExpense() ? Colors.white : Colors.green,
       shadowColor: Colors.white,
       child: InkWell(
         onTap: () {

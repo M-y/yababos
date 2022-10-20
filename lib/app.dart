@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:yababos/theme.dart';
 import 'package:yababos/views/backup.dart';
 import 'package:yababos/views/search.dart';
 import 'package:yababos/views/tags.dart';
@@ -21,9 +22,7 @@ class Yababos extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
       ],
       supportedLocales: S.delegate.supportedLocales,
-      theme: ThemeData(
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+      theme: yababosTheme,
       routes: {
         '/wallets': (rcontext) => WalletsWidget(),
         '/tags': (rcontext) => TagsWidget(),
