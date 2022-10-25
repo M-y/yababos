@@ -16,12 +16,10 @@ class TagChartState extends State<TagChart> {
     return AspectRatio(
       aspectRatio: 1.8,
       child: Card(
-        child: Expanded(
-          child: PieChart(
-            PieChartData(
-              centerSpaceRadius: 40,
-              sections: getSections(),
-            ),
+        child: PieChart(
+          PieChartData(
+            centerSpaceRadius: 40,
+            sections: getSections(),
           ),
         ),
       ),

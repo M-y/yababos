@@ -1,5 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:date_time_picker/date_time_picker.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chips_input/flutter_chips_input.dart';
@@ -16,6 +17,7 @@ import 'package:yababos/models/wallet.dart';
 import 'package:yababos/states/tag.dart';
 import 'package:yababos/states/transaction.dart';
 import 'package:yababos/states/wallet.dart';
+import 'package:yababos/views/charts/pie.dart';
 import 'package:yababos/views/search.dart';
 import 'package:yababos/views/tag_editor.dart';
 import 'package:yababos/views/tags.dart';
@@ -926,6 +928,21 @@ void main() {
       await widgetTester.pumpAndSettle();
 
       expect(find.text("3 found"), findsOneWidget);
+    });
+  });
+
+  group("TagChart", () {
+    testWidgets("PieChart widget exists", (widgetTester) async {
+      var tagValues = {
+        Tag(name: "name", color: Colors.red): 10.0,
+        Tag(name: "name2", color: Colors.blue): 20.0,
+      };
+
+      await widgetTester.pumpWidget(
+          L10nHelper.build(Scaffold(body: TagChart(chartData: tagValues))));
+      await widgetTester.pumpAndSettle();
+
+      expect(find.byType(PieChart), findsOneWidget);
     });
   });
 }
